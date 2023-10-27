@@ -1,6 +1,7 @@
 from flask import Flask
 from src.config import config
 from src.controllers.hello_world import hello_world_bp
+from src.routes import register_routes
 
 
 def create_app(env="development", static_folder="../static"):
@@ -8,6 +9,6 @@ def create_app(env="development", static_folder="../static"):
 
     app.config.from_object(config[env])
 
-    app.register_blueprint(hello_world_bp)
+    register_routes(app)
 
     return app
