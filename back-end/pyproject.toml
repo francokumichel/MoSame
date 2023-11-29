@@ -4,11 +4,18 @@ version = "0.1.0"
 description = ""
 authors = ["felipetamburrimerlo <felipetamburri@gmail.com>"]
 readme = "README.md"
+packages = [{include = "web", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 Flask = "^3.0.0"
 flask-session = "^0.5.0"
+python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.23"
+marshmallow = "^3.20.1"
+flask-cors = "^4.0.0"
+flask-sqlalchemy = "^3.1.1"
+pyodbc = "^5.0.1"
 
 
 [build-system]
