@@ -1,6 +1,16 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+
+const fetchPrueba = async () => {
+  await fetch('http://localhost:5000/api/prueba', {
+    method: 'GET'
+  })
+    .then((res) => res.json())
+    .then((apiResponse) => {
+      console.log(apiResponse)
+    })
+}
 </script>
 
 <template>
@@ -14,6 +24,7 @@ import TheWelcome from './components/TheWelcome.vue'
 
   <main>
     <TheWelcome />
+    <button @click="fetchPrueba" class="btn">API</button>
   </main>
 </template>
 
