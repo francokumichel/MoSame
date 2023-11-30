@@ -5,6 +5,7 @@ from src.core import database
 from src.core import seeds
 from flask_cors import CORS
 from src.web.controllers.hello_world import hello_world_bp
+from src.web.controllers.api import api_blueprint
 
 def create_app(env="development", static_folder="../static"):
     app = Flask(__name__, static_folder=static_folder, static_url_path='/public')
@@ -17,6 +18,7 @@ def create_app(env="development", static_folder="../static"):
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
     app.register_blueprint(hello_world_bp)
+    app.register_blueprint(api_blueprint)
     #register_routes(app)
 
     @app.get("/")
