@@ -9,6 +9,11 @@ class Config(object):
     SECRET_KEY = "secret"
     DEBUG = False
     TESTING = False
+    JWT_SECRET_KEY = "super-secret"
+    JWT_TOKEN_LOCATION = "headers"
+    PROPAGATE_EXCEPTIONS = True
+    CORS_SUPPORTS_CREDENTIALS = True
+    JWT_ACCESS_TOKEN_EXPIRES = False
     load_dotenv()
 
     # Para Flask-Session

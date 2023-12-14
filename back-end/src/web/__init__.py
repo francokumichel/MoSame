@@ -4,6 +4,7 @@ from src.web.routes import register_routes
 from src.core import database
 from src.core import seeds
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from src.web.controllers.hello_world import hello_world_bp
 from src.web.controllers.api import api_blueprint
 
@@ -17,9 +18,12 @@ def create_app(env="development", static_folder="../static"):
     CORS(app)
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
+    #JWT
+    jwt = JWTManager(app)
+
+
     app.register_blueprint(hello_world_bp)
     app.register_blueprint(api_blueprint)
-    #register_routes(app)
 
     @app.get("/")
     def entry_point():
