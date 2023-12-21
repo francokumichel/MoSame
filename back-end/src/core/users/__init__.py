@@ -20,6 +20,10 @@ def get_user(id):
     user = User.query.get(id)
     return user
 
+def get_roles(id):
+    user = get_user(id)
+    return user.roles
+
 
 def update_user(**kwargs):
     user = get_user(kwargs["id"])

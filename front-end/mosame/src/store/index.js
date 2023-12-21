@@ -48,7 +48,7 @@ export default createStore({
             });
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("email", authData.email);
-            router.replace("perfil");
+            router.replace("home");
           }
         })
         .catch((error) => {

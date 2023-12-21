@@ -35,4 +35,7 @@ class User(db.Model):
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            if key == "password":
+                self.set_password(kwargs["password"])
+            else:
+                setattr(self, key, value)

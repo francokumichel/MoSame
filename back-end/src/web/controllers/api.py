@@ -13,8 +13,9 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
-from src.core.users import find_user_by_email, get_user
+from src.core.users import find_user_by_email, get_user, get_roles
 from src.core.schemas.user import user_schema
+from src.core.schemas.role import roles_schema
 
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
@@ -64,3 +65,10 @@ def logout():
     unset_jwt_cookies(response)
     return response, 200
 
+@me_blueprint.get("/roles")
+@jwt_required()
+def get_user_roles():
+    """ Función que devuelve los roles del usuario """
+    current_user = get_jwt_identity()
+    roles = get_roles(id=1)
+    return make_response(jsonify(roles_schema.dump(roles))), 200
