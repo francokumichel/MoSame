@@ -55,3 +55,8 @@ def update_roles(user, rolesSelected):
     db.session.commit()
     assigned_roles(user, rolesSelected)
     return user
+
+def list_users(page_num, per_page):
+    """ Consulta a la bd y obtiene todos los registros paginados de los usuarios registrados en el sistema """
+
+    return User.query.order_by(User.id).paginate(page=page_num, per_page=per_page, error_out=True)

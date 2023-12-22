@@ -23,7 +23,7 @@ const enlacesPorRol = {
         { path: '/personas_en_seguimiento_cetecsm', text: 'Personas en seguimiento por CETEC SM' },
         { path: '/talleres', text: 'Talleres' },
     ],
-    'admin': [
+    'Administrador': [
         { path: '/usuarios', text: 'Usuarios' },
     ],
 };

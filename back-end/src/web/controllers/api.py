@@ -13,8 +13,8 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
-from src.core.users import find_user_by_email, get_user, get_roles
-from src.core.schemas.user import user_schema
+from src.core.users import find_user_by_email, get_user, get_roles, list_users
+from src.core.schemas.user import user_schema, users_schema
 from src.core.schemas.role import roles_schema
 
 from src.core import prueba
@@ -23,11 +23,13 @@ from src.core.schemas.prueba import prueba_schema
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
-me_blueprint = Blueprint("me", __name__, url_prefix="/me") 
+me_blueprint = Blueprint("me", __name__, url_prefix="/me")
+user_blueprint = Blueprint("user", __name__, url_prefix="/users") 
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
 api_blueprint.register_blueprint(me_blueprint)
+api_blueprint.register_blueprint(user_blueprint)
 
 
 @prueba_blueprint.get("")
@@ -72,3 +74,23 @@ def get_user_roles():
     current_user = get_jwt_identity()
     roles = get_roles(id=1)
     return make_response(jsonify(roles_schema.dump(roles))), 200
+
+@user_blueprint.get("index")
+@jwt_required()
+def get_users():
+    """ Función que devuelve el listado de usuarios registrados en el sistema en formato JSON """
+    
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    users = list_users(page_num=page, per_page=per_page)
+    if users:
+        data = {
+            "users": users_schema.dump(users),
+            "page": page,
+            "per_page": per_page,
+            "total": users.total
+        }
+        return jsonify(data), 200
+    else:
+        return jsonify({"error": "No hay usuarios registrados en el sistema"}), 400
+    
