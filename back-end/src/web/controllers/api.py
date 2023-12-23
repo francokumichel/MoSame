@@ -72,7 +72,7 @@ def logout():
 def get_user_roles():
     """ Función que devuelve los roles del usuario """
     current_user = get_jwt_identity()
-    roles = get_roles(id=1)
+    roles = get_roles(id=current_user)
     return make_response(jsonify(roles_schema.dump(roles))), 200
 
 @user_blueprint.get("index")

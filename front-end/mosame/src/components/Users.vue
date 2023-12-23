@@ -1,20 +1,29 @@
 <template>
-    <UsersList :users="users" />
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <li @click="previousPage" :class="{ 'disabled': page === 1 }" class="page-item">
-            <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">{{ page }}</a></li>
-            <li @click="nextPage" :class="{ 'disabled': page >= this.cantPages }" class="page-item">
-            <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-            </li>
-        </ul>
-    </nav>
+    <div class="table-responsive table-content border border-secondary-subtle shadow">
+        <UsersList :users="users" />
+        <div class="d-flex flex-row justify-content-end align-items-center me-3">
+            <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
+                <label>Filas por página: </label>
+                <input class="form-control-sm bg-light" type="number" name="per_page" id="per_page"
+                min="1" v-model="perPage" :max="cantPages" @input="updatePerPage" />
+                <p class="mb-0">{{ pageInfo }}</p>
+            </div>
+            <nav class="ms-5" aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li @click="previousPage" :class="{ 'disabled': page === 1 }" class="page-item">
+                    <a class="page-link border border-0" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    </li>
+                    <li @click="nextPage" :class="{ 'disabled': page*this.perPage >= this.cantPages }" class="page-item">
+                    <a class="page-link border border-0" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -27,7 +36,7 @@ export default {
             users: [],
             errors: [],
             page: 1,
-            perPage: 1,
+            perPage: 2,
             cantPages: 0,
         };
     },
@@ -37,6 +46,14 @@ export default {
     },
 
     components: { UsersList },
+
+    computed: {
+        pageInfo() {
+            const start = (this.page - 1) * this.perPage + 1;
+            const end = Math.min(start + this.perPage - 1, this.cantPages);
+            return `${start}-${end} de ${this.cantPages}`;
+        }
+    },
 
     methods: {
         async loadUsers() {
@@ -66,7 +83,15 @@ export default {
                 this.loadUsers();
             }
         },
+        updatePerPage() {
+            this.page = 1;
+            this.loadUsers();
+        },
 
     },
 }
 </script>
+
+<style>
+
+</style>

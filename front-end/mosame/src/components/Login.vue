@@ -1,12 +1,12 @@
 <template>
-<section class="vh-100 bg-primary-subtle">
+<section class="vh-100 bg-info bg-opacity-50 bg-gradient">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <form class="card shadow-2-strong" @submit.prevent="register" style="border-radius: 1rem;">
+        <form class="card shadow" @submit.prevent="register" style="border-radius: 1rem;">
           <div class="card-body p-5 text-center">
-
-            <h2 class="text-center fw-bold mb-5">Iniciar sesión</h2>
+            <img src="../assets/Logo_MOSaME.png" alt="Logo MOSaME" width="250" height="65">
+            <h2 class="text-center text-info fw-bold mb-5 mt-3">Iniciar sesión</h2>
 
             <div class="input-group mt-4 mb-2">
                 <div class="input-group-text bg-info">
@@ -81,5 +81,4 @@ export default {
 </script>
 
 <style>
-
 </style>
