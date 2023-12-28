@@ -1,5 +1,6 @@
 from src.core.users.user import User
 from src.core.permissions.role import Role
+from src.core.permissions import get_role_by_name
 from src.core.database import db
 
 def create_user(**kwargs):
@@ -44,7 +45,8 @@ def assigned_roles(user, rolesSelected):
         rolesSelected (List[]): Lista de roles a agregar
     """
 
-    for rol in rolesSelected:
+    for role_name in rolesSelected:
+        rol = get_role_by_name(role_name=role_name)
         user.roles.append(rol)
     db.session.add(user)
     db.session.commit()

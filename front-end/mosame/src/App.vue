@@ -53,7 +53,7 @@ export default {
         if (this.roles.length > 0) {
           this.selectedRole = this.roles[0].name;
         this.getNavigationLinks()  
-    }
+        }
       })
       .catch((e) => {
         console.log(e)

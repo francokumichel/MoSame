@@ -17,7 +17,7 @@
       <td>{{ formatRoles(user.roles) }}</td>
       <td>
           <div class="d-flex flex-row column-gap-2">
-              <router-link :to="'/usuarios/editar/' + user.id">
+              <router-link :to="'/users/update/' + user.id">
                   <button type="button" class="btn btn-outline-primary btn-sm">Editar</button>
               </router-link>
               <button type="button" class="btn btn-outline-danger btn-sm">Eliminar</button>

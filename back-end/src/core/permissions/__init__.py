@@ -17,5 +17,8 @@ def create_role(**kwargs):
     return role
 
 
+def list_roles():
+    return Role.query.all()
+
 def get_role_by_name(role_name):
     return Role.query.filter_by(name=role_name).first()

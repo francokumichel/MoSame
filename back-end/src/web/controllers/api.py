@@ -13,7 +13,8 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
-from src.core.users import find_user_by_email, get_user, get_roles, list_users
+from src.core.permissions import list_roles
+from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users
 from src.core.schemas.user import user_schema, users_schema
 from src.core.schemas.role import roles_schema
 
@@ -24,12 +25,14 @@ api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 me_blueprint = Blueprint("me", __name__, url_prefix="/me")
-user_blueprint = Blueprint("user", __name__, url_prefix="/users") 
+user_blueprint = Blueprint("user", __name__, url_prefix="/users")
+roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles") 
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
 api_blueprint.register_blueprint(me_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
+api_blueprint.register_blueprint(roles_blueprint)
 
 
 @prueba_blueprint.get("")
@@ -93,4 +96,44 @@ def get_users():
         return jsonify(data), 200
     else:
         return jsonify({"error": "No hay usuarios registrados en el sistema"}), 400
-    
+
+@user_blueprint.get("show/<int:id>")
+#@jwt_required()
+def get_user_by_id(id):
+    """ Función que dado el id de un usuario registrado en el sistema, retorna la información del mismo """
+    user = get_user(id=id)
+    if user:
+        user_data = user_schema.dump(user)
+        return jsonify(user_data), 200
+    else:
+        return jsonify({"error": "Usuario no encontrado"}), 400
+
+
+
+@user_blueprint.post("update/<int:id>")
+@jwt_required()
+def update_user(id):
+    """ Función que permite a un usuario administrador actualizar los datos de otro usuario """    
+    data = request.get_json()
+    user = get_user(id=id)
+    user.update(name=data['name'], last_name=data["lastName"], email=data["email"])
+    update_roles(user, data['roles'])
+    resp = make_response(jsonify({"msge": "Usuario actualizado exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@user_blueprint.post("create")
+@jwt_required()
+def register_user():
+    """ Función que permite registrar un usuario """
+    data = request.get_json()
+    user = create_user(name=data['name'], last_name=data["lastName"], email=data["email"])
+    update_roles(user, data['roles'])
+    resp = make_response(jsonify({"msge": "Usuario registrado exitosamente."}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@roles_blueprint.get("index")
+def get_index_roles():
+    roles = list_roles()
+    return make_response(jsonify(roles_schema.dump(roles))), 200
