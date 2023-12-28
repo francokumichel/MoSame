@@ -1,39 +1,48 @@
 <!-- UsuarioForm.vue -->
 <template>
-    <div class="border border-secondary-subtle shadow">
-      <h2>{{ edit ? 'Editar Usuario' : 'Crear Usuario' }}</h2>
+    <div class="p-4 border border-secondary-subtle shadow">
+      <h2 class="fw-bold mb-4">{{ edit ? 'Editar Usuario' : 'Crear Usuario' }}</h2>
       <form @submit.prevent="saveUser">
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input v-model="user.name" type="text" id="name" class="form-control" required />
+        <div class="row mb-3">
+          <label for="nombre" class="col-sm-2 col-form-label fw-semibold">Nombre</label>
+          <div class="col-sm-7">
+            <input v-model="user.name" type="text" id="name" class="form-control shadow-sm" required />
+          </div>
         </div>
   
-        <div class="form-group">
-          <label for="apellido">Apellido</label>
-          <input v-model="user.lastName" type="text" id="lastName" class="form-control" required />
+        <div class="row mb-3">
+          <label for="apellido" class="col-sm-2 col-form-label fw-semibold">Apellido</label>
+          <div class="col-sm-7">
+            <input v-model="user.lastName" type="text" id="lastName" class="form-control shadow-sm" required />
+          </div>
         </div>
   
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input v-model="user.email" type="email" id="email" class="form-control" required />
+        <div class="row mb-3">
+          <label for="email" class="col-sm-2 col-form-label fw-semibold">Email</label>
+          <div class="col-sm-7">
+            <input v-model="user.email" type="email" id="email" class="form-control shadow-sm" required />
+          </div>
         </div>
-  
-        <div class="form-group">
-            <label>Roles:</label>
-            <div v-for="role in roleOptions()" :key="role.name" class="form-check">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    :id="role.name"
-                    :value="role.name"
-                    :checked="userRoles().includes(role.name)"
-                    @change="updateUserRoles(role.name)"
-                />
-                <label :for="role.name" class="form-check-label">{{ role.name }}</label>
+        
+        <fieldset class="row mb-3">
+            <legend class="col-form-label col-sm-2 pt-0 fw-semibold">Roles</legend>
+            <div class="col-sm-10">
+                <div v-for="role in roleOptions()" :key="role.name" class="form-check">
+                    <input
+                        class="form-check-input shadow-sm"
+                        type="checkbox"
+                        :id="role.name"
+                        :value="role.name"
+                        :checked="userRoles().includes(role.name)"
+                        @change="updateUserRoles(role.name)"
+                    />
+                    <label :for="role.name" class="form-check-label">{{ role.name }}</label>
+                </div>
             </div>    
-        </div>
-        <p>{{ user.roles }}</p>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        </fieldset>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-info text-white fw-semibold shadow-sm">Guardar</button>
+        </div>    
       </form>
     </div>
   </template>
@@ -67,6 +76,7 @@ export default {
             try {
                 const response = await apiService.get(import.meta.env.VITE_API_URL + "users/show/" + this.$route.params.id);
                 this.user = response.data;
+                this.user.lastName = this.user.last_name;
             } catch (error) {
                 this.errors.push(error);
             }
@@ -126,10 +136,8 @@ export default {
         updateUserRoles(selectedRole) {
             console.log(selectedRole)
             if (this.user.roles.includes(selectedRole)) {
-                // Si ya está en la lista, quítalo
                 this.user.roles = this.user.roles.filter(role => role !== selectedRole);
             } else {
-                // Si no está en la lista, agrégalo
                 this.user.roles = [...this.user.roles, selectedRole];
             }
         },
