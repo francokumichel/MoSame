@@ -13,6 +13,9 @@
             <li class="nav-item" v-for="link in navigationLinks" :key="link.path">
               <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-4 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="link.path"> {{ link.text }} </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-4 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="'/login'" @click="logout">Cerrar sesión</router-link>
+            </li>
           </ul>
           <div class="d-flex align-items-center column-gap-2">
             <label for="roles" class="text-info fw-bold fs-5">Rol: </label>
@@ -65,6 +68,10 @@ export default {
     getNavigationLinks() {
       this.navigationLinks = enlacesPorRol[this.selectedRole] || [];
       console.log(this.navigationLinks)
+    },
+    logout() {
+      this.$store.dispatch("logout");
+      location.reload();
     },
   },
 };

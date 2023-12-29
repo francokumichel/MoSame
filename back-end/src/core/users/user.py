@@ -19,6 +19,8 @@ class User(db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(256))
     roles = db.relationship("Role", secondary=users_roles, backref="users")
+    derivaciones = db.relationship("Derivacion", backref="usuario")
+    llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="usuario")
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
