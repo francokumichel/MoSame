@@ -58,13 +58,8 @@ export default createStore({
         });
     },
     logout: ({ commit }) => {
-      axios
-        .get(process.env.VUE_APP_RUTA + "logout", {
-          xsrfCookieName: "csrf_access_token",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
+      apiService
+        .get(import.meta.env.VITE_API_URL + "logout")
         .then((response) => {
           if (response.status === 200) {
             commit("clearAuthData");
