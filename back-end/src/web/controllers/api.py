@@ -16,6 +16,8 @@ from flask_jwt_extended import (
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users
 from src.core.schemas.user import user_schema, users_schema
+from src.core.persona_cetecsm import list_personas_cetecsm
+from src.core.schemas.persona_cetecsm import personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
 
 from src.core import prueba
@@ -26,13 +28,15 @@ prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
 auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 me_blueprint = Blueprint("me", __name__, url_prefix="/me")
 user_blueprint = Blueprint("user", __name__, url_prefix="/users")
-roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles") 
+roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
+cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm") 
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
 api_blueprint.register_blueprint(me_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(roles_blueprint)
+api_blueprint.register_blueprint(cetecsm_blueprint)
 
 
 @prueba_blueprint.get("")
@@ -137,3 +141,21 @@ def register_user():
 def get_index_roles():
     roles = list_roles()
     return make_response(jsonify(roles_schema.dump(roles))), 200
+
+@cetecsm_blueprint.get("personas")
+def get_personas_cetecsm():
+
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas_cetecsm = list_personas_cetecsm(search_term=search_term, page_num=page, per_page=per_page)
+
+    data = {
+        "personas": personas_cetecsm_schemas.dump(personas_cetecsm),
+        "page": page,
+        "per_page": per_page,
+        "total": personas_cetecsm.total
+    }
+
+    return make_response(jsonify(data)), 200
