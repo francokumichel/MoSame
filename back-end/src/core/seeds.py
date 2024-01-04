@@ -1,6 +1,14 @@
 from src.core import prueba
 from src.core import users
 from src.core import permissions
+from src.core import motivo_general_derivacion
+from src.core import identidad_genero
+from src.core import motivo_general_acompanamiento
+from src.core import malestar_emocional
+from src.core import situaciones_vulnerabilidad
+from src.core import persona_cetecsm
+from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
+from src.core import derivacion
 
 def run():
 
@@ -96,6 +104,103 @@ def run():
     )
 
     users.update_roles(user_coordinator_cetecsm, [role_coordinator_cetecsm])
+
+    # Carga de datos correspondientes a módulo cetecsm
+
+    # Carga de tabla de motivo general de derivación
+    malestar_emocional_der = motivo_general_derivacion.create_motivo_gral_der(tipo="Malestar emocional")
+    consumo_problematico = motivo_general_derivacion.create_motivo_gral_der(tipo="Consumo problematico")
+    orientacion_deriv = motivo_general_derivacion.create_motivo_gral_der(tipo="Orientación/asesoramiento en Salud Mental")
+    acceso_asistencia = motivo_general_derivacion.create_motivo_gral_der(tipo="Acceso a asistencia en Salud Mental")
+    acceso_medicacion = motivo_general_derivacion.create_motivo_gral_der(tipo="Acceso a medicación")
+    violencia_gnro = motivo_general_derivacion.create_motivo_gral_der(tipo="Violencia de género")
+    otras_violencias = motivo_general_derivacion.create_motivo_gral_der(tipo="Otras violencias")
+
+    # Carga de tabla de identidad de genero
+    mujer = identidad_genero.create(tipo="Mujer")
+    varon = identidad_genero.create(tipo="Varón")
+    mujer_trans = identidad_genero.create(tipo="Mujer trans")
+    varon_trans = identidad_genero.create(tipo="Varón trans")
+    no_binarie = identidad_genero.create(tipo="No binarie")
+
+    # Carga de tabla motivo general de acompañamiento
+    malestar_emocional_acomp = motivo_general_acompanamiento.create(tipo="Malestar emocional")
+    orientacion_acomp = motivo_general_acompanamiento.create(tipo="Orientación y asesoramiento")
+    acceso = motivo_general_acompanamiento.create(tipo="Acceso a atención en Salud Mental")
+
+    # Carga de tabla malestar emocional
+    angustia = malestar_emocional.create(tipo="Angustia/Ansiedad")
+    temor = malestar_emocional.create(tipo="Temor/Miedo")
+    soledad = malestar_emocional.create(tipo="Sentimiento de soledad")
+    duelo = malestar_emocional.create(tipo="Duelo")
+    insomnio = malestar_emocional.create(tipo="Dificultades para dormir - insomnio")
+    ideacion_suicida = malestar_emocional.create(tipo="Ideación suicida")
+    intento_suicidio = malestar_emocional.create(tipo="Intento de suicidio")
+    alucinaciones = malestar_emocional.create(tipo="Presentación de delirios - alucinaciones")
+    trastorno_alimentacion = malestar_emocional.create(tipo="Trastornos de la alimentación")
+    violencias = malestar_emocional.create(tipo="Violencias")
+    consumos_problematicos = malestar_emocional.create(tipo="Consumos problemáticos")
+
+    # Carga de tabla de situaciones de vulnerabilidad
+    fallecimiento = situaciones_vulnerabilidad.create(tipo="Fallecimiento de vinculo significativo")
+    situacion_calle = situaciones_vulnerabilidad.create(tipo="Situación de calle")
+    violencia_genero = situaciones_vulnerabilidad.create(tipo="Violencia de género")
+    violencia_intrafamiliar = situaciones_vulnerabilidad.create(tipo="Violencia intrafamiliar")
+    violencia_institucional = situaciones_vulnerabilidad.create(tipo="Violencia institucional")
+    violencia_laboral = situaciones_vulnerabilidad.create(tipo="Violencia laboral")
+    dificultad_acceso_salud = situaciones_vulnerabilidad.create(tipo="Dificultades para el acceso al sistema de salud")
+    dificultad_acceso_alimento = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso al alimento")
+    dificultad_acceso_medicacion_sm = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - SM")
+    dificultad_acceso_medicacion = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - otra (no SM)")
+    pedido_certificado = situaciones_vulnerabilidad.create(tipo="Pedido certificado CUD")
+
+
+    # Carga de tabla de personas_cetecsm
+    persona_cetecsm_1 = persona_cetecsm.create(
+        dni = "35123456",
+        grupo_conviviente = GrupoConviviente.AM.value,
+        dio_consentimiento = True,
+        localidad = "Berazategui",
+        tiene_obra_social = False,
+        nombre = "Roberto",
+        apellido = "Fernandez",
+        edad = 30,
+        telefono = "1122334455",
+        identidad_genero = varon
+    )
+
+    persona_cetecsm_2 = persona_cetecsm.create(
+        dni = "40345678",
+        grupo_conviviente = GrupoConviviente.A.value,
+        dio_consentimiento = True,
+        localidad = "Hudson",
+        tiene_obra_social = True,
+        nombre = "Florencia",
+        apellido = "Gomez",
+        edad = 25,
+        telefono = "221345678",
+        identidad_genero = mujer
+    )
+    
+    derivacion_1 = derivacion.create(
+        dispositivo_derivacion = "Dispositivo 1",
+        nombre_operador_derivador = "Carlos",
+        descripcion = "Soy la primer derivación de todas",
+        mot_gral_derivacion = orientacion_deriv,
+        usuario_derivador = user_operator_cetecsm,
+        persona_cetecsm_derivada = persona_cetecsm_1
+    )
+
+    malestar_emocional_der.malestares_emocionales = [angustia, temor]
+
+    derivacion_2 = derivacion.create(
+        dispositivo_derivacion = "Dispositivo 2",
+        nombre_operador_derivador = "Alicia",
+        descripcion = "Soy la segunda derivación",
+        mot_gral_derivacion = malestar_emocional_der,
+        usuario_derivador = user_operator_cetecsm,
+        persona_cetecsm_derivada = persona_cetecsm_2
+    )
 
     print("Seeds cargados!")
 

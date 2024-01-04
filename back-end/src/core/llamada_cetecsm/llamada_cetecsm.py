@@ -12,7 +12,7 @@ class ResolucionLlamado(enum.Enum):
 
 llamcetecsm_sit_vuln = db.Table('llamcetecsm_sit_vul', 
     db.Column('llamada_cetecsm_id', db.Integer, db.ForeignKey('llamada_cetecsm.id'), primary_key=True),
-    db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situacion_vulnerabilidad.tipo', primary_key=True))                                
+    db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo', primary_key=True))                                
 )
 
 class LlamadaCetecsm(db.Model):
@@ -24,4 +24,6 @@ class LlamadaCetecsm(db.Model):
     detalle = db.Column(db.String(256))
     resolucion = db.Column(db.String(100))
     fecha_prox_llamado = db.Column(db.Date)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)    
+    usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    persona_cetecsm_id = db.Column(db.Integer, db.ForeignKey('persona_cetecsm.id'), nullable=False)
+    motivo_gral_acomp_id = db.Column(db.String(100), db.ForeignKey("motivo_general_acompanamiento.tipo"))   
