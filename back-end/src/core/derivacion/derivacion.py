@@ -6,10 +6,9 @@ class Derivacion(db.Model):
     __tablename__ = "derivaciones"
 
     id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.Date, server_default=func.current_date())
+    fecha = db.Column(db.Date, default=func.current_date())
     dispositivo_derivacion = db.Column(db.String(70))
     nombre_operador_derivador = db.Column(db.String(70))
     descripcion = db.Column(db.String(255))
     tipo_motivo_gral = db.Column(db.String(100), db.ForeignKey('motivo_general_derivacion.tipo'), nullable=False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     persona_cetecsm_id = db.Column(db.Integer, db.ForeignKey('persona_cetecsm.id'), nullable=False)

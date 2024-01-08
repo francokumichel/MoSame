@@ -16,10 +16,12 @@ from flask_jwt_extended import (
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import list_personas_cetecsm
+from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm
 from src.core.schemas.persona_cetecsm import personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
-
+from src.core.motivo_general_derivacion import list_mot_gral_derivacion
+from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
+from src.core.derivacion import create_derivation
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
 
@@ -159,3 +161,35 @@ def get_personas_cetecsm():
     }
 
     return make_response(jsonify(data)), 200
+
+@api_blueprint.get("mot_grales_derivacion")
+def get_index_motivos():
+    mot_grales_derivacion = list_mot_gral_derivacion()
+    return make_response(jsonify(mot_grales_deriv_schema.dump(mot_grales_derivacion))), 200
+
+@cetecsm_blueprint.post("derivacion/create")
+def create_derivation_cetecsm():
+    data = request.get_json()
+    derivacion = data['derivacion']
+    persona = data['persona']
+    persona_cetecsm = create_persona_cetecsm(
+        dni=persona['dni'],
+        dio_consentimiento=persona['dio_consentimiento'],
+        nombre=persona['nombre'],
+        apellido=persona['apellido'],
+        edad=persona['edad'],
+        telefono=persona['telefono'],
+        telefono_alternativo=persona['telefono_alternativo']
+    )
+
+    create_derivation(
+        fecha=derivacion['fecha'], 
+        dispositivo_derivacion=derivacion['dispositivo_derivacion'],
+        nombre_operador_derivador=derivacion['nombre_operador_derivador'],
+        descripcion=derivacion['descripcion'],
+        tipo_motivo_gral=derivacion['mot_gral_derivacion'],
+        persona_cetecsm_derivada=persona_cetecsm)
+
+    resp = make_response(jsonify({"msge": "Usuario registrado exitosamente."}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp

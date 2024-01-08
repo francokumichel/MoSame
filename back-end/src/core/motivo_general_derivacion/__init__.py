@@ -6,3 +6,6 @@ def create_motivo_gral_der(**kwargs):
     db.session.add(motivo_gral_der)
     db.session.commit()
     return motivo_gral_der
+
+def list_mot_gral_derivacion():
+    return MotivoGeneralDerivacion.query.all()

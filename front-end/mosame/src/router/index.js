@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from "../views/LoginView.vue";
 import UsersView from"../views/UsersView.vue";
 import FormUsers from "../views/FormUserView.vue";
+import PersonasCetecsm from "../views/PersonaCetecsmView.vue"
+import CreateDerivacionView from "../views/CreateDerivacionView.vue"
 import store from "@/store";
 
 
@@ -31,6 +33,18 @@ const router = createRouter({
             component: FormUsers,
             meta: { requiresAuth: true },
         },
+        {
+            path:"/cetecsm/derivaciones",
+            name: "cetecsm-derivaciones",
+            component: PersonasCetecsm,
+            meta: { requiresAuth: true }, 
+        },
+        {
+            path:"/cetecsm/derivacion/create",
+            name: "cetecsm-derivacion-create",
+            component: CreateDerivacionView,
+            meta: { requiresAuth: true },
+        }
     ],
 });
 

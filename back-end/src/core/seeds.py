@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.core import prueba
 from src.core import users
 from src.core import permissions
@@ -156,7 +157,7 @@ def run():
 
 
     # Carga de tabla de personas_cetecsm
-    persona_cetecsm_1 = persona_cetecsm.create(
+    persona_cetecsm_1 = persona_cetecsm.create_persona_cetecsm(
         dni = "35123456",
         grupo_conviviente = GrupoConviviente.AM.value,
         dio_consentimiento = True,
@@ -169,7 +170,7 @@ def run():
         identidad_genero = varon
     )
 
-    persona_cetecsm_2 = persona_cetecsm.create(
+    persona_cetecsm_2 = persona_cetecsm.create_persona_cetecsm(
         dni = "40345678",
         grupo_conviviente = GrupoConviviente.A.value,
         dio_consentimiento = True,
@@ -182,23 +183,20 @@ def run():
         identidad_genero = mujer
     )
     
-    derivacion_1 = derivacion.create(
+    derivacion_1 = derivacion.create_derivation(
         dispositivo_derivacion = "Dispositivo 1",
         nombre_operador_derivador = "Carlos",
         descripcion = "Soy la primer derivación de todas",
         mot_gral_derivacion = orientacion_deriv,
-        usuario_derivador = user_operator_cetecsm,
         persona_cetecsm_derivada = persona_cetecsm_1
     )
 
-    malestar_emocional_der.malestares_emocionales = [angustia, temor]
-
-    derivacion_2 = derivacion.create(
+    derivacion_2 = derivacion.create_derivation(
+        fecha = datetime(2024, 1, 6),
         dispositivo_derivacion = "Dispositivo 2",
         nombre_operador_derivador = "Alicia",
         descripcion = "Soy la segunda derivación",
         mot_gral_derivacion = malestar_emocional_der,
-        usuario_derivador = user_operator_cetecsm,
         persona_cetecsm_derivada = persona_cetecsm_2
     )
 

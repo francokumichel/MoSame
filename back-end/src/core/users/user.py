@@ -22,7 +22,6 @@ class User(db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(256))
     roles = db.relationship("Role", secondary=users_roles, backref="users")
-    derivaciones_realizadas = db.relationship("Derivacion", backref="usuario_derivador")
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="usuario_carga")
     personas_cetecsm_asignadas = db.relationship("PersonaCetecsm", backref="usuario_asignado")
 

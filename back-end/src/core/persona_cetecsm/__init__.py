@@ -2,7 +2,7 @@ from src.core.database import db
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from sqlalchemy import or_
 
-def create(**kwargs):
+def create_persona_cetecsm(**kwargs):
     persona_cetecsm = PersonaCetecsm(**kwargs)
     db.session.add(persona_cetecsm)
     db.session.commit()
