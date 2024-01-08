@@ -14,9 +14,9 @@ from flask_jwt_extended import (
 )
 
 from src.core.permissions import list_roles
-from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users
+from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm
+from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm
 from src.core.schemas.persona_cetecsm import personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
@@ -193,3 +193,21 @@ def create_derivation_cetecsm():
     resp = make_response(jsonify({"msge": "Usuario registrado exitosamente."}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
+
+@cetecsm_blueprint.post("asignarPersona/<int:persona_id>")
+@jwt_required()
+def asignar_persona_cetecsm(persona_id):
+    current_user = get_jwt_identity()
+    user = get_user(current_user)
+    persona_cetecsm = get_persona_cetecsm(id=persona_id)
+    asignar_persona(user, persona_cetecsm)
+    resp = make_response(jsonify({"msge": "Persona asignada exitosamente."}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@me_blueprint.get("personasAsignadas")
+@jwt_required()
+def get_personas_cetecsm_asignadas():
+    current_user = get_jwt_identity()
+    personas = get_personas_asignadas(id=current_user)
+    return make_response(jsonify(personas_cetecsm_schemas.dump(personas))), 200

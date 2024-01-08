@@ -62,3 +62,12 @@ def list_users(page_num, per_page):
     """ Consulta a la bd y obtiene todos los registros paginados de los usuarios registrados en el sistema """
 
     return User.query.order_by(User.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def asignar_persona(user, persona):
+    user.personas_cetecsm_asignadas.append(persona)
+    db.session.commit()
+    return user
+
+def get_personas_asignadas(id):
+    user = get_user(id)
+    return user.personas_cetecsm_asignadas

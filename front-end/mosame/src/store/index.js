@@ -13,6 +13,9 @@ export default createStore({
     isAuthenticated(state) {
       return state.token !== null;
     },
+    userEmail(state) {
+      return state.email;
+    },
   },
   mutations: {
     authUser(state, userData) {
