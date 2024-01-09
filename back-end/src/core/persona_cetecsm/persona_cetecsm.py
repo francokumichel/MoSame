@@ -22,9 +22,14 @@ class PersonaCetecsm(db.Model):
     apellido = db.Column(db.String(100))
     edad = db.Column(db.Integer)
     telefono = db.Column(db.String(255))
-    telefono_alternativo = db.Column(db.String(255))
+    telefono_alternativo = db.Column(db.String(255), default='-')
+    fecha_prox_llamado_actual = db.Column(db.Date) 
     derivacion = db.relationship('Derivacion', backref="persona_cetecsm_derivada", uselist=False)
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     identidad_genero_id = db.Column(db.String(100), db.ForeignKey('identidad_genero.tipo'))
 #    municipio_nombre = db.Column(db.String(100), db.ForeignKey('municipio.nombre'), nullable=False)
+    
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)

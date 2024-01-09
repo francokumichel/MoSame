@@ -1,4 +1,5 @@
 from src.core.users.user import User
+from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from src.core.permissions.role import Role
 from src.core.permissions import get_role_by_name
 from src.core.database import db
@@ -68,6 +69,18 @@ def asignar_persona(user, persona):
     db.session.commit()
     return user
 
-def get_personas_asignadas(id):
-    user = get_user(id)
-    return user.personas_cetecsm_asignadas
+def get_personas_asignadas(search_term, page_num, per_page, user_id):
+    user = get_user(id=user_id)
+    personas_asignadas = PersonaCetecsm.query.join(User, User.id == PersonaCetecsm.usuario_id).filter(User.id == user_id)
+    
+    if search_term:
+        personas_asignadas = personas_asignadas.filter(
+            (PersonaCetecsm.nombre.ilike(f"%{search_term}%")) |
+            (PersonaCetecsm.apellido.ilike(f"%{search_term}%"))
+        )
+
+    personas_asignadas = personas_asignadas.order_by(PersonaCetecsm.id)
+
+    return personas_asignadas.paginate(page=page_num, per_page=per_page, error_out=True)
+
+#    return personas_asignadas.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)    

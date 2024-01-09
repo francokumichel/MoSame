@@ -206,8 +206,21 @@ def asignar_persona_cetecsm(persona_id):
     return resp
 
 @me_blueprint.get("personasAsignadas")
-@jwt_required()
+#@jwt_required()
 def get_personas_cetecsm_asignadas():
-    current_user = get_jwt_identity()
-    personas = get_personas_asignadas(id=current_user)
-    return make_response(jsonify(personas_cetecsm_schemas.dump(personas))), 200
+#    current_user = get_jwt_identity()
+
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page,user_id=3)
+    
+    data = {
+        "personas": personas_cetecsm_schemas.dump(personas),
+        "page": page,
+        "per_page": per_page,
+        "total": personas.total
+    }
+    
+    return make_response(jsonify(data)), 200

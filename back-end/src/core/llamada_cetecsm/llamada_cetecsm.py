@@ -1,5 +1,7 @@
 from src.core.database import db
+from src.core.situaciones_vulnerabilidad import situacion_vulnerabilidad
 import enum
+from sqlalchemy import func
 
 class ResolucionLlamado(enum.Enum):
     EN_PRIMER_LLAMADO = "Se resolvió en el primer llamado"
@@ -23,6 +25,7 @@ class LlamadaCetecsm(db.Model):
     detalle_acompanamiento = db.Column(db.String(256))
     detalle = db.Column(db.String(256))
     resolucion = db.Column(db.String(100))
+    fecha_llamado = db.Column(db.Date, default=func.current_date())
     fecha_prox_llamado = db.Column(db.Date)
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     persona_cetecsm_id = db.Column(db.Integer, db.ForeignKey('persona_cetecsm.id'), nullable=False)

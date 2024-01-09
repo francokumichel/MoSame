@@ -13,6 +13,7 @@ class PersonaCetecsmSchema(Schema):
     edad = fields.Int()
     telefono = fields.Str()
     telefono_alternativo = fields.Str()
+    fecha_prox_llamado_actual = fields.Date()
     derivacion = fields.Nested(DerivacionSchema)
 
 personas_cetecsm_schemas = PersonaCetecsmSchema(many=True)

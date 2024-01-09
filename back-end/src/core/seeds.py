@@ -10,6 +10,8 @@ from src.core import situaciones_vulnerabilidad
 from src.core import persona_cetecsm
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
 from src.core import derivacion
+from src.core import llamada_cetecsm
+from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 
 def run():
 
@@ -182,6 +184,19 @@ def run():
         telefono = "221345678",
         identidad_genero = mujer
     )
+
+    persona_cetecsm_3 = persona_cetecsm.create_persona_cetecsm(
+        dni = "42444555",
+        grupo_conviviente = GrupoConviviente.S.value,
+        dio_consentimiento = True,
+        localidad = "El Pato",
+        tiene_obra_social = False,
+        nombre = "Eduardo",
+        apellido = "Sanchez",
+        edad = 26,
+        telefono = "1144556677",
+        identidad_genero = varon
+    )
     
     derivacion_1 = derivacion.create_derivation(
         dispositivo_derivacion = "Dispositivo 1",
@@ -199,6 +214,58 @@ def run():
         mot_gral_derivacion = malestar_emocional_der,
         persona_cetecsm_derivada = persona_cetecsm_2
     )
+
+    derivacion_3 = derivacion.create_derivation(
+        dispositivo_derivacion = "Dispositivo 3",
+        nombre_operador_derivador = "Santiago",
+        descripcion = "Soy la tercer derivación",
+        mot_gral_derivacion = acceso_medicacion,
+        persona_cetecsm_derivada = persona_cetecsm_3
+    )
+
+    users.asignar_persona(user_operator_cetecsm, persona_cetecsm_1)
+    users.asignar_persona(user_operator_cetecsm, persona_cetecsm_3)
+
+    llamada_cetecsm_1 = llamada_cetecsm.create_llamada_cetecsm(
+        detalle_acompanamiento = "Detalle de acompañamiento de la primer llamada",
+        detalle = "Primer llamada",
+        resolucion = ResolucionLlamado.CONTINUA.value,
+        fecha_llamado = datetime(2024, 1, 3),
+        fecha_prox_llamado = datetime(2024, 1, 9),
+        usuario_carga = user_operator_cetecsm,
+        persona_cetecsm_llamada = persona_cetecsm_1,
+        motivo_gral_acomp = orientacion_acomp
+    )
+
+
+    llamada_cetecsm_1.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
+    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_1.persona_cetecsm_id ,fecha_prox_llamado_actual=llamada_cetecsm_1.fecha_prox_llamado)
+
+    llamada_cetecsm_2 = llamada_cetecsm.create_llamada_cetecsm(
+        detalle_acompanamiento = "Detalle de acompañamiento de la segunda llamada",
+        detalle = "Segunda llamada",
+        resolucion = ResolucionLlamado.RESOLUCION.value,
+        usuario_carga = user_operator_cetecsm,
+        persona_cetecsm_llamada = persona_cetecsm_1,
+        motivo_gral_acomp = orientacion_acomp
+    )
+
+    llamada_cetecsm_2.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
+    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_1.persona_cetecsm_id ,fecha_prox_llamado_actual=llamada_cetecsm_2.fecha_prox_llamado)
+
+
+    llamada_cetecsm_3 = llamada_cetecsm.create_llamada_cetecsm(
+        detalle_acompanamiento = "Detalle de acompañamiento de la tercer llamada",
+        detalle = "Primer llamada a persona 3",
+        resolucion = ResolucionLlamado.CONTINUA.value,
+        fecha_prox_llamado = datetime(2024, 1, 17),
+        usuario_carga = user_operator_cetecsm,
+        persona_cetecsm_llamada = persona_cetecsm_3,
+        motivo_gral_acomp = acceso
+    )
+
+    llamada_cetecsm_3.situaciones_vulnerabilidad.append(dificultad_acceso_medicacion)
+    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_3.persona_cetecsm_id, fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado)
 
     print("Seeds cargados!")
 
