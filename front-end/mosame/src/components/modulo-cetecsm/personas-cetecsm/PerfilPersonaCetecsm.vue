@@ -1,9 +1,9 @@
 <template>
     <div class="p-4 border border-secondary-subtle shadow">
-        <h2 class="fw-semibold border-2 border-bottom mb-3">Perfil</h2>
+        <h2 class="fw-semibold border-2 border-bottom mb-4">Perfil</h2>
         <div v-if="persona">
-            <div class="row">
-                <div class="col-7">
+            <div class="row g-3">
+                <div class="col-md-auto">
                     <h5 class="fw-semibold border-2 border-bottom mb-3">Datos personales</h5>
                     <div class="mb-3 row">
                         <label for="nombre" class="col-sm-auto col-form-label fw-semibold">Nombre:</label>
@@ -20,7 +20,7 @@
                     <div class="mb-3 row">
                         <label for="dni" class="col-sm-auto col-form-label fw-semibold">DNI:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="dni" :value="persona.dni">
+                            <input type="text" readonly class="form-control-plaintext" id="dni" :value="persona.dni || '-'">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -38,7 +38,7 @@
                     <div class="mb-3 row">
                         <label for="localidad" class="col-sm-auto col-form-label fw-semibold">Localidad:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="localidad" :value="persona.localidad">
+                            <input type="text" readonly class="form-control-plaintext" id="localidad" :value="persona.localidad || '-'">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -50,7 +50,7 @@
                     <div class="mb-3 row">
                         <label for="dio_consentimiento" class="col-sm-auto col-form-label fw-semibold">¿Presta consentimiento?:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="dio_consentimiento" :value="persona.dio_consentimiento">
+                            <input type="text" readonly class="form-control-plaintext" id="dio_consentimiento" :value="persona.dio_consentimiento ? 'Si' : 'No'">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -62,13 +62,13 @@
                     <div class="mb-3 row">
                         <label for="genero_identidad" class="col-sm-auto col-form-label fw-semibold">Género de identidad:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.genero_identidad">
+                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.genero_identidad || '-'">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="tiene_obra_social" class="col-sm-auto col-form-label fw-semibold">¿Tiene obra social?:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="tiene_obra_social" :value="persona.tiene_obra_social">
+                            <input type="text" readonly class="form-control-plaintext" id="tiene_obra_social" :value="persona.tiene_obra_social ? 'Sí' : 'No'">
                         </div>
                     </div>
                     <div v-if="persona.motivo_gral_acomp" class="mb-3 row">
@@ -92,7 +92,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-5">
+                <div class="col-md-auto">
                     <h5 class="fw-semibold border-2 border-bottom mb-3">Datos derivación</h5>
                     <div class="mb-3 row">
                         <label for="fecha_derivacion" class="col-sm-auto col-form-label fw-semibold">Fecha de derivación:</label>
@@ -120,6 +120,12 @@
                     </div>
                 </div>
             </div>
+            <div class="d-flex justify-content-center align-items-center column-gap-2">
+                <router-link :to="'/cetecsm/persona/llamadas/' + persona.id" class="btn btn-primary shadow-sm">Ver historial de llamadas</router-link>
+                <div v-if="esOperador()">
+                    <router-link :to="'/cetecsm/persona/editar' + persona.id" class="btn btn-primary shadow-sm">Editar persona</router-link>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -132,6 +138,7 @@ export default {
     data() {
         return{
             persona: null,
+            roles: [],
             errores: [],
         }
     },
@@ -140,18 +147,30 @@ export default {
         await apiService.get(import.meta.env.VITE_API_URL + "cetecsm/persona/perfil/" + this.$route.params.id)
             .then((response) => {
                 this.persona = response.data;
-                console.log(this.persona.motivo_gral_acomp.tipo)
             })
             .catch((e) => {
                 console.log(e)
                 this.errores.push(e);
+            });
+
+        await apiService.get(import.meta.env.VITE_API_URL + "me/roles")
+            .then((response) => {
+                this.roles = response.data;
             })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            })    
     },
 
     methods: {
         formatList(lista) {
             return lista ? lista.map(l => l.tipo).join(', ') : '';
         },
+
+        esOperador() {
+            return this.roles.some((role) => role.name == "Operador CETECSM");
+        }
     },
 }
 </script>

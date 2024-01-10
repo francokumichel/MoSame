@@ -16,12 +16,13 @@ from flask_jwt_extended import (
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm
+from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas ,personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
 from src.core.derivacion import create_derivation
+from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
 
@@ -233,3 +234,19 @@ def get_perfil_persona_cetecsm(id):
         return make_response(jsonify(persona_cetecsm_schemas.dump(persona_cetecsm))), 200
     else:
         return jsonify({"error": "Persona no encontrada"}), 400
+
+@cetecsm_blueprint.get("persona/llamadas/<int:persona_id>")
+def get_llamadas_recibidas(persona_id):
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    llamadas_recibidas = list_llamadas_recibidas(page_num=page, per_page=per_page, persona_id=persona_id)
+
+    data = {
+        "llamadas": llamadas_cetecsm_schema.dump(llamadas_recibidas),
+        "page": page,
+        "per_page": per_page,
+        "total": llamadas_recibidas.total
+    }
+
+    return make_response(jsonify(data)), 200

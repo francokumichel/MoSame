@@ -1,5 +1,6 @@
 from src.core.database import db
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
+from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 from sqlalchemy import or_
 
 def create_persona_cetecsm(**kwargs):
@@ -30,3 +31,7 @@ def list_personas_cetecsm(search_term, page_num, per_page):
 
         return resultados.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
     return PersonaCetecsm.query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def list_llamadas_recibidas(page_num, per_page, persona_id):
+    llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id)
+    return llamadas_recibidas.order_by(LlamadaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)

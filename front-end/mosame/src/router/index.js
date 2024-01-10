@@ -6,6 +6,7 @@ import PersonasCetecsm from "../views/PersonaCetecsmView.vue";
 import CreateDerivacionView from "../views/CreateDerivacionView.vue";
 import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue";
 import PerfilPersonaCetecsm from "../views/PerfilPersonaCetecsmView.vue";
+import PersonaCetecsmLlamadas from "../views/PersonaCetecsmLlamadasView.vue";
 import store from "@/store";
 
 
@@ -57,6 +58,12 @@ const router = createRouter({
             path:"/cetecsm/persona/perfil/:id",
             name: "cetecsm-perfil-persona",
             component: PerfilPersonaCetecsm,
+            meta: { requiresAuth: true },             
+        },
+        {
+            path:"/cetecsm/persona/llamadas/:id",
+            name: "cetecsm-persona-llamadas",
+            component: PersonaCetecsmLlamadas,
             meta: { requiresAuth: true },             
         },
     ],
