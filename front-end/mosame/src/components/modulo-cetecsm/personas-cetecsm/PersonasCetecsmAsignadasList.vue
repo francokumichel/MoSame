@@ -22,7 +22,7 @@
         <td>{{ persona.telefono }}</td>
         <td>
             <div class="d-flex align-items-center column-gap-2">
-              <button type="button" class="btn btn-outline-primary btn-sm">Ver perfil</button>
+              <router-link :to="'/cetecsm/persona/perfil/' + persona.id" class="btn btn-outline-primary btn-sm">Ver perfil</router-link>
               <button type="button" class="btn btn-outline-success btn-sm">Cargar llamada</button>
             </div>
         </td>

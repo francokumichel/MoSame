@@ -17,7 +17,7 @@ from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
 from src.core.schemas.user import user_schema, users_schema
 from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm
-from src.core.schemas.persona_cetecsm import personas_cetecsm_schemas
+from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas ,personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
@@ -206,15 +206,15 @@ def asignar_persona_cetecsm(persona_id):
     return resp
 
 @me_blueprint.get("personasAsignadas")
-#@jwt_required()
+@jwt_required()
 def get_personas_cetecsm_asignadas():
-#    current_user = get_jwt_identity()
+    current_user = get_jwt_identity()
 
     search_term = request.args.get("q", default="", type=str)
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
 
-    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page,user_id=3)
+    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page, user_id=current_user)
     
     data = {
         "personas": personas_cetecsm_schemas.dump(personas),
@@ -224,3 +224,12 @@ def get_personas_cetecsm_asignadas():
     }
     
     return make_response(jsonify(data)), 200
+
+@cetecsm_blueprint.get("persona/perfil/<int:id>")
+def get_perfil_persona_cetecsm(id):
+    persona_cetecsm = get_persona_cetecsm(id=id)
+
+    if persona_cetecsm:
+        return make_response(jsonify(persona_cetecsm_schemas.dump(persona_cetecsm))), 200
+    else:
+        return jsonify({"error": "Persona no encontrada"}), 400

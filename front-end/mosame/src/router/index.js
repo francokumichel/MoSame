@@ -4,7 +4,8 @@ import UsersView from"../views/UsersView.vue";
 import FormUsers from "../views/FormUserView.vue";
 import PersonasCetecsm from "../views/PersonaCetecsmView.vue";
 import CreateDerivacionView from "../views/CreateDerivacionView.vue";
-import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue"
+import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue";
+import PerfilPersonaCetecsm from "../views/PerfilPersonaCetecsmView.vue";
 import store from "@/store";
 
 
@@ -51,7 +52,13 @@ const router = createRouter({
             name: "cetecsm-asignaciones",
             component: PersonasCetecsmAsignadas,
             meta: { requiresAuth: true },             
-        }
+        },
+        {
+            path:"/cetecsm/persona/perfil/:id",
+            name: "cetecsm-perfil-persona",
+            component: PerfilPersonaCetecsm,
+            meta: { requiresAuth: true },             
+        },
     ],
 });
 

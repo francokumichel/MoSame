@@ -1,4 +1,5 @@
 from src.core.database import db
+from src.core.situaciones_vulnerabilidad import situacion_vulnerabilidad
 import enum
 
 class GrupoConviviente(enum.Enum):
@@ -7,6 +8,11 @@ class GrupoConviviente(enum.Enum):
     AM = "Con adultos/as y menores"
     A = "Solo con adulto/as"
     M = "Solo con menores"
+
+personacetecsm_sit_vuln = db.Table('personacetecsm_sit_vul', 
+    db.Column('persona_cetecsm_id', db.Integer, db.ForeignKey('persona_cetecsm.id'), primary_key=True),
+    db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo', primary_key=True))                                
+)
 
 class PersonaCetecsm(db.Model):
     """ Clase que representa el modelo de una persona derivada a CETECSM """
@@ -23,11 +29,14 @@ class PersonaCetecsm(db.Model):
     edad = db.Column(db.Integer)
     telefono = db.Column(db.String(255))
     telefono_alternativo = db.Column(db.String(255), default='-')
+    detalle_acompanamiento = db.Column(db.String(256))
     fecha_prox_llamado_actual = db.Column(db.Date) 
     derivacion = db.relationship('Derivacion', backref="persona_cetecsm_derivada", uselist=False)
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     identidad_genero_id = db.Column(db.String(100), db.ForeignKey('identidad_genero.tipo'))
+    motivo_gral_acomp_id = db.Column(db.String(100), db.ForeignKey("motivo_general_acompanamiento.tipo"))
+    situaciones_vulnerabilidad = db.relationship('SituacionVulnerabilidad', secondary=personacetecsm_sit_vuln, backref="personas_cetecsm")
 #    municipio_nombre = db.Column(db.String(100), db.ForeignKey('municipio.nombre'), nullable=False)
     
     def update(self, **kwargs):

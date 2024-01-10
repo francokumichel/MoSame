@@ -10,5 +10,5 @@ class MotivoGeneralAcompanamiento(db.Model):
     __tablename__ = "motivo_general_acompanamiento"
 
     tipo = db.Column(db.String(100), primary_key=True)
-    llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="motivo_gral_acomp")
+    personas_cetecsm = db.relationship("PersonaCetecsm", backref="motivo_gral_acomp")
     malestares_emocionales = db.relationship("MalestarEmocional", secondary=mot_acom_malestar_emoc, backref="motivos_grales_acomp")

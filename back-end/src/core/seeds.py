@@ -227,45 +227,52 @@ def run():
     users.asignar_persona(user_operator_cetecsm, persona_cetecsm_3)
 
     llamada_cetecsm_1 = llamada_cetecsm.create_llamada_cetecsm(
-        detalle_acompanamiento = "Detalle de acompañamiento de la primer llamada",
         detalle = "Primer llamada",
         resolucion = ResolucionLlamado.CONTINUA.value,
         fecha_llamado = datetime(2024, 1, 3),
         fecha_prox_llamado = datetime(2024, 1, 9),
         usuario_carga = user_operator_cetecsm,
         persona_cetecsm_llamada = persona_cetecsm_1,
-        motivo_gral_acomp = orientacion_acomp
     )
 
 
-    llamada_cetecsm_1.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
-    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_1.persona_cetecsm_id ,fecha_prox_llamado_actual=llamada_cetecsm_1.fecha_prox_llamado)
+    persona_cetecsm_1.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
+    persona_cetecsm.update_persona_cetecsm(
+        id=llamada_cetecsm_1.persona_cetecsm_id,
+        fecha_prox_llamado_actual=llamada_cetecsm_1.fecha_prox_llamado,
+        detalle_acompanamiento = "En la primer llamada hablamos bastante."        
+    )
 
     llamada_cetecsm_2 = llamada_cetecsm.create_llamada_cetecsm(
-        detalle_acompanamiento = "Detalle de acompañamiento de la segunda llamada",
         detalle = "Segunda llamada",
         resolucion = ResolucionLlamado.RESOLUCION.value,
         usuario_carga = user_operator_cetecsm,
         persona_cetecsm_llamada = persona_cetecsm_1,
+    )
+
+    persona_cetecsm.update_persona_cetecsm(
+        id=llamada_cetecsm_1.persona_cetecsm_id,
+        fecha_prox_llamado_actual=llamada_cetecsm_2.fecha_prox_llamado,
+        detalle_acompanamiento = "En la primer llamada hablamos bastante. En la segunda llamada hablamos menos.",
         motivo_gral_acomp = orientacion_acomp
     )
 
-    llamada_cetecsm_2.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
-    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_1.persona_cetecsm_id ,fecha_prox_llamado_actual=llamada_cetecsm_2.fecha_prox_llamado)
-
 
     llamada_cetecsm_3 = llamada_cetecsm.create_llamada_cetecsm(
-        detalle_acompanamiento = "Detalle de acompañamiento de la tercer llamada",
         detalle = "Primer llamada a persona 3",
         resolucion = ResolucionLlamado.CONTINUA.value,
         fecha_prox_llamado = datetime(2024, 1, 17),
         usuario_carga = user_operator_cetecsm,
-        persona_cetecsm_llamada = persona_cetecsm_3,
-        motivo_gral_acomp = acceso
+        persona_cetecsm_llamada = persona_cetecsm_3
     )
 
-    llamada_cetecsm_3.situaciones_vulnerabilidad.append(dificultad_acceso_medicacion)
-    persona_cetecsm.update_persona_cetecsm(id=llamada_cetecsm_3.persona_cetecsm_id, fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado)
+    persona_cetecsm_3.situaciones_vulnerabilidad.append(dificultad_acceso_medicacion)
+    persona_cetecsm.update_persona_cetecsm(
+        id=llamada_cetecsm_3.persona_cetecsm_id, 
+        fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado,
+        detalle_acompanamiento = "Llamado por primera vez a la persona y me brindo todos los datos",
+        motivo_gral_acomp = acceso,
+)
 
     print("Seeds cargados!")
 
