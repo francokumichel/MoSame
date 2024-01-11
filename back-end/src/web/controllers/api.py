@@ -16,8 +16,8 @@ from flask_jwt_extended import (
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas
-from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas ,personas_cetecsm_schemas
+from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln
+from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas
 from src.core.schemas.role import roles_schema
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
@@ -25,6 +25,15 @@ from src.core.derivacion import create_derivation
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
+from src.core.motivo_general_acompanamiento import list_mot_gral_acomp
+from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_schema
+from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
+from src.core.identidad_genero import list_identidades_genero
+from src.core.schemas.identidad_genero import identidades_genero_schema
+from src.core.malestar_emocional import list_malestares_emocionales
+from src.core.schemas.malestar_emocional import malestares_emocionales_schema
+from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
+from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -250,3 +259,59 @@ def get_llamadas_recibidas(persona_id):
     }
 
     return make_response(jsonify(data)), 200
+
+@api_blueprint.get("grupos_convivientes")
+def get_index_grupo_conviviente():
+    grupos_convivientes = {grupo.name: grupo.value for grupo in GrupoConviviente}
+    return make_response(jsonify(grupos_convivientes)), 200
+
+@api_blueprint.get("identidades_genero")
+def get_index_identidad_genero():
+    identidades_genero = list_identidades_genero()
+    return make_response(jsonify(identidades_genero_schema.dump(identidades_genero))), 200
+
+@api_blueprint.get("mot_grales_acomp")
+def get_index_mot_gral_acomp():
+    mot_grales_acomp = list_mot_gral_acomp()
+    return make_response(jsonify(mot_grales_acomp_schema.dump(mot_grales_acomp))), 200
+
+@api_blueprint.get("malestares_emocionales")
+def get_index_malestar_emocional():
+    malestares_emocionales = list_malestares_emocionales()
+    return make_response(jsonify(malestares_emocionales_schema.dump(malestares_emocionales))), 200
+
+@api_blueprint.get("situaciones_vulnerabilidad")
+def get_index_situacion_vulnerabilidad():
+    situaciones_vulnerabilidad = list_situaciones_vulnerabilidad()
+    return make_response(jsonify(situaciones_vuln_schema.dump(situaciones_vulnerabilidad))), 200
+
+@cetecsm_blueprint.post("persona/editar/<int:id>")
+@jwt_required()
+def editar_persona_cetecsm(id):
+    """ Función que permite a un usuario administrador actualizar los datos de otro usuario """    
+    data = request.get_json()
+    persona = data['persona']
+    print(persona)
+    persona_cetecsm = get_persona_cetecsm(id=id)
+    persona_cetecsm.update(
+        dni=persona['dni'], 
+        grupo_conviviente=persona['grupo_conviviente'], 
+        dio_consentimiento=persona['dio_consentimiento'],
+        localidad=persona['localidad'],
+        tiene_obra_social=persona['tiene_obra_social'],
+        nombre=persona['nombre'],
+        apellido=persona['apellido'],
+        telefono=persona['telefono'],
+        telefono_alternativo=persona['telefono_alternativo'],
+        detalle_acompanamiento=persona['detalle_acompanamiento'],
+    )
+
+    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
+    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
+    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
+
+    
+    resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+

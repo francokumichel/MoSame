@@ -1,6 +1,10 @@
 from src.core.database import db
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
+from src.core.motivo_general_acompanamiento import get_motivo_gral_acomp_by_tipo
+from src.core.malestar_emocional import get_malestar_emocional_by_tipo
+from src.core.identidad_genero import get_identidad_genero_by_tipo
+from src.core.situaciones_vulnerabilidad import get_situacion_vulnerabilidad_by_tipo
 from sqlalchemy import or_
 
 def create_persona_cetecsm(**kwargs):
@@ -35,3 +39,36 @@ def list_personas_cetecsm(search_term, page_num, per_page):
 def list_llamadas_recibidas(page_num, per_page, persona_id):
     llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id)
     return llamadas_recibidas.order_by(LlamadaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def actualizar_mot_gral_acomp(persona, mot_gral_acomp): 
+
+    persona.motivo_gral_acomp.malestares_emocionales = []    
+    motivo = get_motivo_gral_acomp_by_tipo(tipo=mot_gral_acomp['tipo'])
+
+    if mot_gral_acomp['tipo'] == "Malestar emocional":
+        for malestar in mot_gral_acomp['malestares_emocionales']:
+            malestar = get_malestar_emocional_by_tipo(tipo=malestar['tipo'])
+            motivo.malestares_emocionales.append(malestar)
+
+    persona.motivo_gral_acomp = motivo
+    db.session.commit()
+    return persona
+
+def actualizar_identidad_genero(persona, identidad_genero):
+    identidad_genero = get_identidad_genero_by_tipo(tipo=identidad_genero['tipo'])
+    persona.identidad_genero = identidad_genero
+    db.session.commit()
+    return persona
+
+def actualizar_sit_vuln(persona, situaciones_vulnerabilidad):
+
+    persona.situaciones_vulnerabilidad = []
+
+    print(situaciones_vulnerabilidad)
+    for situacion in situaciones_vulnerabilidad:
+        situacion_vulnerabilidad = get_situacion_vulnerabilidad_by_tipo(tipo=situacion['tipo'])
+        persona.situaciones_vulnerabilidad.append(situacion_vulnerabilidad)
+
+    db.session.commit()
+    return persona 
+     

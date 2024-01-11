@@ -6,3 +6,9 @@ def create(**kwargs):
     db.session.add(malestar_emocional)
     db.session.commit()
     return malestar_emocional
+
+def list_malestares_emocionales():
+    return MalestarEmocional.query.all()
+
+def get_malestar_emocional_by_tipo(tipo):
+    return MalestarEmocional.query.filter_by(tipo=tipo).first()

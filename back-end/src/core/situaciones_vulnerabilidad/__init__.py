@@ -6,3 +6,9 @@ def create(**kwargs):
     db.session.add(situacion_vulnerabilidad)
     db.session.commit()
     return situacion_vulnerabilidad
+
+def list_situaciones_vulnerabilidad():
+    return SituacionVulnerabilidad.query.all()
+
+def get_situacion_vulnerabilidad_by_tipo(tipo):
+    return SituacionVulnerabilidad.query.filter_by(tipo=tipo).first()

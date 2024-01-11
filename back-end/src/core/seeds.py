@@ -237,6 +237,7 @@ def run():
 
 
     persona_cetecsm_1.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
+    persona_cetecsm_1.situaciones_vulnerabilidad.append(pedido_certificado)
     persona_cetecsm.update_persona_cetecsm(
         id=llamada_cetecsm_1.persona_cetecsm_id,
         fecha_prox_llamado_actual=llamada_cetecsm_1.fecha_prox_llamado,

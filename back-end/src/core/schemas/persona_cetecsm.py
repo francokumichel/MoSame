@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields
 from src.core.schemas.derivacion import DerivacionSchema
 from src.core.schemas.motivo_general_acompanamiento import MotivoGralAcompSchema
+from src.core.schemas.identidad_genero import IdentidadGeneroSchema
 from src.core.schemas.situacion_vulnerabilidad import SituacionVulnerabilidadSchema
 
 class PersonaCetecsmSchema(Schema):
@@ -19,6 +20,7 @@ class PersonaCetecsmSchema(Schema):
     detalle_acompanamiento = fields.Str()
     derivacion = fields.Nested(DerivacionSchema)
     motivo_gral_acomp = fields.Nested(MotivoGralAcompSchema)
+    identidad_genero = fields.Nested(IdentidadGeneroSchema)
     situaciones_vulnerabilidad = fields.Nested(SituacionVulnerabilidadSchema, many=True)
 
 persona_cetecsm_schemas = PersonaCetecsmSchema()

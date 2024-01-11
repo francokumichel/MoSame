@@ -6,3 +6,9 @@ def create(**kwargs):
     db.session.add(identidad_genero)
     db.session.commit()
     return identidad_genero
+
+def list_identidades_genero():
+    return IdentidadGenero.query.all()
+
+def get_identidad_genero_by_tipo(tipo):
+    return IdentidadGenero.query.filter_by(tipo=tipo).first()

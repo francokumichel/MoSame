@@ -60,9 +60,9 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="genero_identidad" class="col-sm-auto col-form-label fw-semibold">Género de identidad:</label>
+                        <label for="genero_identidad" class="col-sm-auto col-form-label fw-semibold">Identidad de género:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.genero_identidad || '-'">
+                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.identidad_genero.tipo || '-'">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -123,7 +123,7 @@
             <div class="d-flex justify-content-center align-items-center column-gap-2">
                 <router-link :to="'/cetecsm/persona/llamadas/' + persona.id" class="btn btn-primary shadow-sm">Ver historial de llamadas</router-link>
                 <div v-if="esOperador()">
-                    <router-link :to="'/cetecsm/persona/editar' + persona.id" class="btn btn-primary shadow-sm">Editar persona</router-link>
+                    <router-link :to="'/cetecsm/persona/editar/' + persona.id" class="btn btn-primary shadow-sm">Editar persona</router-link>
                 </div>
             </div>
         </div>

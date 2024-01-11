@@ -9,9 +9,9 @@ class GrupoConviviente(enum.Enum):
     A = "Solo con adulto/as"
     M = "Solo con menores"
 
-personacetecsm_sit_vuln = db.Table('personacetecsm_sit_vul', 
+personacetecsm_sit_vuln = db.Table('personacetecsm_sit_vul',   
     db.Column('persona_cetecsm_id', db.Integer, db.ForeignKey('persona_cetecsm.id'), primary_key=True),
-    db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo', primary_key=True))                                
+    db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo'), primary_key=True)                                
 )
 
 class PersonaCetecsm(db.Model):
