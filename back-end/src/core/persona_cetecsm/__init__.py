@@ -1,11 +1,25 @@
 from src.core.database import db
-from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
+from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm, Municipio, RegionSanitaria
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 from src.core.motivo_general_acompanamiento import get_motivo_gral_acomp_by_tipo
 from src.core.malestar_emocional import get_malestar_emocional_by_tipo
 from src.core.identidad_genero import get_identidad_genero_by_tipo
 from src.core.situaciones_vulnerabilidad import get_situacion_vulnerabilidad_by_tipo
-from sqlalchemy import or_
+
+def create_municipio(**kwargs):
+    municipio = Municipio(**kwargs)
+    db.session.add(municipio)
+    db.session.commit()
+    return municipio
+
+def list_municipios():
+    return Municipio.query.all()
+
+def create_region_sanitaria(**kwargs):
+    region_sanitaria = RegionSanitaria(**kwargs)
+    db.session.add(region_sanitaria)
+    db.session.commit()
+    return region_sanitaria
 
 def create_persona_cetecsm(**kwargs):
     persona_cetecsm = PersonaCetecsm(**kwargs)
@@ -55,8 +69,10 @@ def actualizar_mot_gral_acomp(persona, mot_gral_acomp):
     return persona
 
 def actualizar_identidad_genero(persona, identidad_genero):
-    identidad_genero = get_identidad_genero_by_tipo(tipo=identidad_genero['tipo'])
-    persona.identidad_genero = identidad_genero
+    identidad_genero_nueva = get_identidad_genero_by_tipo(tipo=identidad_genero['tipo'])
+    if identidad_genero['tipo'] == "Otra identidad":
+        identidad_genero_nueva['otro_tipo'] = identidad_genero['otro_tipo']
+    persona.identidad_genero = identidad_genero_nueva
     db.session.commit()
     return persona
 

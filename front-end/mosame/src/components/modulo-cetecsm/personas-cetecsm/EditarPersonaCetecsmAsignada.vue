@@ -45,6 +45,14 @@
                 </div>
             </div>
             <div class="mb-3">
+                <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
+                <select class="form-select border border-dark-subtle" v-model="persona.municipio.nombre" aria-label="Default select example">
+                    <option v-for="municipio in municipios" :key="municipio">
+                        {{ municipio.tipo }}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label for="detalle_acompanamiento" class="col-form-label fw-semibold">Detalle del acompañamiento:</label>
                 <input v-model="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
@@ -85,7 +93,7 @@
                 </select>
             </div>
             <fieldset class="mb-3">
-                <legend class="col-form-label pt-0 fw-semibold">Obra social</legend>
+                <legend class="col-form-label pt-0 fw-semibold">¿Tiene obra social?</legend>
                 <div class="d-flex column-gap-4">
                     <div class="form-check">
                         <input class="form-check-input shadow-sm" type="radio" name="si_dio_consentimiento" id="si_dio_consentimiento" v-model="persona.tiene_obra_social" :value="true" :checked="persona.tiene_obra_social">
@@ -101,6 +109,13 @@
                     </div>
                 </div>    
             </fieldset>
+            <div v-if="persona.tiene_obra_social" class="mb-3">
+                <label for="obra_social" class="col-form-label fw-semibold">¿Cual?</label>
+                <input v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
+                <div class="invalid-feedback">
+                    Por favor, ingrese una localidad.
+                </div>
+            </div>
             <div class="mb-3">
                 <label for="motivo_gral_acomp" class="col-form-label fw-semibold">Motivo general de acompañamiento:</label>
                 <select class="form-select border border-dark-subtle" v-model="persona.motivo_gral_acomp.tipo" aria-label="Default select example">
@@ -154,6 +169,7 @@ export default {
             persona: null,
             grupos: [],
             generos: [],
+            municipios: [],
             motivosAcomp: [],
             malestares: [],
             situaciones: [],
@@ -172,6 +188,15 @@ export default {
                 this.errores.push(e);
             });
         
+        await apiService.get(import.meta.env.VITE_API_URL + "municipios")
+            .then((response) => {
+                this.municipios = response.data;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            })
+
         await apiService.get(import.meta.env.VITE_API_URL + "mot_grales_acomp")
             .then((response) => {
                 this.motivosAcomp = response.data;

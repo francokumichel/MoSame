@@ -10,5 +10,5 @@ class Derivacion(db.Model):
     dispositivo_derivacion = db.Column(db.String(70))
     nombre_operador_derivador = db.Column(db.String(70))
     descripcion = db.Column(db.String(255))
-    tipo_motivo_gral = db.Column(db.String(100), db.ForeignKey('motivo_general_derivacion.tipo'), nullable=False)
+    tipo_motivo_gral = db.Column(db.String(100), db.ForeignKey('motivo_general_derivacion.tipo'))
     persona_cetecsm_id = db.Column(db.Integer, db.ForeignKey('persona_cetecsm.id'), nullable=False)

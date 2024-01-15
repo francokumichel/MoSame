@@ -8,7 +8,7 @@
                 </svg>
             </button>
         </div>
-        <PersonasCetecsmList :personasCetecsm="personasCetecsm" />
+        <PersonasCetecsmList :personasCetecsm="personasCetecsm" @asignacionRealizada="loadPersonaCetecsm" />
         <div class="d-flex flex-row justify-content-center align-items-center">
             <router-link :to="'/cetecsm/derivacion/create'" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Registrar derivacion</router-link>
             <div class="d-flex flex-row ms-auto align-items-center me-3">

@@ -9,3 +9,6 @@ def create_motivo_gral_der(**kwargs):
 
 def list_mot_gral_derivacion():
     return MotivoGeneralDerivacion.query.all()
+
+def get_mot_gral_derivacion_by_tipo(tipo):
+    return MotivoGeneralDerivacion.query.filter_by(tipo=tipo).first()

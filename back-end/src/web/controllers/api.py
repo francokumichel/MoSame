@@ -16,12 +16,16 @@ from flask_jwt_extended import (
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln
+from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas
+from src.core.schemas.municipio import municipios_schema
 from src.core.schemas.role import roles_schema
+from src.core.derivacion import actualizar_derivacion
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
 from src.core.derivacion import create_derivation
+from src.core.llamada_cetecsm import create_llamada_cetecsm
+from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
@@ -185,6 +189,7 @@ def create_derivation_cetecsm():
     persona_cetecsm = create_persona_cetecsm(
         dni=persona['dni'],
         dio_consentimiento=persona['dio_consentimiento'],
+        municipio_id=persona['municipio'],
         nombre=persona['nombre'],
         apellido=persona['apellido'],
         edad=persona['edad'],
@@ -192,15 +197,17 @@ def create_derivation_cetecsm():
         telefono_alternativo=persona['telefono_alternativo']
     )
 
-    create_derivation(
+    nueva_derivacion = create_derivation(
         fecha=derivacion['fecha'], 
         dispositivo_derivacion=derivacion['dispositivo_derivacion'],
         nombre_operador_derivador=derivacion['nombre_operador_derivador'],
         descripcion=derivacion['descripcion'],
-        tipo_motivo_gral=derivacion['mot_gral_derivacion'],
         persona_cetecsm_derivada=persona_cetecsm)
+    
+    print(derivacion['mot_gral_derivacion'])
+    actualizar_derivacion(nueva_derivacion, derivacion['mot_gral_derivacion'])    
 
-    resp = make_response(jsonify({"msge": "Usuario registrado exitosamente."}))
+    resp = make_response(jsonify({"msge": "Derivación registrada exitosamente."}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
@@ -260,10 +267,20 @@ def get_llamadas_recibidas(persona_id):
 
     return make_response(jsonify(data)), 200
 
+@api_blueprint.get("municipios")
+def get_index_municipios():
+    municipios = list_municipios()
+    return make_response(jsonify(municipios_schema.dump(municipios))), 200
+
 @api_blueprint.get("grupos_convivientes")
 def get_index_grupo_conviviente():
     grupos_convivientes = {grupo.name: grupo.value for grupo in GrupoConviviente}
     return make_response(jsonify(grupos_convivientes)), 200
+
+@api_blueprint.get("resoluciones")
+def get_index_resolucion():
+    resoluciones = {resolucion.name: resolucion.value for resolucion in ResolucionLlamado}
+    return make_response(jsonify(resoluciones)), 200
 
 @api_blueprint.get("identidades_genero")
 def get_index_identidad_genero():
@@ -295,10 +312,12 @@ def editar_persona_cetecsm(id):
     persona_cetecsm = get_persona_cetecsm(id=id)
     persona_cetecsm.update(
         dni=persona['dni'], 
-        grupo_conviviente=persona['grupo_conviviente'], 
+        grupo_conviviente=persona['grupo_conviviente'],
+        grupo_conviviente_otro=persona['grupo_conviviente_otro'], 
         dio_consentimiento=persona['dio_consentimiento'],
         localidad=persona['localidad'],
         tiene_obra_social=persona['tiene_obra_social'],
+        obra_social=persona['obra_social'],
         nombre=persona['nombre'],
         apellido=persona['apellido'],
         telefono=persona['telefono'],
@@ -312,6 +331,48 @@ def editar_persona_cetecsm(id):
 
     
     resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@cetecsm_blueprint.post("llamada/crear/<int:id>")
+@jwt_required()
+def crear_llamada_cetecsm(id):
+    """ Función que permite a un usuario administrador actualizar los datos de otro usuario """
+    current_user = get_jwt_identity()
+    user = get_user(current_user)    
+    data = request.get_json()
+    persona = data['persona']
+    llamada = data['llamada']
+    print(persona)
+    persona_cetecsm = get_persona_cetecsm(id=id)
+    persona_cetecsm.update(
+        dni=persona['dni'], 
+        grupo_conviviente=persona['grupo_conviviente'],
+        grupo_conviviente_otro=persona['grupo_conviviente_otro'], 
+        dio_consentimiento=persona['dio_consentimiento'],
+        localidad=persona['localidad'],
+        tiene_obra_social=persona['tiene_obra_social'],
+        obra_social=persona['obra_social'],
+        nombre=persona['nombre'],
+        apellido=persona['apellido'],
+        telefono=persona['telefono'],
+        telefono_alternativo=persona['telefono_alternativo'],
+        detalle_acompanamiento=persona['detalle_acompanamiento'],
+    )
+
+    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
+    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
+    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
+
+    create_llamada_cetecsm(
+        detalle=llamada['detalle'],
+        resolucion=llamada['resolucion'],
+        fecha_prox_llamado=llamada['fecha_prox_llamado'],
+        usuario_carga=user,
+        persona_cetecsm_llamada=persona_cetecsm
+    )
+    
+    resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 

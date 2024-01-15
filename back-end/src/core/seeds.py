@@ -110,6 +110,36 @@ def run():
 
     # Carga de datos correspondientes a módulo cetecsm
 
+    # Carga de tabla de region sanitaria
+    region_1 = persona_cetecsm.create_region_sanitaria(tipo="I")
+    region_2 = persona_cetecsm.create_region_sanitaria(tipo="II")
+    region_3 = persona_cetecsm.create_region_sanitaria(tipo="III")
+    region_4 = persona_cetecsm.create_region_sanitaria(tipo="IV")
+    region_5 = persona_cetecsm.create_region_sanitaria(tipo="V")
+    region_6 = persona_cetecsm.create_region_sanitaria(tipo="VI")
+    region_7 = persona_cetecsm.create_region_sanitaria(tipo="VII")
+    region_8 = persona_cetecsm.create_region_sanitaria(tipo="VIII")
+    region_9 = persona_cetecsm.create_region_sanitaria(tipo="IX")
+    region_10 = persona_cetecsm.create_region_sanitaria(tipo="X")
+    region_11 = persona_cetecsm.create_region_sanitaria(tipo="XI")
+    region_12 = persona_cetecsm.create_region_sanitaria(tipo="XII")
+
+    # Carga de tabla de municipios (solo algunos para pruebas)
+    municipio_1 = persona_cetecsm.create_municipio(nombre="Bahía Blanca", region_sanitaria=region_1)
+    municipio_2 = persona_cetecsm.create_municipio(nombre="Daireaux", region_sanitaria=region_2)
+    municipio_3 = persona_cetecsm.create_municipio(nombre="Junín", region_sanitaria=region_3)
+    municipio_4 = persona_cetecsm.create_municipio(nombre="Pergamino", region_sanitaria=region_4)
+    municipio_5 = persona_cetecsm.create_municipio(nombre="Tigre", region_sanitaria=region_5)
+    municipio_6 = persona_cetecsm.create_municipio(nombre="Berazategui", region_sanitaria=region_6)
+    municipio_7 = persona_cetecsm.create_municipio(nombre="General Rodríguez", region_sanitaria=region_7)
+    municipio_8 = persona_cetecsm.create_municipio(nombre="Partido de La Costa", region_sanitaria=region_8)
+    municipio_9 = persona_cetecsm.create_municipio(nombre="Azul", region_sanitaria=region_9)
+    municipio_10 = persona_cetecsm.create_municipio(nombre="Mercedes", region_sanitaria=region_10)
+    municipio_11 = persona_cetecsm.create_municipio(nombre="La Plata", region_sanitaria=region_11)
+    municipio_12 = persona_cetecsm.create_municipio(nombre="La Matanza", region_sanitaria=region_12)
+
+
+
     # Carga de tabla de motivo general de derivación
     malestar_emocional_der = motivo_general_derivacion.create_motivo_gral_der(tipo="Malestar emocional")
     consumo_problematico = motivo_general_derivacion.create_motivo_gral_der(tipo="Consumo problematico")
@@ -118,6 +148,7 @@ def run():
     acceso_medicacion = motivo_general_derivacion.create_motivo_gral_der(tipo="Acceso a medicación")
     violencia_gnro = motivo_general_derivacion.create_motivo_gral_der(tipo="Violencia de género")
     otras_violencias = motivo_general_derivacion.create_motivo_gral_der(tipo="Otras violencias")
+    otro_mot_gral_derivacion = motivo_general_derivacion.create_motivo_gral_der(tipo="Otro")
 
     # Carga de tabla de identidad de genero
     mujer = identidad_genero.create(tipo="Mujer")
@@ -125,6 +156,9 @@ def run():
     mujer_trans = identidad_genero.create(tipo="Mujer trans")
     varon_trans = identidad_genero.create(tipo="Varón trans")
     no_binarie = identidad_genero.create(tipo="No binarie")
+    otra_identidad = identidad_genero.create(tipo="Otra identidad")
+    ns_nc = identidad_genero.create(tipo="NS/NC")
+
 
     # Carga de tabla motivo general de acompañamiento
     malestar_emocional_acomp = motivo_general_acompanamiento.create(tipo="Malestar emocional")
@@ -143,6 +177,7 @@ def run():
     trastorno_alimentacion = malestar_emocional.create(tipo="Trastornos de la alimentación")
     violencias = malestar_emocional.create(tipo="Violencias")
     consumos_problematicos = malestar_emocional.create(tipo="Consumos problemáticos")
+    otro_malestar_emocional = malestar_emocional.create(tipo="Otro")
 
     # Carga de tabla de situaciones de vulnerabilidad
     fallecimiento = situaciones_vulnerabilidad.create(tipo="Fallecimiento de vinculo significativo")
@@ -156,6 +191,8 @@ def run():
     dificultad_acceso_medicacion_sm = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - SM")
     dificultad_acceso_medicacion = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - otra (no SM)")
     pedido_certificado = situaciones_vulnerabilidad.create(tipo="Pedido certificado CUD")
+    otra_situacion_vulnerabilidad = situaciones_vulnerabilidad.create(tipo="Otro")
+    ninguna_sit_vuln = situaciones_vulnerabilidad.create(tipo="Ninguna situación de vulnerabilidad")
 
 
     # Carga de tabla de personas_cetecsm
@@ -169,7 +206,8 @@ def run():
         apellido = "Fernandez",
         edad = 30,
         telefono = "1122334455",
-        identidad_genero = varon
+        identidad_genero = varon,
+        municipio = municipio_1
     )
 
     persona_cetecsm_2 = persona_cetecsm.create_persona_cetecsm(
@@ -178,16 +216,19 @@ def run():
         dio_consentimiento = True,
         localidad = "Hudson",
         tiene_obra_social = True,
+        obra_social = "OSDE",
         nombre = "Florencia",
         apellido = "Gomez",
         edad = 25,
         telefono = "221345678",
-        identidad_genero = mujer
+        identidad_genero = mujer,
+        municipio = municipio_6
     )
 
     persona_cetecsm_3 = persona_cetecsm.create_persona_cetecsm(
         dni = "42444555",
-        grupo_conviviente = GrupoConviviente.S.value,
+        grupo_conviviente = GrupoConviviente.O.value,
+        grupo_conviviente_otro = "Familia",
         dio_consentimiento = True,
         localidad = "El Pato",
         tiene_obra_social = False,
@@ -195,7 +236,8 @@ def run():
         apellido = "Sanchez",
         edad = 26,
         telefono = "1144556677",
-        identidad_genero = varon
+        identidad_genero = varon,
+        municipio = municipio_11
     )
     
     derivacion_1 = derivacion.create_derivation(
@@ -222,9 +264,11 @@ def run():
         mot_gral_derivacion = acceso_medicacion,
         persona_cetecsm_derivada = persona_cetecsm_3
     )
-
+    
     users.asignar_persona(user_operator_cetecsm, persona_cetecsm_1)
+    persona_cetecsm_1.update(esta_asignada=True)
     users.asignar_persona(user_operator_cetecsm, persona_cetecsm_3)
+    persona_cetecsm_3.update(esta_asignada=True)
 
     llamada_cetecsm_1 = llamada_cetecsm.create_llamada_cetecsm(
         detalle = "Primer llamada",

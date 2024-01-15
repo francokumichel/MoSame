@@ -65,6 +65,7 @@ def list_users(page_num, per_page):
     return User.query.order_by(User.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
 def asignar_persona(user, persona):
+    persona.esta_asignada = True
     user.personas_cetecsm_asignadas.append(persona)
     db.session.commit()
     return user

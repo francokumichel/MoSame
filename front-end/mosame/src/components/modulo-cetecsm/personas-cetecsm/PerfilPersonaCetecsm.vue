@@ -42,6 +42,18 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
+                        <label for="municipio" class="col-sm-auto col-form-label fw-semibold">Municipio:</label>
+                        <div class="col-sm-auto">
+                            <input type="text" readonly class="form-control-plaintext" id="municipio" :value="persona.municipio.nombre || '-'">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="region_sanitaria" class="col-sm-auto col-form-label fw-semibold">Región sanitaria:</label>
+                        <div class="col-sm-auto">
+                            <input type="text" readonly class="form-control-plaintext" id="region_sanitaria" :value="persona.municipio.region_sanitaria.tipo || '-'">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
                         <label for="detalle_acompañamiento" class="col-sm-auto col-form-label fw-semibold">Detalle acompañamiento:</label>
                         <div class="col-sm-auto">
                             <textarea type="text" readonly class="form-control-plaintext" id="detalle_acompañamiento" rows="3">{{ persona.detalle_acompanamiento }}</textarea>
@@ -71,6 +83,12 @@
                             <input type="text" readonly class="form-control-plaintext" id="tiene_obra_social" :value="persona.tiene_obra_social ? 'Sí' : 'No'">
                         </div>
                     </div>
+                    <div v-if="persona.tiene_obra_social" class="mb-3 row">
+                        <label for="obra_social" class="col-sm-auto col-form-label fw-semibold">Obra social:</label>
+                        <div class="col-sm-auto">
+                            <input type="text" readonly class="form-control-plaintext" id="obra_social" :value="persona.obra_social">
+                        </div>
+                    </div>
                     <div v-if="persona.motivo_gral_acomp" class="mb-3 row">
                         <label for="motivo_gral_acomp" class="col-sm-auto col-form-label fw-semibold">Motivo general de acompañamiento:</label>
                         <div class="col-sm-auto">
@@ -98,6 +116,12 @@
                         <label for="fecha_derivacion" class="col-sm-auto col-form-label fw-semibold">Fecha de derivación:</label>
                         <div class="col-sm-auto">
                             <input type="text" readonly class="form-control-plaintext" id="fecha_derivacion" :value="persona.derivacion.fecha">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="descripcion" class="col-sm-auto col-form-label fw-semibold">Descripción:</label>
+                        <div class="col-sm-auto">
+                            <textarea type="text" readonly class="form-control-plaintext" id="descripcion" rows="2">{{ persona.derivacion.descripcion }}</textarea>
                         </div>
                     </div>
                     <div class="mb-3 row">

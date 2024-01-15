@@ -41,6 +41,17 @@
                 </div>
             </div>
             <div class="mb-3">
+                <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
+                <select class="form-select border border-dark-subtle" v-model="persona.municipio" aria-label="Default select example" required>
+                    <option v-for="municipio in municipios" :key="municipio">
+                        {{ municipio.nombre }}
+                    </option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione un municipio.
+                </div>
+            </div>
+            <div class="mb-3">
                 <label for="nombre" class="col-form-label fw-semibold">Nombre:</label>
                 <input v-model="persona.nombre" type="text" id="nombre" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
@@ -84,12 +95,22 @@
             </div>
             <div class="mb-3">
                 <label for="telefono_alternativo" class="col-form-label fw-semibold">Motivo general de derivación:</label>
-                <select class="form-select border border-dark-subtle" v-model="derivacion.mot_gral_derivacion" aria-label="Default select example">
+                <select class="form-select border border-dark-subtle" v-model="derivacion.mot_gral_derivacion.tipo" aria-label="Default select example">
                     <option v-for="motivo in motivos_grales_derivacion" :key="motivo">
                         {{ motivo.tipo }}
                     </option>
                 </select>
+                <p>{{ derivacion.mot_gral_derivacion.tipo }}</p>
             </div>
+            <div v-if="derivacion.mot_gral_derivacion">
+                <div v-if="derivacion.mot_gral_derivacion.tipo == 'Otro'" class="mb-4">
+                    <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación:</label>
+                    <input v-model="derivacion.mot_gral_derivacion.otro_tipo" type="text" id="otro_mot_gral_derivacion" class="form-control shadow-sm" required />
+                    <div class="invalid-feedback">
+                        Por favor, ingrese otro tipo de motivo general de derivación.
+                    </div>
+                </div>
+            </div>    
             <div class="mb-4">
                 <label for="descripcion" class="col-form-label fw-semibold">Descripción:</label>
                 <input v-model="derivacion.descripcion" type="text" id="descripcion" class="form-control shadow-sm" required />
@@ -112,6 +133,7 @@ export default {
     data() {
         return {
             persona: {
+                municipio: '',
                 dio_consentimiento: false,
                 nombre: '',
                 apellido: '',
@@ -125,12 +147,16 @@ export default {
                 fecha: '',
                 dispositivo_derivacion: '',
                 nombre_operador_derivador: '',
-                mot_gral_derivacion: null,
+                mot_gral_derivacion: {
+                    tipo: '',
+                    otro_tipo:'',
+                },
                 descripcion: '',
             },
 
             errors: [],
             motivos_grales_derivacion: [],
+            municipios: [],
         };
     },
 
@@ -138,7 +164,15 @@ export default {
         await apiService.get(import.meta.env.VITE_API_URL + "mot_grales_derivacion")
             .then((response) => {
                 this.motivos_grales_derivacion = response.data;
-                this.derivacion.mot_gral_derivacion = this.motivos_grales_derivacion[0].tipo;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            })
+        
+        await apiService.get(import.meta.env.VITE_API_URL + "municipios")
+            .then((response) => {
+                this.municipios = response.data;
             })
             .catch((e) => {
                 console.log(e)
