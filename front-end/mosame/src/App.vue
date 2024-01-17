@@ -11,10 +11,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item" v-for="link in navigationLinks" :key="link.path">
-              <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-4 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="link.path"> {{ link.text }} </router-link>
+              <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-5 border border-0 me-3" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="link.path"> {{ link.text }} </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-4 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="'/login'" @click="logout">Cerrar sesión</router-link>
+              <a class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-5 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" ref="#" @click="logout">Cerrar sesión</a>
             </li>
           </ul>
           <div class="d-flex align-items-center column-gap-2">
@@ -32,7 +32,7 @@
 
 <script>
 import enlacesPorRol from '@/data/enlaces.js';
-import axios from "axios";
+import { apiService } from "@/services/api";
 
 export default {
   data() {
@@ -44,24 +44,18 @@ export default {
   },
 
   async created() {
-    axios
-      .get(import.meta.env.VITE_API_URL + "me/roles", {
-        xsrfCookieName: "csrf_access_token",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+    await apiService.get(import.meta.env.VITE_API_URL + "me/roles")
       .then((response) => {
         this.roles = response.data;
         if (this.roles.length > 0) {
           this.selectedRole = this.roles[0].name;
-        this.getNavigationLinks()  
-        }
+        }  
+        this.getNavigationLinks()
       })
       .catch((e) => {
-        console.log(e)
-        this.errores.push(e);
-      });
+          console.log(e)
+          this.errores.push(e);
+      })
   },
 
   methods: {
@@ -71,7 +65,6 @@ export default {
     },
     logout() {
       this.$store.dispatch("logout");
-      location.reload();
     },
   },
 };

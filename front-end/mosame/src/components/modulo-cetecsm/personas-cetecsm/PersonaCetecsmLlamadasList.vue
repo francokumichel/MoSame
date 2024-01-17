@@ -8,7 +8,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="llamada in llamadas" :key="user">
+            <tr v-for="llamada in llamadas" :key="llamada">
                 <td>{{ llamada.fecha_llamado }}</td>
                 <td>{{ llamada.detalle }}</td>
                 <td>{{ llamada.resolucion }}</td>

@@ -48,7 +48,7 @@
                 <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
                 <select class="form-select border border-dark-subtle" v-model="persona.municipio.nombre" aria-label="Default select example">
                     <option v-for="municipio in municipios" :key="municipio">
-                        {{ municipio.tipo }}
+                        {{ municipio.nombre }}
                     </option>
                 </select>
             </div>

@@ -62,7 +62,7 @@ export default createStore({
     },
     logout: ({ commit }) => {
       axios
-        .get(process.env.VUE_APP_RUTA + "logout", {
+        .get(import.meta.env.VITE_API_URL + "logout", {
           xsrfCookieName: "csrf_access_token",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

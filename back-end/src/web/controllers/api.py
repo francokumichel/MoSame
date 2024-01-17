@@ -345,19 +345,14 @@ def crear_llamada_cetecsm(id):
     llamada = data['llamada']
     print(persona)
     persona_cetecsm = get_persona_cetecsm(id=id)
-    persona_cetecsm.update(
-        dni=persona['dni'], 
+    persona_cetecsm.update( 
         grupo_conviviente=persona['grupo_conviviente'],
         grupo_conviviente_otro=persona['grupo_conviviente_otro'], 
-        dio_consentimiento=persona['dio_consentimiento'],
         localidad=persona['localidad'],
         tiene_obra_social=persona['tiene_obra_social'],
         obra_social=persona['obra_social'],
-        nombre=persona['nombre'],
-        apellido=persona['apellido'],
-        telefono=persona['telefono'],
-        telefono_alternativo=persona['telefono_alternativo'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
+        fecha_prox_llamado_actual=llamada['fecha_prox_llamado']
     )
 
     actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])

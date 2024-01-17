@@ -46,7 +46,7 @@ class PersonaCetecsm(db.Model):
     edad = db.Column(db.Integer)
     telefono = db.Column(db.String(255))
     telefono_alternativo = db.Column(db.String(255))
-    detalle_acompanamiento = db.Column(db.String(256))
+    detalle_acompanamiento = db.Column(db.String(256), default='')
     fecha_prox_llamado_actual = db.Column(db.Date) 
     derivacion = db.relationship('Derivacion', backref="persona_cetecsm_derivada", uselist=False)
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")

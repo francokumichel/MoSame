@@ -56,35 +56,40 @@ def list_llamadas_recibidas(page_num, per_page, persona_id):
 
 def actualizar_mot_gral_acomp(persona, mot_gral_acomp): 
 
-    persona.motivo_gral_acomp.malestares_emocionales = []    
-    motivo = get_motivo_gral_acomp_by_tipo(tipo=mot_gral_acomp['tipo'])
+    if mot_gral_acomp:
 
-    if mot_gral_acomp['tipo'] == "Malestar emocional":
-        for malestar in mot_gral_acomp['malestares_emocionales']:
-            malestar = get_malestar_emocional_by_tipo(tipo=malestar['tipo'])
-            motivo.malestares_emocionales.append(malestar)
+        if persona.motivo_gral_acomp:
+            persona.motivo_gral_acomp.malestares_emocionales = []
 
-    persona.motivo_gral_acomp = motivo
-    db.session.commit()
+        motivo = get_motivo_gral_acomp_by_tipo(tipo=mot_gral_acomp['tipo'])
+
+        if mot_gral_acomp['tipo'] == "Malestar emocional":
+            for malestar in mot_gral_acomp['malestares_emocionales']:
+                malestar = get_malestar_emocional_by_tipo(tipo=malestar['tipo'])
+                motivo.malestares_emocionales.append(malestar)
+
+        persona.motivo_gral_acomp = motivo
+        db.session.commit()
     return persona
 
 def actualizar_identidad_genero(persona, identidad_genero):
-    identidad_genero_nueva = get_identidad_genero_by_tipo(tipo=identidad_genero['tipo'])
-    if identidad_genero['tipo'] == "Otra identidad":
-        identidad_genero_nueva['otro_tipo'] = identidad_genero['otro_tipo']
-    persona.identidad_genero = identidad_genero_nueva
-    db.session.commit()
+    if identidad_genero:
+        identidad_genero_nueva = get_identidad_genero_by_tipo(tipo=identidad_genero['tipo'])
+        if identidad_genero['tipo'] == "Otra identidad":
+            identidad_genero_nueva['otro_tipo'] = identidad_genero['otro_tipo']
+        persona.identidad_genero = identidad_genero_nueva
+        db.session.commit()
     return persona
 
 def actualizar_sit_vuln(persona, situaciones_vulnerabilidad):
 
-    persona.situaciones_vulnerabilidad = []
+    if situaciones_vulnerabilidad:
+        persona.situaciones_vulnerabilidad = []
 
-    print(situaciones_vulnerabilidad)
-    for situacion in situaciones_vulnerabilidad:
-        situacion_vulnerabilidad = get_situacion_vulnerabilidad_by_tipo(tipo=situacion['tipo'])
-        persona.situaciones_vulnerabilidad.append(situacion_vulnerabilidad)
+        for situacion in situaciones_vulnerabilidad:
+            situacion_vulnerabilidad = get_situacion_vulnerabilidad_by_tipo(tipo=situacion['tipo'])
+            persona.situaciones_vulnerabilidad.append(situacion_vulnerabilidad)
 
-    db.session.commit()
+        db.session.commit()
     return persona 
      
