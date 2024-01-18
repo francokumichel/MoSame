@@ -14,7 +14,7 @@ from flask_jwt_extended import (
 )
 
 from src.core.permissions import list_roles
-from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
+from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm
 from src.core.schemas.user import user_schema, users_schema
 from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas
@@ -370,4 +370,31 @@ def crear_llamada_cetecsm(id):
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
+
+@cetecsm_blueprint.get("operadores")
+def get_all_operadores_cetecsm():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=10, type=int)
+
+    operadores_paginados = get_operadores_cetecsm(page=page, per_page=per_page)
+
+    # Puedes personalizar el formato de salida según tus necesidades
+    resultados = {
+        "total": operadores_paginados.total,
+        "page": operadores_paginados.page,
+        "per_page": operadores_paginados.per_page,
+        "items": [
+            {
+                "id": operador.id,
+                "email": operador.email,
+                "name": operador.name,
+                "last_name": operador.last_name,
+                "cantidad_personas_asignadas": operador.cantidad_personas_asignadas,
+                "fecha_ultimo_llamado": operador.fecha_ultimo_llamado,
+            }
+            for operador in operadores_paginados.items
+        ],
+    }
+
+    return make_response(jsonify(resultados))
 
