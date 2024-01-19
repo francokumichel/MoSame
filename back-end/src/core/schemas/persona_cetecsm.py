@@ -21,6 +21,7 @@ class PersonaCetecsmSchema(Schema):
     telefono = fields.Str()
     telefono_alternativo = fields.Str()
     fecha_prox_llamado_actual = fields.Date()
+    fecha_ultimo_llamado = fields.Date()
     detalle_acompanamiento = fields.Str()
     municipio = fields.Nested(MunicipioSchema)
     derivacion = fields.Nested(DerivacionSchema)

@@ -8,7 +8,7 @@
                 </svg>
             </button>
         </div>
-        <PersonasCetecsmAsignadasList :personasAsignadas="personasAsignadas" />
+        <PersonasCetecsmAsignadasList :personasAsignadas="personasAsignadas" :esCoordinador="esCoordinador" />
         <div class="d-flex flex-row justify-content-center align-items-center">
             <div class="d-flex flex-row ms-auto align-items-center me-3">
                 <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
@@ -49,10 +49,12 @@ export default {
             page: 1,
             perPage: 1,
             cantPages: 0,
+            esCoordinador: false,
         };
     },
 
     async created() {
+        this.esCoordinador = this.$route.params.id ? true : false;
         this.cargarAsignadas();
     },
 
@@ -68,8 +70,9 @@ export default {
 
     methods: {
         async cargarAsignadas() {
+            const endpoint = !this.esCoordinador ? "me/personasAsignadas" : `cetecsm/personasAsignadas/${this.$route.params.id}`;
             try {
-                const response = await apiService.get(import.meta.env.VITE_API_URL + "me/personasAsignadas" , {
+                const response = await apiService.get(import.meta.env.VITE_API_URL + endpoint , {
                     params: {
                         q: this.searchQuery,
                         page: this.page,
@@ -77,9 +80,11 @@ export default {
                     },
                 });
                 this.personasAsignadas = response.data.personas;
+                console.log(import.meta.env.VITE_API_URL + endpoint);
                 this.cantPages = response.data.total;
                 this.personasAsignadas = this.ordenarPersonasPorFecha()
             } catch (error) {
+                console.log(error)
                 this.errors.push(error);
             }
         },
@@ -113,7 +118,6 @@ export default {
                     return -1;
                 }
 
-                // Ordenar de la fecha más próxima a la más lejana
                 return new Date(a.fecha_prox_llamado_actual) - new Date(b.fecha_prox_llamado_actual);
             });
         },

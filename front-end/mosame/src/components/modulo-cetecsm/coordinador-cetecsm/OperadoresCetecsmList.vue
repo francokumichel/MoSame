@@ -19,7 +19,7 @@
                 <td>{{ operador.fecha_ultimo_llamado }}</td>
                 <td>
                     <div class="d-flex flex-row column-gap-2">
-                        <router-link :to="'/cetecsm/asignadas/' + operador.id">
+                        <router-link :to="'/cetecsm/asignaciones/' + operador.id">
                             <button type="button" class="btn btn-outline-primary btn-sm">Actividad</button>
                         </router-link>
                     </div>

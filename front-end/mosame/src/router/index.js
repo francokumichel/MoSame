@@ -52,7 +52,7 @@ const router = createRouter({
             meta: { requiresAuth: true },
         },
         {
-            path:"/cetecsm/asignaciones",
+            path:"/cetecsm/asignaciones/:id(\\d+)?",
             name: "cetecsm-asignaciones",
             component: PersonasCetecsmAsignadas,
             meta: { requiresAuth: true },             

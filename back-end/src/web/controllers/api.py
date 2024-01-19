@@ -24,7 +24,7 @@ from src.core.derivacion import actualizar_derivacion
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
 from src.core.derivacion import create_derivation
-from src.core.llamada_cetecsm import create_llamada_cetecsm
+from src.core.llamada_cetecsm import create_llamada_cetecsm, obtener_fecha_ultimo_llamado
 from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
@@ -398,3 +398,24 @@ def get_all_operadores_cetecsm():
 
     return make_response(jsonify(resultados))
 
+@cetecsm_blueprint.get("personasAsignadas/<int:id>")
+def get_asignaciones_operador(id):
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page, user_id=id)
+
+    for persona in personas.items:
+        fecha_ultimo_llamado = obtener_fecha_ultimo_llamado(persona.id)
+
+        persona.fecha_ultimo_llamado = fecha_ultimo_llamado
+
+    data = {
+        "personas": personas_cetecsm_schemas.dump(personas),
+        "page": page,
+        "per_page": per_page,
+        "total": personas.total
+    }
+    
+    return make_response(jsonify(data)), 200
