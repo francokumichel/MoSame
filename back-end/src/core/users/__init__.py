@@ -116,4 +116,3 @@ def get_operadores_cetecsm(page, per_page):
     )
 
     return asignaciones.paginate(page=page, per_page=per_page, error_out=True)
-

@@ -1,4 +1,5 @@
 from src.core.database import db
+from sqlalchemy import func
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 
 def create_llamada_cetecsm(**kwargs):
@@ -16,3 +17,24 @@ def obtener_fecha_ultimo_llamado(persona_id):
     else:
         # Devolver una fecha predeterminada o None según tu lógica
         return None
+
+def obtener_cantidad_llamadas(persona_id):
+    cantidad_llamadas = (
+        db.session.query(func.count(LlamadaCetecsm.id))
+        .filter_by(persona_cetecsm_id=persona_id)
+        .scalar()
+    )
+
+    return cantidad_llamadas
+
+def obtener_resolucion_ultima_llamada(persona_id):
+
+    ultima_llamada = (
+        db.session.query(LlamadaCetecsm)
+        .filter_by(persona_cetecsm_id=persona_id)
+        .order_by(LlamadaCetecsm.fecha_llamado.desc())
+        .first()
+    )
+
+    resolucion_ultima_llamada = ultima_llamada.resolucion if ultima_llamada else None
+    return resolucion_ultima_llamada
