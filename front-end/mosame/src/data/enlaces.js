@@ -3,8 +3,8 @@ const enlacesPorRol = {
       { path: '/calls_0800', text: 'Llamadas' },
     ],
     'Operador CETECSM': [
-      { path: '/derived_people', text: 'Personas derivadas' },
-      { path: '/assigned_people', text: 'Personas asignadas' },
+      { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
+      { path: '/cetecsm/asignaciones', text: 'Personas asignadas' },
     ],
     'Coordinador CETECSM': [
         { path: '/derived_people', text: 'Operadores' },

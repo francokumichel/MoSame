@@ -1,5 +1,8 @@
 from src.core.database import db
 from src.core.permissions import role
+from src.core.derivacion.derivacion import Derivacion
+from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
+from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from werkzeug.security import generate_password_hash, check_password_hash
 
 users_roles = db.Table(
@@ -13,12 +16,14 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=False)
     last_name = db.Column(db.String(50), unique=False)
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(256))
     roles = db.relationship("Role", secondary=users_roles, backref="users")
+    llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="usuario_carga")
+    personas_cetecsm_asignadas = db.relationship("PersonaCetecsm", backref="usuario_asignado")
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():

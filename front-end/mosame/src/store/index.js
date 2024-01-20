@@ -13,6 +13,9 @@ export default createStore({
     isAuthenticated(state) {
       return state.token !== null;
     },
+    userEmail(state) {
+      return state.email;
+    },
   },
   mutations: {
     authUser(state, userData) {
@@ -58,8 +61,13 @@ export default createStore({
         });
     },
     logout: ({ commit }) => {
-      apiService
-        .get(import.meta.env.VITE_API_URL + "logout")
+      axios
+        .get(import.meta.env.VITE_API_URL + "logout", {
+          xsrfCookieName: "csrf_access_token",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
         .then((response) => {
           if (response.status === 200) {
             commit("clearAuthData");

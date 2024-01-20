@@ -1,4 +1,5 @@
 from src.core.users.user import User
+from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from src.core.permissions.role import Role
 from src.core.permissions import get_role_by_name
 from src.core.database import db
@@ -45,8 +46,8 @@ def assigned_roles(user, rolesSelected):
         rolesSelected (List[]): Lista de roles a agregar
     """
 
-    for role_name in rolesSelected:
-        rol = get_role_by_name(role_name=role_name)
+    for rol in rolesSelected:
+#        rol = get_role_by_name(role_name=role_name)
         user.roles.append(rol)
     db.session.add(user)
     db.session.commit()
@@ -62,3 +63,25 @@ def list_users(page_num, per_page):
     """ Consulta a la bd y obtiene todos los registros paginados de los usuarios registrados en el sistema """
 
     return User.query.order_by(User.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def asignar_persona(user, persona):
+    persona.esta_asignada = True
+    user.personas_cetecsm_asignadas.append(persona)
+    db.session.commit()
+    return user
+
+def get_personas_asignadas(search_term, page_num, per_page, user_id):
+    user = get_user(id=user_id)
+    personas_asignadas = PersonaCetecsm.query.join(User, User.id == PersonaCetecsm.usuario_id).filter(User.id == user_id)
+    
+    if search_term:
+        personas_asignadas = personas_asignadas.filter(
+            (PersonaCetecsm.nombre.ilike(f"%{search_term}%")) |
+            (PersonaCetecsm.apellido.ilike(f"%{search_term}%"))
+        )
+
+    personas_asignadas = personas_asignadas.order_by(PersonaCetecsm.id)
+
+    return personas_asignadas.paginate(page=page_num, per_page=per_page, error_out=True)
+
+#    return personas_asignadas.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)    
