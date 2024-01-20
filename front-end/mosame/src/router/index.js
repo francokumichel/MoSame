@@ -2,13 +2,16 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from "../views/LoginView.vue";
 import UsersView from"../views/UsersView.vue";
 import FormUsers from "../views/FormUserView.vue";
+import HomeView from "../views/HomeView.vue";
 import PersonasCetecsm from "../views/PersonaCetecsmView.vue";
 import CreateDerivacionView from "../views/CreateDerivacionView.vue";
 import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue";
 import PerfilPersonaCetecsm from "../views/PerfilPersonaCetecsmView.vue";
 import PersonaCetecsmLlamadas from "../views/PersonaCetecsmLlamadasView.vue";
 import EditarPersonaCetecsmAsignada from "../views/EditarPersonaCetecsmAsignadaView.vue";
-import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue"
+import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue";
+import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
+import Llamadas0800View from "../views/Llamadas0800View.vue";
 import store from "@/store";
 
 
@@ -24,6 +27,12 @@ const router = createRouter({
             path: "/users",
             name: "users",
             component: UsersView,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: "/home",
+            name: "home",
+            component: HomeView,
             meta: { requiresAuth: true },
         },
         {
@@ -79,6 +88,18 @@ const router = createRouter({
             name: "cetecsm-crear-llamada",
             component: CreateLlamadaCetecsm,
             meta: { requiresAuth: true },             
+        },
+        {
+            path:"/create_call_0800",
+            name: "0800-crear-llamada",
+            component: CreateLlamada0800View,
+            meta: { requiresAuth: true },
+        },
+        {
+            path:"/calls_0800",
+            name: "0800-llamadas",
+            component: Llamadas0800View,
+            meta: { requiresAuth: true },
         },
     ],
 });

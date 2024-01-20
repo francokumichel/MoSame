@@ -1,6 +1,7 @@
 const enlacesPorRol = {
     'Operador 0800': [
       { path: '/calls_0800', text: 'Llamadas' },
+      { path: '/create_call_0800', text: 'Cargar llamada'},
     ],
     'Operador CETECSM': [
       { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
