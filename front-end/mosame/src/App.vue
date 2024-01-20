@@ -61,7 +61,7 @@ export default {
   methods: {
     getNavigationLinks() {
       this.navigationLinks = enlacesPorRol[this.selectedRole] || [];
-      console.log(this.navigationLinks)
+      this.$store.dispatch("cambiarRol", this.selectedRole);
     },
     logout() {
       this.$store.dispatch("logout");

@@ -8,8 +8,8 @@ const enlacesPorRol = {
     ],
     'Coordinador CETECSM': [
         { path: '/cetecsm/operadores', text: 'Operadores' },
-        { path: '/cetecsm/personas_derivadas', text: 'Personas derivadas' },
-        { path: '/cetecsm/personas_seguimiento', text: 'Personas en seguimiento' },
+        { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
+        { path: "/cetecsm/personas/asignadas_todas", text: 'Personas en seguimiento' },
     ],
     'Trabajador de salud': [
         { path: '/actividades/create', text: 'Actividades' },

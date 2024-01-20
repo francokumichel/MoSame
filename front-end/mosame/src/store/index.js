@@ -7,6 +7,7 @@ export default createStore({
   state: {
     email: null,
     token: null,
+    rolActual: null,
     error_msg: "",
   },
   getters: {
@@ -15,6 +16,9 @@ export default createStore({
     },
     userEmail(state) {
       return state.email;
+    },
+    userRole(state) {
+      return state.rolActual;
     },
   },
   mutations: {
@@ -25,6 +29,7 @@ export default createStore({
     clearAuthData(state) {
       state.email = null;
       state.token = null;
+      state.rolActual = null;
       state.error_msg = "";
     },
     initializeStore(state) {
@@ -36,6 +41,9 @@ export default createStore({
     setMsg(state, errorData) {
       state.error_msg = errorData.error_msg;
     },
+    setRole(state, selectedRole) {
+      state.rolActual = selectedRole;
+    }
   },
   actions: {
     login: ({ commit }, authData) => {
@@ -80,6 +88,9 @@ export default createStore({
           console.log("No se pudo cerrar sesion");
         });
     },
+    cambiarRol: ({ commit }, selectedRole) => {
+      commit("setRole", selectedRole);
+    }
   },
   modules: {},
 });

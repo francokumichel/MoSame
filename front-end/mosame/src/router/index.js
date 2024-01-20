@@ -10,6 +10,7 @@ import PersonaCetecsmLlamadas from "../views/PersonaCetecsmLlamadasView.vue";
 import EditarPersonaCetecsmAsignada from "../views/EditarPersonaCetecsmAsignadaView.vue";
 import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue";
 import OperadoresCetecsm from "../views/modulo-cetecsm/OperadoresCetecsmView.vue";
+import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsignadasTodasCetecsmView.vue"
 import store from "@/store";
 
 
@@ -85,6 +86,12 @@ const router = createRouter({
             path:"/cetecsm/operadores",
             name: "cetecsm-operadores",
             component: OperadoresCetecsm,
+            meta: { requiresAuth: true },             
+        },
+        {
+            path:"/cetecsm/personas/asignadas_todas",
+            name: "cetecsm-personas-asignadas-todas",
+            component: PersonasAsignadasTodasCetecsm,
             meta: { requiresAuth: true },             
         },
     ],
