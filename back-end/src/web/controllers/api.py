@@ -14,9 +14,9 @@ from flask_jwt_extended import (
 )
 
 from src.core.permissions import list_roles
-from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas
+from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_personas_cetecsm, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, get_all_personas_asignadas
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas
 from src.core.schemas.municipio import municipios_schema
 from src.core.schemas.role import roles_schema
@@ -24,7 +24,7 @@ from src.core.derivacion import actualizar_derivacion
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
 from src.core.schemas.motivo_general_derivacion import mot_grales_deriv_schema
 from src.core.derivacion import create_derivation
-from src.core.llamada_cetecsm import create_llamada_cetecsm
+from src.core.llamada_cetecsm import create_llamada_cetecsm, obtener_fecha_ultimo_llamado, obtener_cantidad_llamadas, obtener_resolucion_ultima_llamada
 from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
@@ -80,7 +80,7 @@ def user_jwt():
     """Función que devuelve los datos de perfil del usuario"""
     current_user = get_jwt_identity()
     user = get_user(current_user)
-    return user_schema.dump(user), 200
+    return make_response(jsonify(user_schema.dump(user))), 200
 
 
 @api_blueprint.get("logout")
@@ -159,13 +159,12 @@ def get_index_roles():
     return make_response(jsonify(roles_schema.dump(roles))), 200
 
 @cetecsm_blueprint.get("personas")
-def get_personas_cetecsm():
+def get_personas_cetecsm_no_asignadas():
 
-    search_term = request.args.get("q", default="", type=str)
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
 
-    personas_cetecsm = list_personas_cetecsm(search_term=search_term, page_num=page, per_page=per_page)
+    personas_cetecsm = list_all_personas_cetecsm_no_asignadas(page_num=page, per_page=per_page)
 
     data = {
         "personas": personas_cetecsm_schemas.dump(personas_cetecsm),
@@ -371,3 +370,76 @@ def crear_llamada_cetecsm(id):
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
+@cetecsm_blueprint.get("operadores")
+def get_all_operadores_cetecsm():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=10, type=int)
+
+    operadores_paginados = get_operadores_cetecsm(page=page, per_page=per_page)
+
+    resultados = {
+        "total": operadores_paginados.total,
+        "page": operadores_paginados.page,
+        "per_page": operadores_paginados.per_page,
+        "items": [
+            {
+                "id": operador.id,
+                "email": operador.email,
+                "name": operador.name,
+                "last_name": operador.last_name,
+                "cantidad_personas_asignadas": operador.cantidad_personas_asignadas,
+                "fecha_ultimo_llamado": operador.fecha_ultimo_llamado,
+            }
+            for operador in operadores_paginados.items
+        ],
+    }
+
+    return make_response(jsonify(resultados))
+
+@cetecsm_blueprint.get("personasAsignadas/<int:id>")
+def get_asignaciones_operador(id):
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page, user_id=id)
+
+    for persona in personas.items:
+        fecha_ultimo_llamado = obtener_fecha_ultimo_llamado(persona.id)
+
+        persona.fecha_ultimo_llamado = fecha_ultimo_llamado
+
+    data = {
+        "personas": personas_cetecsm_schemas.dump(personas),
+        "page": page,
+        "per_page": per_page,
+        "total": personas.total
+    }
+    
+    return make_response(jsonify(data)), 200
+
+@cetecsm_blueprint.get("asignadas_todas")
+def personas_asignadas_index():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas = get_all_personas_asignadas(page_num=page, per_page=per_page)
+
+    data = {
+        "total": personas.total,
+        "page": personas.page,
+        "per_page": personas.per_page,
+        "personas": [
+            {
+                "id": persona.id,
+                "nombre": persona.nombre,
+                "apellido": persona.apellido,
+                "email_operador": persona.usuario_asignado.email,
+                "cantidad_llamadas": obtener_cantidad_llamadas(persona.id),
+                "resolucion_ultima_llamada": obtener_resolucion_ultima_llamada(persona.id),
+            }
+            for persona in personas.items
+        ],
+    }
+    
+    return make_response(jsonify(data)), 200

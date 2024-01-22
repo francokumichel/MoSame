@@ -1,4 +1,6 @@
 from src.core.database import db
+from sqlalchemy import func, desc, and_
+from sqlalchemy.orm import aliased
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm, Municipio, RegionSanitaria
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 from src.core.motivo_general_acompanamiento import get_motivo_gral_acomp_by_tipo
@@ -37,19 +39,17 @@ def update_persona_cetecsm(**kwargs):
     db.session.commit()
     return persona
 
-def list_personas_cetecsm(search_term, page_num, per_page):
-    """ Consulta a la bd y obtiene los egistros paginados de los usuarios registrados en el sistema """
-    if search_term:
-        resultados = PersonaCetecsm.query.filter(
-            (PersonaCetecsm.dni.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.nombre.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.apellido.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.localidad.ilike(f"%{search_term}%"))
-        )
+def get_all_personas_asignadas(page_num, per_page):
+    """ Consulta a la BD y obtiene los registros páginados de las personas cetecsm que estás asigaadas a algún operador cetecsm"""
+    personas_asignadas = PersonaCetecsm.query.filter_by(esta_asignada=True)
+    return personas_asignadas.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
-        return resultados.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
-    return PersonaCetecsm.query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+def list_all_personas_cetecsm_no_asignadas(page_num, per_page):
+    """ Consulta a la bd y obtiene los registros paginados de los usuarios registrados en el sistema """
+    resultados = PersonaCetecsm.query.filter_by(esta_asignada=False)
 
+    return resultados.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+    
 def list_llamadas_recibidas(page_num, per_page, persona_id):
     llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id)
     return llamadas_recibidas.order_by(LlamadaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)

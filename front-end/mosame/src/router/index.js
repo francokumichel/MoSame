@@ -8,9 +8,10 @@ import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue"
 import PerfilPersonaCetecsm from "../views/PerfilPersonaCetecsmView.vue";
 import PersonaCetecsmLlamadas from "../views/PersonaCetecsmLlamadasView.vue";
 import EditarPersonaCetecsmAsignada from "../views/EditarPersonaCetecsmAsignadaView.vue";
-import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue"
+import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue";
+import OperadoresCetecsm from "../views/modulo-cetecsm/OperadoresCetecsmView.vue";
+import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsignadasTodasCetecsmView.vue"
 import store from "@/store";
-
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,7 +52,7 @@ const router = createRouter({
             meta: { requiresAuth: true },
         },
         {
-            path:"/cetecsm/asignaciones",
+            path:"/cetecsm/asignaciones/:id(\\d+)?",
             name: "cetecsm-asignaciones",
             component: PersonasCetecsmAsignadas,
             meta: { requiresAuth: true },             
@@ -80,12 +81,24 @@ const router = createRouter({
             component: CreateLlamadaCetecsm,
             meta: { requiresAuth: true },             
         },
+        {
+            path:"/cetecsm/operadores",
+            name: "cetecsm-operadores",
+            component: OperadoresCetecsm,
+            meta: { requiresAuth: true },             
+        },
+        {
+            path:"/cetecsm/personas/asignadas_todas",
+            name: "cetecsm-personas-asignadas-todas",
+            component: PersonasAsignadasTodasCetecsm,
+            meta: { requiresAuth: true },             
+        },
     ],
 });
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some((route) => route.meta.requiresAuth)) {
-        if (!store.state.email) {
+        if (!store.state.token) {
             next("/login");
         } else {
             next();
