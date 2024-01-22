@@ -80,7 +80,7 @@ def user_jwt():
     """Función que devuelve los datos de perfil del usuario"""
     current_user = get_jwt_identity()
     user = get_user(current_user)
-    return user_schema.dump(user), 200
+    return make_response(jsonify(user_schema.dump(user))), 200
 
 
 @api_blueprint.get("logout")

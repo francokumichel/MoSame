@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default createStore({
   state: {
-    email: null,
+    user: JSON.parse(localStorage.getItem('user')) || {},
     token: null,
     rolActual: null,
     error_msg: "",
@@ -14,18 +14,22 @@ export default createStore({
     isAuthenticated(state) {
       return state.token !== null;
     },
-    userEmail(state) {
-      return state.email;
+    user(state) {
+      return state.user;
     },
     userRole(state) {
       return state.rolActual;
     },
   },
   mutations: {
-    authUser(state, userData) {
-      state.email = userData.email;
-      state.token = userData.token;
+    setUser(state, user){
+      state.user = user;
     },
+
+    setToken(state, token){
+      state.token = token;
+    },
+
     clearAuthData(state) {
       state.email = null;
       state.token = null;
@@ -33,8 +37,8 @@ export default createStore({
       state.error_msg = "";
     },
     initializeStore(state) {
-      if (localStorage.getItem("email")) {
-        state.email = `${localStorage.getItem("email")}`;
+      if (localStorage.getItem("user")) {
+        state.user = `${localStorage.getItem("user")}`;
         state.token = `${localStorage.getItem("token")}`;
       }
     },
@@ -46,20 +50,15 @@ export default createStore({
     }
   },
   actions: {
-    login: ({ commit }, authData) => {
+    login: ({ commit, dispatch }, authData) => {
       apiService
         .post("/auth", authData)
         .then((response) => {
           let success = response.data.token;
-
           if (success != null) {
-            commit("authUser", {
-              email: authData.email,
-              token: response.data.token,
-            });
+            commit("setToken", response.data.token);
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("email", authData.email);
-            router.replace("home");
+            dispatch("fetchUser");
           }
         })
         .catch((error) => {
@@ -68,6 +67,30 @@ export default createStore({
           });
         });
     },
+
+    fetchUser: ({ commit }) => {
+      axios
+        .get(import.meta.env.VITE_API_URL + "me/profile", {
+          xsrfCookieName: "csrf_access_token",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          if(response.status == 200) {
+            console.log(response)
+            commit("setUser", response.data);
+            localStorage.setItem("user", JSON.stringify(response.data));
+            router.push("/");
+          }
+        })
+        .catch((error) => {
+          commit("setMsg", {
+            error_msg: error.response.data.msg,
+          });
+        });
+    },
+
     logout: ({ commit }) => {
       axios
         .get(import.meta.env.VITE_API_URL + "logout", {
@@ -79,9 +102,9 @@ export default createStore({
         .then((response) => {
           if (response.status === 200) {
             commit("clearAuthData");
-            localStorage.removeItem("email");
+            localStorage.removeItem("user");
             localStorage.removeItem("token");
-            router.replace("login");
+            router.push("/login")
           }
         })
         .catch((e) => {

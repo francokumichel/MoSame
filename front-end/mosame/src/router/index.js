@@ -13,7 +13,6 @@ import OperadoresCetecsm from "../views/modulo-cetecsm/OperadoresCetecsmView.vue
 import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsignadasTodasCetecsmView.vue"
 import store from "@/store";
 
-
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -99,7 +98,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some((route) => route.meta.requiresAuth)) {
-        if (!store.state.email) {
+        if (!store.state.token) {
             next("/login");
         } else {
             next();

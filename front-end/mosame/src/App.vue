@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-transparent" v-if="$store.state.token">
+  <div class="bg-transparent" v-if="isAuthenticated && user">
     <nav class="container-xxl py-3 navbar navbar-expand-lg bg-info bg-opacity-10 shadow-sm">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
@@ -20,7 +20,7 @@
           <div class="d-flex align-items-center column-gap-2">
             <label for="roles" class="text-info fw-bold fs-5">Rol: </label>
             <select class="text-info fw-bold form-select me-2" v-model="selectedRole" @change="getNavigationLinks" aria-label="Default select example">
-              <option v-for="rol in roles" :key="rol.name" :value="rol.name">{{ rol.name }}</option>
+              <option v-for="rol in user.roles" :key="rol.name" :value="rol.name">{{ rol.name }}</option>
             </select>
           </div>
         </div>
@@ -32,7 +32,7 @@
 
 <script>
 import enlacesPorRol from '@/data/enlaces.js';
-import { apiService } from "@/services/api";
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -43,19 +43,20 @@ export default {
     };
   },
 
-  async created() {
-    await apiService.get(import.meta.env.VITE_API_URL + "me/roles")
-      .then((response) => {
-        this.roles = response.data;
-        if (this.roles.length > 0) {
-          this.selectedRole = this.roles[0].name;
-        }  
-        this.getNavigationLinks()
-      })
-      .catch((e) => {
-          console.log(e)
-          this.errores.push(e);
-      })
+  watch: {
+    user: {
+      immediate: true,
+      handler(newValue) {
+        if (newValue && newValue.roles && newValue.roles.length > 0) {
+          this.selectedRole = newValue.roles[0].name;
+          this.getNavigationLinks();
+        }
+      },
+    },
+  },
+
+  computed: {
+    ...mapGetters(['isAuthenticated', 'user']),
   },
 
   methods: {
