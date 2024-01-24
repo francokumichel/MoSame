@@ -12,6 +12,7 @@ from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
 from src.core import derivacion
 from src.core import llamada_cetecsm
 from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
+from src.core import llamada_0800
 
 def run():
 
@@ -137,8 +138,6 @@ def run():
     municipio_10 = persona_cetecsm.create_municipio(nombre="Mercedes", region_sanitaria=region_10)
     municipio_11 = persona_cetecsm.create_municipio(nombre="La Plata", region_sanitaria=region_11)
     municipio_12 = persona_cetecsm.create_municipio(nombre="La Matanza", region_sanitaria=region_12)
-
-
 
     # Carga de tabla de motivo general de derivación
     malestar_emocional_der = motivo_general_derivacion.create_motivo_gral_der(tipo="Malestar emocional")
@@ -317,7 +316,23 @@ def run():
         fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado,
         detalle_acompanamiento = "Llamado por primera vez a la persona y me brindo todos los datos",
         motivo_gral_acomp = acceso,
-)
+    )
+
+    # Cargas del 0800
+
+    # Carga de tabla de motivo de consulta
+    llamada_0800.create_motivo_consulta("Asistencia en Salud Mental")
+    llamada_0800.create_motivo_consulta("Orientación en Salud Mental")
+    llamada_0800.create_motivo_consulta("Otros")
+
+    # Carga la tabla de cómo el paciente puede haber ubicado al 0800
+    llamada_0800.create_como_ubico("Búsqueda en Internet")
+    llamada_0800.create_como_ubico("Redes sociales")
+    llamada_0800.create_como_ubico("Material gráfico")
+    llamada_0800.create_como_ubico("Por conocidos")
+    llamada_0800.create_como_ubico("Derivación de un profesional")
+    llamada_0800.create_como_ubico("Usuario habitual")
+    llamada_0800.create_como_ubico("Medios de comunicación")
+    llamada_0800.create_como_ubico("Otros")
 
     print("Seeds cargados!")
-

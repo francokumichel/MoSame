@@ -2,10 +2,15 @@ from src.core.database import db
 import enum
 from sqlalchemy import func
 
-class MotivoDeLaConsulta(enum.Enum):
-    ASISTENCIA = "Asistencia en Salud Mental"
-    ORIENTACION = "Orientación en Salud Mental"
-    OTROS = "Otros"
+class MotivoDeLaConsulta(db.Model):
+    __tablename__ = "motivo_consulta"
+
+    nombre = db.Column(db.String(100), primary_key=True)
+
+class ComoUbico(db.Model):
+    __tablename__ = "como_ubico"
+
+    forma = db.Column(db.String(100), primary_key=True)
 
 class SujetoDeLaConsulta(enum.Enum):
     PROPIA = "Propia"
@@ -16,19 +21,28 @@ class Pronombre(enum.Enum):
     ELLA = "Ella"
     ELLE = "Elle"
 
+class DetalleMotivoConsulta(db.Model):
+    __tablename__ = "detalle_motivo_consulta"
+
+    motivo = db.Column(db.String(100), primary_key=True)
+
 class Llamada0800(db.Model):
     __tablename__ = "llamada_0800"
 
     id = db.Column(db.Integer, primary_key=True)
-    motivo = db.Column(db.String(100))
-    como_ubico = db.Column(db.String(256))
+    motivo_id = db.Column(db.String(100), db.ForeignKey("motivo_consulta.nombre"))
+    como_ubico_id = db.Column(db.String(100), db.ForeignKey("como_ubico.forma"))
+    como_ubico_otro = db.Column(db.String(256))
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
     sujeto = db.Column(db.String(15))
     edad = db.Column(db.Integer)
     identidad_genero_id = db.Column(db.String(100), db.ForeignKey('identidad_genero.tipo'))
     pronombre = db.Column(db.String(5))
     grupo_conviviente = db.Column(db.String(50))
-    grupo_conviviente_otro = db.Column(db.String(50)) # TODO
+    grupo_conviviente_otro = db.Column(db.String(50))
+    detalle_motivo_id = db.Column(db.String(100), db.ForeignKey("detalle_motivo_consulta.motivo"))
+    malestar_emocional_id = db.Column(db.String(100), db.ForeignKey("malestar_emocional.tipo"))
+    # TODO: Tengo que seguir con Situaciones de Vulnerabilidad
 
 class ResolucionLlamado(enum.Enum):
     EN_PRIMER_LLAMADO = "Se resolvió en el primer llamado"
