@@ -13,12 +13,14 @@ from flask_jwt_extended import (
     unset_jwt_cookies,
 )
 
+from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, get_all_personas_asignadas
-from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar
+from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
 from src.core.schemas.municipio import municipios_schema
+from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
 from src.core.schemas.role import roles_schema
 from src.core.derivacion import actualizar_derivacion
 from src.core.motivo_general_derivacion import list_mot_gral_derivacion
@@ -45,7 +47,8 @@ auth_blueprint = Blueprint("auth", __name__, url_prefix="/auth")
 me_blueprint = Blueprint("me", __name__, url_prefix="/me")
 user_blueprint = Blueprint("user", __name__, url_prefix="/users")
 roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
-cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm") 
+cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm")
+observatorio_blueprint =  Blueprint("observatorio", __name__, url_prefix="/observatorio")
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
@@ -53,7 +56,7 @@ api_blueprint.register_blueprint(me_blueprint)
 api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(roles_blueprint)
 api_blueprint.register_blueprint(cetecsm_blueprint)
-
+api_blueprint.register_blueprint(observatorio_blueprint)
 
 @prueba_blueprint.get("")
 def get_all_pruebas():
@@ -271,6 +274,11 @@ def get_index_municipios():
     municipios = list_municipios()
     return make_response(jsonify(municipios_schema.dump(municipios))), 200
 
+@api_blueprint.get("regiones_sanitarias")
+def get_index_regiones_sanitarias():
+    regiones_sanitarias = list_regiones_sanitarias()
+    return make_response(jsonify(regiones_sanitarias_schema.dump(regiones_sanitarias))), 200
+
 @api_blueprint.get("grupos_convivientes")
 def get_index_grupo_conviviente():
     grupos_convivientes = {grupo.name: grupo.value for grupo in GrupoConviviente}
@@ -443,3 +451,100 @@ def personas_asignadas_index():
     }
     
     return make_response(jsonify(data)), 200
+
+@observatorio_blueprint.get("personas_cetecsm_derivadas")
+def obtener_personas_cetecsm_derivadas():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    dispositivo_derivador = request.args.get("dispositivo_derivador", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    mot_gral_derivacion = request.args.get("mot_gral_derivacion", default="", type=str)
+    nombre_operador_derivador = request.args.get("nombre_operador_derivador", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "dispositivo_derivador": dispositivo_derivador,
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_derivacion": mot_gral_derivacion,
+        "operador": nombre_operador_derivador 
+    }
+
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    personas = get_personas_cetecsm_todas(search_terms=search_terms, page_num=page, per_page=per_page)
+
+    items = {
+        "personas": personas_cetecsm_schemas.dump(personas),
+        "page": page,
+        "per_page": per_page,
+        "total": personas.total
+    }
+
+    return make_response(jsonify(items)), 200
+
+@observatorio_blueprint.get("personas_cetecsm_derivadas/exportar")
+def obtener_personas_cetecsm_derivadas_todas():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    dispositivo_derivador = request.args.get("dispositivo_derivador", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    mot_gral_derivacion = request.args.get("mot_gral_derivacion", default="", type=str)
+    nombre_operador_derivador = request.args.get("nombre_operador_derivador", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "dispositivo_derivador": dispositivo_derivador,
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_derivacion": mot_gral_derivacion,
+        "operador": nombre_operador_derivador 
+    }
+
+    personas = get_personas_cetecsm_todas_sin_paginar(search_terms=search_terms)
+    
+    
+    data = [{
+        'fecha_derivacion': persona.derivacion.fecha,
+        'dio_consentimiento': "Sí" if persona.dio_consentimiento else "No",
+        'dispositivo_derivacion': persona.derivacion.dispositivo_derivacion,
+        'nombre_operador_derivador': persona.derivacion.nombre_operador_derivador,
+        'municipio': persona.municipio_id,
+        'nombre': persona.nombre,
+        'apellido': persona.apellido,
+        'edad': persona.edad,
+        'dni': persona.dni,
+        'telefono': persona.telefono,
+        'telefono_alternativo': persona.telefono_alternativo,
+        'motivo_derivacion': persona.derivacion.tipo_motivo_gral,
+        'otro_motivo_derivacion': persona.derivacion.mot_gral_derivacion.otro_tipo,
+        'descripcion': persona.derivacion.descripcion,
+        'grupo_conviviente': persona.grupo_conviviente,
+        'localidad': persona.localidad,
+        'identidad_genero': persona.identidad_genero_id,
+        'obra_social': persona.obra_social,
+        'motivo_acompañamiento': persona.motivo_gral_acomp_id,
+        'tipo_malestar_emocional': ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+        'detalle_acompanamiento': persona.detalle_acompanamiento,
+        'fecha_prox_llamado': persona.fecha_prox_llamado_actual
+    } for persona in personas]
+
+    return convert_to_csv(data, "personas_derivadas.csv")
+    
+    

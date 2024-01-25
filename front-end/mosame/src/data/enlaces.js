@@ -20,7 +20,7 @@ const enlacesPorRol = {
     ],
     'Miembro observatorio': [
         { path: '/observatorio/llamadas_0800', text: 'Llamadas 0800' },
-        { path: '/observatorio/personas_derivadas_cetecsm', text: 'Personas derivadas a CETEC SM' },
+        { path: '/observatorio/personas_cetecsm_derivadas', text: 'Personas derivadas a CETEC SM' },
         { path: '/observatorio/personas_en_seguimiento_cetecsm', text: 'Personas en seguimiento por CETEC SM' },
         { path: '/observatorio/talleres', text: 'Talleres' },
     ],

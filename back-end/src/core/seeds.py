@@ -72,7 +72,31 @@ def run():
     role_coordinator_cetecsm.permissions.append(call_cetecsm_new)
     role_coordinator_cetecsm.permissions.append(operator_cetecsm_index)
 
+    # Permisos observatorio
+    role_observatorio = permissions.create_role(name="Miembro observatorio")
+
+    llamadas_0800_index = permissions.create_permission(name="llamadas_0800_index")
+    llamadas_0800_export = permissions.create_permission(name="llamadas_0800_export")
+    personas_cetecsm_asignadas_index = permissions.create_permission(name="personas_cetecsm_asignadas_index")
+    personas_cetecsm_derivadas_export = permissions.create_permission(name="personas_cetecsm_derivadas_export")
+    personas_cetecsm_seguimiento_index = permissions.create_permission(name="personas_cetecsm_seguimiento_index")
+    personas_cetecsm_seguimiento_export = permissions.create_permission(name="personas_cetecsm_seguimiento_export")
+    cantidad_total_llamadas_show = permissions.create_permission(name="cantidad_total_llamadas_show")
+    talleres_salud_escuelas_index = permissions.create_permission(name="talleres_salud_escuelas_index")
+    talleres_salud_escuelas_export = permissions.create_permission(name="talleres_salud_escuelas_export")
+
+    role_observatorio.permissions.append(llamadas_0800_index)
+    role_observatorio.permissions.append(llamadas_0800_export)
+    role_observatorio.permissions.append(personas_cetecsm_asignadas_index)
+    role_observatorio.permissions.append(personas_cetecsm_derivadas_export)
+    role_observatorio.permissions.append(personas_cetecsm_seguimiento_index)
+    role_observatorio.permissions.append(personas_cetecsm_seguimiento_export)
+    role_observatorio.permissions.append(cantidad_total_llamadas_show)
+    role_observatorio.permissions.append(talleres_salud_escuelas_index)
+    role_observatorio.permissions.append(talleres_salud_escuelas_export)
     
+
+
     user_admin = users.create_user(
         name="Admin",
         last_name="Admin",
@@ -107,6 +131,15 @@ def run():
     )
 
     users.update_roles(user_coordinator_cetecsm, [role_coordinator_cetecsm])
+
+    user_observatorio = users.create_user(
+        name="Observatorio",
+        last_name="Observatorio",
+        email="Observatorio@gmail.com",
+        password="1234"
+    )
+
+    users.update_roles(user_observatorio, [role_observatorio])
 
     # Carga de datos correspondientes a módulo cetecsm
 
