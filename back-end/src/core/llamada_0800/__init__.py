@@ -1,6 +1,6 @@
 from src.core.database import db
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
-from src.core.llamada_0800.llamada_0800 import MotivoDeLaConsulta, ComoUbico
+from src.core.llamada_0800.llamada_0800 import MotivoDeLaConsulta, ComoUbico, DetalleMotivoConsulta
 
 def create_llamada_cetecsm(**kwargs):
     llamada_cetecsm = LlamadaCetecsm(**kwargs)
@@ -31,3 +31,15 @@ def list_como_ubico():
 
 def get_como_ubico(forma):
     return ComoUbico.query.filter_by(forma=forma).first()
+
+def create_detalle_motivo_consulta(**kwargs):
+    detalle_motivo_consulta = DetalleMotivoConsulta(**kwargs)
+    db.session.add(detalle_motivo_consulta)
+    db.session.commit()
+    return detalle_motivo_consulta
+
+def list_detalles_motivo_consulta():
+    return DetalleMotivoConsulta.query.all()
+
+def get_detalle_motivo_consulta(motivo):
+    return DetalleMotivoConsulta.query.filter_by(motivo=motivo).first()

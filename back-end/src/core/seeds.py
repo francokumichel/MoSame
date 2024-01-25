@@ -335,4 +335,10 @@ def run():
     llamada_0800.create_como_ubico("Medios de comunicación")
     llamada_0800.create_como_ubico("Otros")
 
+    # Carga la tabla de detalles de motivo de la consulta
+    llamada_0800.create_detalle_motivo_consulta("Consumo Problemático")
+    llamada_0800.create_detalle_motivo_consulta("Violencia de Género")
+    llamada_0800.create_detalle_motivo_consulta("Otras violencias")
+    llamada_0800.create_detalle_motivo_consulta("Malestar emocional")
+
     print("Seeds cargados!")
