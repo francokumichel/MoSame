@@ -321,24 +321,24 @@ def run():
     # Cargas del 0800
 
     # Carga de tabla de motivo de consulta
-    llamada_0800.create_motivo_consulta("Asistencia en Salud Mental")
-    llamada_0800.create_motivo_consulta("Orientación en Salud Mental")
-    llamada_0800.create_motivo_consulta("Otros")
+    llamada_0800.create_motivo_consulta(nombre="Asistencia en Salud Mental")
+    llamada_0800.create_motivo_consulta(nombre="Orientación en Salud Mental")
+    llamada_0800.create_motivo_consulta(nombre="Otros")
 
     # Carga la tabla de cómo el paciente puede haber ubicado al 0800
-    llamada_0800.create_como_ubico("Búsqueda en Internet")
-    llamada_0800.create_como_ubico("Redes sociales")
-    llamada_0800.create_como_ubico("Material gráfico")
-    llamada_0800.create_como_ubico("Por conocidos")
-    llamada_0800.create_como_ubico("Derivación de un profesional")
-    llamada_0800.create_como_ubico("Usuario habitual")
-    llamada_0800.create_como_ubico("Medios de comunicación")
-    llamada_0800.create_como_ubico("Otros")
+    llamada_0800.create_como_ubico(forma="Búsqueda en Internet")
+    llamada_0800.create_como_ubico(forma="Redes sociales")
+    llamada_0800.create_como_ubico(forma="Material gráfico")
+    llamada_0800.create_como_ubico(forma="Por conocidos")
+    llamada_0800.create_como_ubico(forma="Derivación de un profesional")
+    llamada_0800.create_como_ubico(forma="Usuario habitual")
+    llamada_0800.create_como_ubico(forma="Medios de comunicación")
+    llamada_0800.create_como_ubico(forma="Otros")
 
     # Carga la tabla de detalles de motivo de la consulta
-    llamada_0800.create_detalle_motivo_consulta("Consumo Problemático")
-    llamada_0800.create_detalle_motivo_consulta("Violencia de Género")
-    llamada_0800.create_detalle_motivo_consulta("Otras violencias")
-    llamada_0800.create_detalle_motivo_consulta("Malestar emocional")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Consumo Problemático")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Violencia de Género")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Otras violencias")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Malestar emocional")
 
     print("Seeds cargados!")

@@ -38,6 +38,8 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
+from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_motivos_consulta
+from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -371,3 +373,24 @@ def crear_llamada_cetecsm(id):
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
+# Api para la parte del 0800
+
+@api_blueprint.get("sujetos_consulta")
+def get_index_sujeto_consulta():
+    sujetos_consulta = {sujeto.name: sujeto.value for sujeto in SujetoDeLaConsulta}
+    return make_response(jsonify(sujetos_consulta)), 200
+
+@api_blueprint.get("pronombres")
+def get_index_pronombres():
+    pronombres = {pronombre.name: pronombre.value for pronombre in Pronombre}
+    return make_response(jsonify(pronombres)), 200
+
+@api_blueprint.get("definiciones_llamada0800")
+def get_index_definiciones_llamada():
+    definiciones = {definicion.name: definicion.value for definicion in DefinicionLlamada}
+    return make_response(jsonify(definiciones)), 200
+
+@api_blueprint.get("intervenciones_sugeridas")
+def get_index_intervenciones_sugeridas():
+    intervenciones = {intervencion.name: intervencion.value for intervencion in IntervecionSugerida}
+    return make_response(jsonify(intervenciones)), 200
