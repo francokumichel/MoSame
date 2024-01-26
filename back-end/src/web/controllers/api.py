@@ -15,7 +15,7 @@ from flask_jwt_extended import (
 
 from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
-from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm
+from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm, obtener_total_llamados_cetecsm, obtener_usuario_por_rol
 from src.core.schemas.user import user_schema, users_schema
 from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
@@ -654,3 +654,20 @@ def obtener_personas_cetecsm_asignadas_exportar():
     } for persona in personas]
 
     return convert_to_csv(data, "personas_en_seguimiento.csv")
+
+@observatorio_blueprint.get("cantidad_llamadas")
+def obtener_cantidad_llamadas_todas():
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    usuario_id = request.args.get("usuario_id", default=None, type=int)
+    resolucion = request.args.get("resolucion_llamado", default=None, type=str)
+
+    total_llamados_cetecsm = obtener_total_llamados_cetecsm(fecha_desde=fecha_desde, fecha_hasta=fecha_hasta, usuario_id=usuario_id, resolucion=resolucion)
+
+    return make_response(jsonify({"total_llamados": total_llamados_cetecsm}))
+
+@cetecsm_blueprint.get("operadores_cetecsm")
+def obtener_operadores_cetecsm():
+
+    operadores_cetecsm = obtener_usuario_por_rol(rol="Operador CETECSM")
+    return make_response(jsonify(users_schema.dump(operadores_cetecsm)))

@@ -198,7 +198,7 @@ def obtener_datos_resolucion_fecha_llamada(persona):
         resolucion_ultima_llamada = llamadas_ordenadas[-1].resolucion
     else:
         resolucion_primera_llamada = None
-        fecha_ultima_llamada = None
+        fecha_primera_llamada = None
         resolucion_ultima_llamada = None
 
 

@@ -13,6 +13,7 @@ import OperadoresCetecsm from "../views/modulo-cetecsm/OperadoresCetecsmView.vue
 import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsignadasTodasCetecsmView.vue"
 import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetecsmDerivadasView.vue";
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
+import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
 import store from "@/store";
 
 const router = createRouter({
@@ -105,6 +106,12 @@ const router = createRouter({
             path:"/observatorio/personas_cetecsm_seguimiento",
             name: "observatorio-personas-cetecsm-seguimiento",
             component: PersonasCetecsmSeguimiento,
+            meta: { requiresAuth: true },             
+        },
+        {
+            path:"/observatorio/cantidad_llamadas_cetecsm",
+            name: "observatorio-cantidad-llamadas-cetecsm",
+            component: CantidadLlamadasCetecsm,
             meta: { requiresAuth: true },             
         },
     ],

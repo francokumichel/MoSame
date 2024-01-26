@@ -4,7 +4,7 @@ from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 from src.core.permissions.role import Role
 from src.core.permissions import get_role_by_name
 from src.core.database import db
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, and_
 from datetime import datetime
 
 def create_user(**kwargs):
@@ -116,3 +116,29 @@ def get_operadores_cetecsm(page, per_page):
     )
 
     return asignaciones.paginate(page=page, per_page=per_page, error_out=True)
+
+def obtener_total_llamados_cetecsm(fecha_desde=None, fecha_hasta=None, usuario_id=None, resolucion=None):
+    filtros = []
+
+    if fecha_desde:
+        filtros.append(LlamadaCetecsm.fecha_llamado >= fecha_desde)
+
+    if fecha_hasta:
+        filtros.append(LlamadaCetecsm.fecha_llamado <= fecha_hasta)
+
+    if usuario_id:
+        filtros.append(LlamadaCetecsm.usuario_id == usuario_id)
+
+    if resolucion:
+        filtros.append(LlamadaCetecsm.resolucion == resolucion)
+
+    filtro_final = and_(*filtros)
+
+    total_llamados = db.session.query(func.count(LlamadaCetecsm.id)).filter(filtro_final).scalar()
+
+    return total_llamados
+
+def obtener_usuario_por_rol(rol):
+    usuarios_operadores = User.query.filter(User.roles.any(Role.name == rol)).all()
+
+    return usuarios_operadores
