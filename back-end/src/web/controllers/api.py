@@ -40,6 +40,9 @@ from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
+from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
+from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
+from src.core.schemas.motivo_de_la_consulta import motivo_de_la_consulta_schema, motivos_de_la_consulta_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -385,7 +388,7 @@ def get_index_pronombres():
     pronombres = {pronombre.name: pronombre.value for pronombre in Pronombre}
     return make_response(jsonify(pronombres)), 200
 
-@api_blueprint.get("definiciones_llamada0800")
+@api_blueprint.get("definiciones_llamada_0800")
 def get_index_definiciones_llamada():
     definiciones = {definicion.name: definicion.value for definicion in DefinicionLlamada}
     return make_response(jsonify(definiciones)), 200
@@ -394,3 +397,18 @@ def get_index_definiciones_llamada():
 def get_index_intervenciones_sugeridas():
     intervenciones = {intervencion.name: intervencion.value for intervencion in IntervecionSugerida}
     return make_response(jsonify(intervenciones)), 200
+
+@api_blueprint.get("motivos_consulta")
+def get_index_motivos_consulta():
+    motivos = list_motivos_consulta()
+    return make_response(jsonify(motivos_de_la_consulta_schema.dump(motivos))), 200
+
+@api_blueprint.get("como_ubico")
+def get_index_como_ubico():
+    formas = list_como_ubico()
+    return make_response(jsonify(como_ubico_schema_many.dump(formas))), 200
+
+@api_blueprint.get("detalle_motivos_consulta")
+def get_index_detalle_motivos_consulta():
+    motivos = list_detalles_motivo_consulta()
+    return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
