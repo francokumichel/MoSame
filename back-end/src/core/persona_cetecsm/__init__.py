@@ -1,4 +1,5 @@
 from src.core.database import db
+from operator import attrgetter
 from sqlalchemy import func, desc, and_
 from sqlalchemy.orm import aliased
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm, Municipio, RegionSanitaria
@@ -164,3 +165,66 @@ def buscar_personas_por_motivo_derivacion(query, motivo_derivacion):
 
 def buscar_personas_por_operador(query, operador):
     return query.filter(PersonaCetecsm.derivacion.has(Derivacion.nombre_operador_derivador == operador))
+
+def obtener_informacion_personas_seguimiento(search_terms, debe_paginarse=True, page_num=1, per_page=1):
+    query = PersonaCetecsm.query.filter_by(esta_asignada=True)
+    
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_personas_por_regiones,
+            'fechas': buscar_personas_por_ultima_fecha_llamado,
+            'edades': buscar_personas_por_edad,
+            'identidad_genero': buscar_personas_por_identidad_genero,
+            'mot_gral_acomp': buscar_personas_por_motivo_acomp,
+            
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+    
+    if debe_paginarse:
+        return query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+    else:
+        return query
+
+def obtener_datos_resolucion_fecha_llamada(persona):
+    # Ordenar las llamadas por fecha
+    llamadas_ordenadas = sorted(persona.llamadas_cetecsm, key=attrgetter('fecha_llamado'))
+
+    # Obtener la fecha y resolución de la primera llamada
+    if llamadas_ordenadas:
+        resolucion_primera_llamada = llamadas_ordenadas[0].resolucion
+        fecha_primera_llamada = llamadas_ordenadas[0].fecha_llamado
+        resolucion_ultima_llamada = llamadas_ordenadas[-1].resolucion
+    else:
+        resolucion_primera_llamada = None
+        fecha_ultima_llamada = None
+        resolucion_ultima_llamada = None
+
+
+    return resolucion_primera_llamada, fecha_primera_llamada, resolucion_ultima_llamada
+
+def buscar_personas_por_ultima_fecha_llamado(query, fechas):
+    subquery_primer_llamada = (
+        db.session.query(
+            LlamadaCetecsm.persona_cetecsm_id,
+            func.min(LlamadaCetecsm.fecha_llamado).label('fecha_primera_llamada')
+        )
+        .group_by(LlamadaCetecsm.persona_cetecsm_id)
+        .subquery()
+    )
+
+    if fechas['desde'] and fechas['hasta']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada.between(fechas['desde'], fechas['hasta']))
+    elif fechas['desde']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada >= fechas['desde'])
+    elif fechas['hasta']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada <= fechas['hasta'])
+
+    return query
+
+def buscar_personas_por_identidad_genero(query, identidad_genero):
+    return query.filter(PersonaCetecsm.identidad_genero_id == identidad_genero)
+
+def buscar_personas_por_motivo_acomp(query, mot_gral_acomp):
+    return query.filter(PersonaCetecsm.motivo_gral_acomp_id == mot_gral_acomp)

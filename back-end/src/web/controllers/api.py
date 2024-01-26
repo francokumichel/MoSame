@@ -17,7 +17,7 @@ from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
 from src.core.schemas.municipio import municipios_schema
 from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
@@ -547,4 +547,110 @@ def obtener_personas_cetecsm_derivadas_todas():
 
     return convert_to_csv(data, "personas_derivadas.csv")
     
+@observatorio_blueprint.get("personas_cetecsm_seguimiento")
+def obtener_informacion_personas_seguimiento_todas():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    identidad_genero = request.args.get("identidad_genero", default="", type=str)
+    mot_gral_acomp = request.args.get("mot_gral_acomp", default="", type=str)
     
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "identidad_genero": identidad_genero,
+        "mot_gral_acomp": mot_gral_acomp,
+    }
+
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    personas = obtener_informacion_personas_seguimiento(search_terms=search_terms ,page_num=page, per_page=per_page)
+
+    datos_personas = []
+    for persona in personas:
+        resolucion_primera_llamada, fecha_primera_llamada, resolucion_ultima_llamada = obtener_datos_resolucion_fecha_llamada(persona)
+        datos_persona = {
+            "region_sanitaria": persona.municipio.region_sanitaria.tipo,
+            "edad": persona.edad,
+            "identidad_genero": persona.identidad_genero_id,
+            "motivo_acompanamiento": persona.motivo_gral_acomp_id,
+            "tipo_malestar_emocional": ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+            "resolucion_primera_llamada": resolucion_primera_llamada,
+            "fecha_primera_llamada": fecha_primera_llamada.strftime("%Y-%m-%d"),
+            "resolucion_ultima_llamada": resolucion_ultima_llamada,
+        }
+        datos_personas.append(datos_persona)
+
+    data = {
+        "personas": datos_personas,
+        "page": page,
+        "per_page": per_page,
+        "total": personas.total
+    }
+
+    # Devolver los resultados como JSON
+    return make_response(jsonify(data))
+
+@observatorio_blueprint.get("personas_cetecsm_seguimiento/exportar")
+def obtener_personas_cetecsm_asignadas_exportar():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    identidad_genero = request.args.get("identidad_genero", default="", type=str)
+    mot_gral_acomp = request.args.get("mot_gral_acomp", default="", type=str)
+    
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "identidad_genero": identidad_genero,
+        "mot_gral_acomp": mot_gral_acomp,
+    }
+
+    personas = obtener_informacion_personas_seguimiento(search_terms=search_terms, debe_paginarse=False)
+    
+    
+    data = [{
+        'fecha_derivacion': persona.derivacion.fecha,
+        'dio_consentimiento': "Sí" if persona.dio_consentimiento else "No",
+        'dispositivo_derivacion': persona.derivacion.dispositivo_derivacion,
+        'nombre_operador_derivador': persona.derivacion.nombre_operador_derivador,
+        'municipio': persona.municipio_id,
+        'nombre': persona.nombre,
+        'apellido': persona.apellido,
+        'edad': persona.edad,
+        'dni': persona.dni,
+        'telefono': persona.telefono,
+        'telefono_alternativo': persona.telefono_alternativo,
+        'motivo_derivacion': persona.derivacion.tipo_motivo_gral,
+        'otro_motivo_derivacion': persona.derivacion.mot_gral_derivacion.otro_tipo,
+        'descripcion': persona.derivacion.descripcion,
+        'grupo_conviviente': persona.grupo_conviviente,
+        'localidad': persona.localidad,
+        'identidad_genero': persona.identidad_genero_id,
+        'obra_social': persona.obra_social,
+        'motivo_acompañamiento': persona.motivo_gral_acomp_id,
+        'tipo_malestar_emocional': ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+        'detalle_acompanamiento': persona.detalle_acompanamiento,
+        'fecha_prox_llamado': persona.fecha_prox_llamado_actual
+    } for persona in personas]
+
+    return convert_to_csv(data, "personas_en_seguimiento.csv")

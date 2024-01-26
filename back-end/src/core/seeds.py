@@ -324,6 +324,7 @@ def run():
     llamada_cetecsm_2 = llamada_cetecsm.create_llamada_cetecsm(
         detalle = "Segunda llamada",
         resolucion = ResolucionLlamado.RESOLUCION.value,
+        fecha_llamado = datetime(2024, 1, 9),
         usuario_carga = user_operator_cetecsm,
         persona_cetecsm_llamada = persona_cetecsm_1,
     )
@@ -339,6 +340,7 @@ def run():
     llamada_cetecsm_3 = llamada_cetecsm.create_llamada_cetecsm(
         detalle = "Primer llamada a persona 3",
         resolucion = ResolucionLlamado.CONTINUA.value,
+        fecha_llamado = datetime(2024, 1, 10),
         fecha_prox_llamado = datetime(2024, 1, 17),
         usuario_carga = user_operator_cetecsm,
         persona_cetecsm_llamada = persona_cetecsm_3
