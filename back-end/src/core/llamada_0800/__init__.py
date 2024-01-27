@@ -1,12 +1,12 @@
 from src.core.database import db
-from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
+from src.core.llamada_0800.llamada_0800 import Llamada0800
 from src.core.llamada_0800.llamada_0800 import MotivoDeLaConsulta, ComoUbico, DetalleMotivoConsulta
 
-def create_llamada_cetecsm(**kwargs):
-    llamada_cetecsm = LlamadaCetecsm(**kwargs)
-    db.session.add(llamada_cetecsm)
+def create_llamada_0800(**kwargs):
+    llamada_0800 = Llamada0800(**kwargs)
+    db.session.add(llamada_0800)
     db.session.commit()
-    return llamada_cetecsm
+    return llamada_0800
 
 def create_motivo_consulta(**kwargs):
     motivo_consulta = MotivoDeLaConsulta(**kwargs)

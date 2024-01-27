@@ -38,7 +38,7 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_motivos_consulta
+from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_motivos_consulta, create_llamada_0800
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -422,3 +422,41 @@ def crear_llamada_0800():
     data = request.get_json()
     llamada = data['llamada']
     print(llamada)
+
+    create_llamada_0800(
+        motivo_nombre = llamada['motivo_consulta'],
+        como_ubico_forma = llamada['como_ubico'],
+        como_ubico_otro = llamada['como_ubico_otro'],
+        municipio_nombre = llamada['municipio'],
+        sujeto = llamada['sujeto'],
+        edad = llamada['edad'],
+        identidad_genero_tipo = llamada['identidad_genero'],
+        identidad_genero_otra = llamada['identidad_genero_otra'],
+        pronombre = llamada['pronombre'],
+        grupo_conviviente = llamada['grupo_conviviente'],
+        grupo_conviviente_otro = llamada['grupo_conviviente_otro'],
+        detalle_motivo_motivo = llamada['detalle_motivo_consulta'],
+        # Cargar el malestares emocionales
+        malestares_emocionales_otro = llamada['malestares_emocionales_otro'],
+        # Cargar situaciones de vulnerabilidad
+        definicion = llamada['definicion'],
+        intervencion_sugerida = llamada['intervencion_sugerida'],
+        motivo_derivacion_tipo = llamada['motivo_derivacion'],
+        motivo_derivacion_otro = llamada['motivo_derivacion_otro'],
+        nombre = llamada['nombre'],
+        apellido = llamada['apellido'],
+        dni = llamada['dni'],
+        # Cargar telefonos
+        # Cargar emails
+        domicilio = llamada['domicilio'],
+        nacionalidad = llamada['nacionalidad'],
+        nacimiento = llamada['nacimiento'],
+        detalle_intervencion = llamada['detalle'],
+        duracion = llamada['duracion'],
+        demanda_tratamiento = llamada['demanda_tratamiento'],
+        email_operador = llamada['email_operador']
+    )
+    
+    resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp

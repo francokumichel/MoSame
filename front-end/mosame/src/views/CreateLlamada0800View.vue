@@ -17,6 +17,13 @@
                     </option>
                 </select>
             </div>
+            <div v-if="llamada.como_ubico == 'Otros'" class="mb-3">
+                <label for="como_ubico_otro" class="col-form-label fw-semibold">Indique otra forma:</label>
+                <input v-model="llamada.como_ubico_otro" type="text" id="como_ubico_otro" class="form-control border border-dark-subtle" required />
+                <div class="invalid-feedback">
+                    Por favor, ingresa otra identidad de genero.
+                </div>
+            </div>
             <div class="mb-3">
                 <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
                 <select class="form-select border border-dark-subtle" v-model.lazy="llamada.municipio" aria-label="Default select example">
@@ -50,7 +57,7 @@
             </div>
             <div v-if="llamada.identidad_genero == 'Otra identidad'" class="mb-3">
                 <label for="identidad_genero_otro" class="col-form-label fw-semibold">Indique otra identidad de género:</label>
-                <input v-model="llamada.identidad_genero_otra" type="text" id="identidad_genero_otro" class="form-control shadow-sm" required />
+                <input v-model="llamada.identidad_genero_otra" type="text" id="identidad_genero_otro" class="form-control border border-dark-subtle" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa otra identidad de genero.
                 </div>
@@ -247,6 +254,7 @@ export default {
             llamada: {
                 motivo_consulta: '',
                 como_ubico: '',
+                como_ubico_otro: '',
                 municipio: '',
                 sujeto: '',
                 edad: '',
@@ -417,7 +425,7 @@ export default {
             const form = this.$refs.formulario;
             if (form.checkValidity()) {
                 try {
-                    await apiService.post(import.meta.env.VITE_API_URL + "cetecsm/llamada/crear/" + this.$route.params.id, 
+                    await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear", 
                     {
                         llamada: this.llamada,
                     })
