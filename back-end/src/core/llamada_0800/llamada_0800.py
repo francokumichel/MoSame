@@ -91,4 +91,4 @@ class Llamada0800(db.Model):
     duracion = db.Column(db.String(50), nullable=False)
     demanda_tratamiento = db.Column(db.Boolean, nullable=False)
     email_operador = db.Column(db.String(100), nullable=False)
-    fecha_y_hora_carga = db.Column(db.Datetime, nullable=False)
+    fecha_y_hora_carga = db.Column(db.DateTime, default=func.current_timestamp())

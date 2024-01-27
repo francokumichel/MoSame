@@ -412,3 +412,13 @@ def get_index_como_ubico():
 def get_index_detalle_motivos_consulta():
     motivos = list_detalles_motivo_consulta()
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
+
+@cetecsm_blueprint.post("llamada_0800/crear")
+@jwt_required()
+def crear_llamada_0800():
+    """ Función que permite a un usuario Operador del 0800 cargar una llamada """
+    current_user = get_jwt_identity()
+    user = get_user(current_user)    
+    data = request.get_json()
+    llamada = data['llamada']
+    print(llamada)
