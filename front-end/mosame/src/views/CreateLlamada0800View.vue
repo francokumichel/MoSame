@@ -17,9 +17,10 @@
                     </option>
                 </select>
             </div>
+            <p class="color-red">VOLER A PONER EL REQUIRED</p>
             <div v-if="llamada.como_ubico == 'Otros'" class="mb-3">
                 <label for="como_ubico_otro" class="col-form-label fw-semibold">Indique otra forma:</label>
-                <input v-model="llamada.como_ubico_otro" type="text" id="como_ubico_otro" class="form-control border border-dark-subtle" required />
+                <input v-model="llamada.como_ubico_otro" type="text" id="como_ubico_otro" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa otra identidad de genero.
                 </div>
@@ -202,16 +203,18 @@
                     Por favor, selecciona una fecha válida.
                 </div>
             </div>
+            <p class="color-red">VOLER A PONER EL REQUIRED</p>
             <div class="mb-3">
                 <label for="detalle" class="col-form-label fw-semibold">Detalle de la intervención:</label>
-                <input v-model="llamada.detalle" type="text" id="detalle" class="form-control border border-dark-subtle" required />
+                <input v-model="llamada.detalle" type="text" id="detalle" class="form-control border border-dark-subtle"  />
                 <div class="invalid-feedback">
                     Por favor, ingrese un breve detalle de la llamada.
                 </div>
             </div>
+            <p class="color-red">VOLER A PONER EL REQUIRED</p>
             <div class="mb-3">
                 <label for="duracion" class="col-form-label fw-semibold">Duración aproximada de la llamada:</label>
-                <input v-model="llamada.duracion" type="text" id="duracion" class="form-control border border-dark-subtle" required />
+                <input v-model="llamada.duracion" type="text" id="duracion" class="form-control border border-dark-subtle"  />
                 <div class="invalid-feedback">
                     Por favor, ingrese la duración aproximada de la llamada.
                 </div>
@@ -409,26 +412,27 @@ export default {
                 console.log(e)
                 this.errores.push(e);
             })
+    },
+
+    methods: {
+        async registrarLlamada() {
             
-        await apiService.get(import.meta.env.VITE_API_URL + "mot_grales_derivacion")
+            await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear2",
+                {
+                    llamada: this.llamada,
+                })
             .then((response) => {
-                this.motivos_grales_derivacion = response.data;
+                console.log('llego')
+                console.log(response)
             })
             .catch((e) => {
                 console.log(e)
                 this.errores.push(e);
             })
-    },
-
-    methods: {
-        async registrarLlamada() {
-            const form = this.$refs.formulario;
+            /*const form = this.$refs.formulario;
             if (form.checkValidity()) {
                 try {
-                    await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear", 
-                    {
-                        llamada: this.llamada,
-                    })
+                    await apiService.get(import.meta.env.VITE_API_URL + "llamada_0800/crear2")
                     .then((response) => {
                         if(response.status == 200) {
                             displaySuccess(this.$toast, "Llamada creada exitosamente");
@@ -442,7 +446,7 @@ export default {
             } else {
                 console.log('Formulario no válido. Realiza acciones adicionales...');
                 form.classList.add('was-validated');
-            }    
+            }*/
         },
 
         actualizarLista(lista, elemento) {

@@ -413,10 +413,64 @@ def get_index_detalle_motivos_consulta():
     motivos = list_detalles_motivo_consulta()
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
 
+@api_blueprint.post("llamada_0800/crear2")
+# @jwt_required()
+def crear_llamada_08002():
+    """ Función que permite a un usuario Operador del 0800 cargar una llamada """
+    # current_user = get_jwt_identity()
+    # user = get_user(current_user)
+    data = request.get_json()
+    llamada = data['llamada']
+    print(llamada)
+
+    create_llamada_0800(
+        motivo_nombre = 'motivo_consulta',
+        como_ubico_forma = 'como_ubico',
+        como_ubico_otro = 'como_ubico_otro',
+        municipio_nombre = 'municipio',
+        sujeto = 'sujeto',
+        edad = 'edad',
+        identidad_genero_tipo = 'identidad_genero',
+        identidad_genero_otra = 'identidad_genero_otra',
+        pronombre = 'pronombre',
+        grupo_conviviente = 'grupo_conviviente',
+        grupo_conviviente_otro = 'grupo_conviviente_otro',
+        detalle_motivo_motivo = 'detalle_motivo_consulta',
+        # Cargar el malestares emocionales
+        malestares_emocionales_otro = 'malestares_emocionales_otro',
+        # Cargar situaciones de vulnerabilidad
+        definicion = 'definicion',
+        intervencion_sugerida = 'intervencion_sugerida',
+        motivo_derivacion_tipo = 'motivo_derivacion',
+        motivo_derivacion_otro = 'motivo_derivacion_otro',
+        nombre = 'nombre',
+        apellido = 'apellido',
+        dni = 'dni',
+        # Cargar telefonos
+        # Cargar emails
+        domicilio = 'domicilio',
+        nacionalidad = 'nacionalidad',
+        nacimiento = 'nacimiento',
+        detalle_intervencion = 'detalle',
+        duracion = 'duracion',
+        demanda_tratamiento = True,
+        email_operador = 'email_operador'
+    )
+    persona_cetecsm = create_persona_cetecsm(
+        dni='12345678',
+        dio_consentimiento=True,
+        municipio_id='Azul',
+        nombre='nombre',
+        apellido='apellido',
+        edad='12',
+        telefono='12345678',
+        telefono_alternativo='12345678'
+    )
+    return make_response(jsonify(llamada)), 200
+
 @cetecsm_blueprint.post("llamada_0800/crear")
 @jwt_required()
 def crear_llamada_0800():
-    """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     current_user = get_jwt_identity()
     user = get_user(current_user)    
     data = request.get_json()
