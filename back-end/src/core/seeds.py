@@ -355,9 +355,9 @@ def run():
         grupo_conviviente = 'Solo',
         grupo_conviviente_otro = '',
         detalle_motivo_motivo = 'Consumo Problemático',
-        # Cargar el malestares emocionales
+        malestares_emocionales = '',
         malestares_emocionales_otro = '',
-        # Cargar situaciones de vulnerabilidad
+        situaciones_vulnerabilidad = '',
         definicion = 'Intervención finalizada',
         intervencion_sugerida = '',
         motivo_derivacion = '',
@@ -365,8 +365,8 @@ def run():
         nombre = 'Anabella',
         apellido = 'Grugs',
         dni = '12345678',
-        # Cargar telefonos
-        # Cargar emails
+        telefonos = '',
+        emails = '',
         domicilio = 'En algún lugar',
         nacionalidad = 'Argentina',
         nacimiento = '',

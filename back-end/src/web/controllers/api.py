@@ -413,55 +413,12 @@ def get_index_detalle_motivos_consulta():
     motivos = list_detalles_motivo_consulta()
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
 
-@api_blueprint.post("llamada_0800/crear2")
+@api_blueprint.post("llamada_0800/crear")
 # @jwt_required()
 def crear_llamada_08002():
     """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     # current_user = get_jwt_identity()
     # user = get_user(current_user)
-    data = request.get_json()
-    llamada = data['llamada']
-    print(llamada)
-
-    create_llamada_0800(
-        motivo_nombre = llamada['motivo_consulta'],
-        como_ubico_forma = llamada['como_ubico'],
-        como_ubico_otro = '',
-        municipio = 'Azul',
-        sujeto = 'Propia',
-        edad = '18',
-        identidad_genero = 'Mujer',
-        identidad_genero_otra = '',
-        pronombre = 'Ella',
-        grupo_conviviente = 'Solo',
-        grupo_conviviente_otro = '',
-        detalle_motivo_consulta = 'Consumo Problemático',
-        # Cargar el malestares emocionales
-        malestares_emocionales_otro = '',
-        # Cargar situaciones de vulnerabilidad
-        definicion = 'Intervención finalizada',
-        intervencion_sugerida = '',
-        motivo_derivacion_otro = '',
-        nombre = 'Anabella',
-        apellido = 'Grugs',
-        dni = '12345678',
-        # Cargar telefonos
-        # Cargar emails
-        domicilio = 'En algún lugar',
-        nacionalidad = 'Argentina',
-        nacimiento = '',
-        detalle_intervencion = 'Hablamos',
-        duracion = 'Como 20 mins',
-        demanda_tratamiento = True,
-        email_operador = 'Operador0800@gmail.com'
-    )
-    return make_response(jsonify(llamada)), 200
-
-@cetecsm_blueprint.post("llamada_0800/crear")
-@jwt_required()
-def crear_llamada_0800():
-    current_user = get_jwt_identity()
-    user = get_user(current_user)    
     data = request.get_json()
     llamada = data['llamada']
     print(llamada)
@@ -479,18 +436,18 @@ def crear_llamada_0800():
         grupo_conviviente = llamada['grupo_conviviente'],
         grupo_conviviente_otro = llamada['grupo_conviviente_otro'],
         detalle_motivo_motivo = llamada['detalle_motivo_consulta'],
-        # Cargar el malestares emocionales
+        malestares_emocionales = llamada['malestares_emocionales'],
         malestares_emocionales_otro = llamada['malestares_emocionales_otro'],
-        # Cargar situaciones de vulnerabilidad
+        situaciones_vulnerabilidad = llamada['situaciones_vulnerabilidad'],
         definicion = llamada['definicion'],
         intervencion_sugerida = llamada['intervencion_sugerida'],
-        motivo_derivacion_tipo = llamada['motivo_derivacion'],
+        motivo_derivacion = llamada['motivo_derivacion'],
         motivo_derivacion_otro = llamada['motivo_derivacion_otro'],
         nombre = llamada['nombre'],
         apellido = llamada['apellido'],
         dni = llamada['dni'],
-        # Cargar telefonos
-        # Cargar emails
+        telefonos = '',
+        emails = '',
         domicilio = llamada['domicilio'],
         nacionalidad = llamada['nacionalidad'],
         nacimiento = llamada['nacimiento'],

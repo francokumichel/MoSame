@@ -267,7 +267,7 @@ export default {
                 grupo_conviviente:'',
                 grupo_conviviente_otro:'',
                 detalle_motivo_consulta: '',
-                malestares_emocionales: [],
+                malestares_emocionales: '',
                 malestares_emocionales_otro: '',
                 situaciones_vulnerabilidad: [],
                 definicion: '',
@@ -279,10 +279,10 @@ export default {
                 dni: '',
                 domicilio: '',
                 nacionalidad: '',
-                nacimiento: null,
+                nacimiento: '',
                 detalle: '',
                 duracion: '',
-                demanda_tratamiento: '',
+                demanda_tratamiento: true,
                 email_operador: store.state.email
             },
 
@@ -412,12 +412,21 @@ export default {
                 console.log(e)
                 this.errores.push(e);
             })
+
+        await apiService.get(import.meta.env.VITE_API_URL + "mot_grales_derivacion")
+            .then((response) => {
+                this.motivos_grales_derivacion = response.data;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            })
     },
 
     methods: {
         async registrarLlamada() {
             
-            await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear2",
+            await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear",
                 {
                     llamada: this.llamada,
                 })
