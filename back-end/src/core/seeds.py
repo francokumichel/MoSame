@@ -341,4 +341,39 @@ def run():
     llamada_0800.create_detalle_motivo_consulta(motivo="Otras violencias")
     llamada_0800.create_detalle_motivo_consulta(motivo="Malestar emocional")
 
+    # Carga una llamada de prueba
+    llamada_0800.create_llamada_0800(
+        motivo_nombre = 'Asistencia en Salud Mental',
+        como_ubico_forma = 'Búsqueda en Internet',
+        como_ubico_otro = '',
+        municipio_nombre = 'Azul',
+        sujeto = 'Propia',
+        edad = '18',
+        identidad_genero_tipo = 'Mujer',
+        identidad_genero_otra = '',
+        pronombre = 'Ella',
+        grupo_conviviente = 'Solo',
+        grupo_conviviente_otro = '',
+        detalle_motivo_motivo = 'Consumo Problemático',
+        # Cargar el malestares emocionales
+        malestares_emocionales_otro = '',
+        # Cargar situaciones de vulnerabilidad
+        definicion = 'Intervención finalizada',
+        intervencion_sugerida = '',
+        motivo_derivacion = '',
+        motivo_derivacion_otro = '',
+        nombre = 'Anabella',
+        apellido = 'Grugs',
+        dni = '12345678',
+        # Cargar telefonos
+        # Cargar emails
+        domicilio = 'En algún lugar',
+        nacionalidad = 'Argentina',
+        nacimiento = '',
+        detalle_intervencion = 'Hablamos',
+        duracion = 'Como 20 mins',
+        demanda_tratamiento = True,
+        email_operador = 'Operador0800@gmail.com'
+    )
+
     print("Seeds cargados!")

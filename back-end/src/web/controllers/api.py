@@ -424,47 +424,36 @@ def crear_llamada_08002():
     print(llamada)
 
     create_llamada_0800(
-        motivo_nombre = 'motivo_consulta',
-        como_ubico_forma = 'como_ubico',
-        como_ubico_otro = 'como_ubico_otro',
-        municipio_nombre = 'municipio',
-        sujeto = 'sujeto',
-        edad = 'edad',
-        identidad_genero_tipo = 'identidad_genero',
-        identidad_genero_otra = 'identidad_genero_otra',
-        pronombre = 'pronombre',
-        grupo_conviviente = 'grupo_conviviente',
-        grupo_conviviente_otro = 'grupo_conviviente_otro',
-        detalle_motivo_motivo = 'detalle_motivo_consulta',
+        motivo_nombre = llamada['motivo_consulta'],
+        como_ubico_forma = llamada['como_ubico'],
+        como_ubico_otro = '',
+        municipio = 'Azul',
+        sujeto = 'Propia',
+        edad = '18',
+        identidad_genero = 'Mujer',
+        identidad_genero_otra = '',
+        pronombre = 'Ella',
+        grupo_conviviente = 'Solo',
+        grupo_conviviente_otro = '',
+        detalle_motivo_consulta = 'Consumo Problemático',
         # Cargar el malestares emocionales
-        malestares_emocionales_otro = 'malestares_emocionales_otro',
+        malestares_emocionales_otro = '',
         # Cargar situaciones de vulnerabilidad
-        definicion = 'definicion',
-        intervencion_sugerida = 'intervencion_sugerida',
-        motivo_derivacion_tipo = 'motivo_derivacion',
-        motivo_derivacion_otro = 'motivo_derivacion_otro',
-        nombre = 'nombre',
-        apellido = 'apellido',
-        dni = 'dni',
+        definicion = 'Intervención finalizada',
+        intervencion_sugerida = '',
+        motivo_derivacion_otro = '',
+        nombre = 'Anabella',
+        apellido = 'Grugs',
+        dni = '12345678',
         # Cargar telefonos
         # Cargar emails
-        domicilio = 'domicilio',
-        nacionalidad = 'nacionalidad',
-        nacimiento = 'nacimiento',
-        detalle_intervencion = 'detalle',
-        duracion = 'duracion',
+        domicilio = 'En algún lugar',
+        nacionalidad = 'Argentina',
+        nacimiento = '',
+        detalle_intervencion = 'Hablamos',
+        duracion = 'Como 20 mins',
         demanda_tratamiento = True,
-        email_operador = 'email_operador'
-    )
-    persona_cetecsm = create_persona_cetecsm(
-        dni='12345678',
-        dio_consentimiento=True,
-        municipio_id='Azul',
-        nombre='nombre',
-        apellido='apellido',
-        edad='12',
-        telefono='12345678',
-        telefono_alternativo='12345678'
+        email_operador = 'Operador0800@gmail.com'
     )
     return make_response(jsonify(llamada)), 200
 
