@@ -15,6 +15,7 @@ import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetec
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
 import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
 import store from "@/store";
+import { displayError } from "@/services/handlers.js"
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,106 +29,127 @@ const router = createRouter({
             path: "/users",
             name: "users",
             component: UsersView,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Administrador"] },
         },
         {
             path:"/users/create",
             name: "users-create",
             component: FormUsers,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Administrador"] },
         },
         {
             path:"/users/update/:id",
             name: "users-update",
             component: FormUsers,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Administrador"] },
         },
         {
             path:"/cetecsm/derivaciones",
             name: "cetecsm-derivaciones",
             component: PersonasCetecsm,
-            meta: { requiresAuth: true }, 
+            meta: { requiresAuth: true, roles: ["Operador CETECSM"] }, 
         },
         {
             path:"/cetecsm/derivacion/create",
             name: "cetecsm-derivacion-create",
             component: CreateDerivacionView,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Operador CETECSM"] },
         },
         {
             path:"/cetecsm/asignaciones/:id(\\d+)?",
             name: "cetecsm-asignaciones",
             component: PersonasCetecsmAsignadas,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },             
         },
         {
             path:"/cetecsm/persona/perfil/:id",
             name: "cetecsm-perfil-persona",
             component: PerfilPersonaCetecsm,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },             
         },
         {
             path:"/cetecsm/persona/llamadas/:id",
             name: "cetecsm-persona-llamadas",
             component: PersonaCetecsmLlamadas,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },             
         },
         {
             path:"/cetecsm/persona/editar/:id",
             name: "cetecsm-editar-persona",
             component: EditarPersonaCetecsmAsignada,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM"] },             
         },
         {
             path:"/cetecsm/llamada/crear/:id",
             name: "cetecsm-crear-llamada",
             component: CreateLlamadaCetecsm,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },             
         },
         {
             path:"/cetecsm/operadores",
             name: "cetecsm-operadores",
             component: OperadoresCetecsm,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Coordinador CETECSM"] },             
         },
         {
             path:"/cetecsm/personas/asignadas_todas",
             name: "cetecsm-personas-asignadas-todas",
             component: PersonasAsignadasTodasCetecsm,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Coordinador CETECSM"] },             
         },
         {
             path:"/observatorio/personas_cetecsm_derivadas",
             name: "observatorio-personas-cetecsm-derivadas",
             component: PersonasCetecsmDerivadas,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
         },
         {
             path:"/observatorio/personas_cetecsm_seguimiento",
             name: "observatorio-personas-cetecsm-seguimiento",
             component: PersonasCetecsmSeguimiento,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
         },
         {
             path:"/observatorio/cantidad_llamadas_cetecsm",
             name: "observatorio-cantidad-llamadas-cetecsm",
             component: CantidadLlamadasCetecsm,
-            meta: { requiresAuth: true },             
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
         },
     ],
 });
 
-router.beforeEach((to, from, next) => {
-    if (to.matched.some((route) => route.meta.requiresAuth)) {
-        if (!store.state.token) {
-            next("/login");
-        } else {
-            next();
-        }
-    } else {
-        next();
+function hasPermission(route, userRoles) {
+    if (!route.meta.roles || route.meta.roles.length === 0) {
+        // La ruta no tiene restricciones de roles, por lo que se permite el acceso
+        return true;
     }
+
+    return route.meta.roles.some((role) => userRoles.includes(role));
+}
+
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
+
+    if (requiresAuth) {
+        // Verificar la autenticación
+        if (!store.getters.isAuthenticated) {
+            next("/login");
+            return;
+        }
+
+        // Verificar los roles
+        const userRoles = store.getters.userRole;
+        if (!hasPermission(to, userRoles)) {
+            // El usuario no tiene permisos para acceder a la ruta
+            displayError(toast, "No estas autorizado a acceder a esta ruta");
+            next("/login");
+            return;
+        }
+    }
+
+    next();
 });
+
 
 export default router
 
