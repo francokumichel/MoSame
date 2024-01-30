@@ -4,6 +4,7 @@
             <div class="mb-3">
                 <label for="motivo_de_consulta" class="col-form-label fw-semibold">Motivo de la consulta:</label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.motivo_consulta" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in motivos" :key="key" :value="value.nombre">
                         {{ value.nombre }}
                     </option>
@@ -12,6 +13,7 @@
             <div class="mb-3">
                 <label for="como_ubico" class="col-form-label fw-semibold">¿Cómo nos ubicaste?:</label>
                 <select class="form-select border border-dark-subtle" v-model.lazy="llamada.como_ubico" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in formas_ubico" :key="key" :value="value.forma">
                         {{ value.forma }}
                     </option>
@@ -27,6 +29,7 @@
             <div class="mb-3">
                 <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
                 <select class="form-select border border-dark-subtle" v-model.lazy="llamada.municipio" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in municipios" :key="key" :value="value.nombre">
                         {{ value.nombre }}
                     </option>
@@ -35,6 +38,7 @@
             <div class="mb-3">
                 <label for="sujeto" class="col-form-label fw-semibold">Sujeto de la consulta:</label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.sujeto" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in sujetos" :key="key" :value="value">
                         {{ value }}
                     </option>
@@ -42,7 +46,7 @@
             </div>
             <div class="mb-3">
                 <label for="edad" class="col-form-label fw-semibold">Edad:</label>
-                <input v-model="llamada.edad" type="number" min="0" max="120" id="edad" class="form-control border border-dark-subtle"/>
+                <input placeholder="Ingrese una edad en el rango de 0 a 120" v-model="llamada.edad" type="number" min="0" max="120" id="edad" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese una edad en el rango de 0 a 120.
                 </div>
@@ -50,6 +54,7 @@
             <div class="mb-3">
                 <label for="identidad_genero" class="col-form-label fw-semibold">Identidad de género:</label>
                 <select class="form-select border border-dark-subtle" v-model="llamada.identidad_genero" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="genero in generos" :key="genero" :value="genero.tipo">
                         {{ genero.tipo }}
                     </option>
@@ -65,6 +70,7 @@
             <div class="mb-3">
                 <label for="pronombre" class="col-form-label fw-semibold">Pronombre:</label>
                 <select class="form-select border border-dark-subtle" v-model.lazy="llamada.pronombre" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in pronombres" :key="key" :value="value">
                         {{ value }}
                     </option>
@@ -73,6 +79,7 @@
             <div class="mb-3">
                 <label for="grupo_conviviente" class="col-form-label fw-semibold">Grupo conviviente:</label>
                 <select class="form-select border border-dark-subtle" v-model.lazy="llamada.grupo_conviviente" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in grupos" :key="key" :value="value">
                         {{ value }}
                     </option>
@@ -88,6 +95,7 @@
             <div class="mb-3">
                 <label for="detalle_motivo_consulta" class="col-form-label fw-semibold">Detalle del motivo de la consulta:</label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.detalle_motivo_consulta" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="detalle in detalle_motivos" :key="detalle.motivo" :value="detalle.motivo">
                         {{ detalle.motivo }}
                     </option>
@@ -129,6 +137,7 @@
             <div class="mb-3">
                 <label for="definicion" class="col-form-label fw-semibold">Definición del llamado:</label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.definicion" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in definiciones" :key="key" :value="value">
                         {{ value }}
                     </option>
@@ -137,7 +146,8 @@
             <div v-if="llamada.definicion == 'Derivación a CETEC SM'">
                 <div class="mb-3">
                     <label for="intervencion_sugerida" class="col-form-label fw-semibold">Intervención sugerida:</label>
-                    <select requiered class="form-select border border-dark-subtle" v-model.lazy="llamada.intervencion_sugerida" aria-label="Default select example">
+                    <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.intervencion_sugerida" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                         <option v-for="(value, key) in intervenciones" :key="key" :value="value">
                             {{ value }}
                         </option>
@@ -145,7 +155,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="motivo_derivacion" class="col-form-label fw-semibold">Motivo general de la derivación:</label>
-                    <select class="form-select border border-dark-subtle" v-model="llamada.motivo_derivacion" aria-label="Default select example">
+                    <select required class="form-select border border-dark-subtle" v-model="llamada.motivo_derivacion" aria-label="Default select example">
+                    <option hidden disabled value="">Seleccione una opción</option>
                         <option v-for="motivo in motivos_grales_derivacion" :key="motivo" :value="motivo.tipo">
                             {{ motivo.tipo }}
                         </option>
@@ -153,7 +164,7 @@
                 </div>
                 <div v-if="llamada.motivo_derivacion == 'Otro'" class="mb-4">
                     <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación:</label>
-                    <input v-model="llamada.motivo_derivacion_otro" type="text" id="otro_mot_gral_derivacion" class="form-control border border-dark-subtle"/>
+                    <input required v-model="llamada.motivo_derivacion_otro" type="text" id="otro_mot_gral_derivacion" class="form-control border border-dark-subtle"/>
                     <div class="invalid-feedback">
                         Por favor, ingrese otro tipo de motivo general de derivación.
                     </div>
@@ -161,30 +172,36 @@
             </div>
             <div class="mb-3">
                 <label for="nombre" class="col-form-label fw-semibold">Nombre:</label>
-                <input v-model="llamada.nombre" type="text" id="nombre" class="form-control border border-dark-subtle"/>
+                <input placeholder="Ingrese un nombre" v-model="llamada.nombre" type="text" id="nombre" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa un el nombre de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="apellido" class="col-form-label fw-semibold">Apellido:</label>
-                <input v-model="llamada.apellido" type="text" id="apellido" class="form-control border border-dark-subtle"/>
+                <input placeholder="Ingrese un apellido" v-model="llamada.apellido" type="text" id="apellido" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa el apellido de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="dni" class="col-form-label fw-semibold">DNI:</label>
-                <input v-model="llamada.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control border border-dark-subtle" />
+                <input placeholder="Ingrese un DNI" v-model="llamada.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control border border-dark-subtle" />
                 <div class="invalid-feedback">
                     El DNI debe ingresarse sin puntos y contener entre 7 y 8 dígitos.
                 </div>
             </div>
-            <!-- HACER LA CARGA DE TELÉFONO Y MAIL DE CONTACTO -->
             <div class="mb-3">
                 <label for="emails" class="col-form-label fw-semibold">Emails:</label>
                 <div v-for="(email, index) in llamada.emails" :key="index" class="d-flex">
-                    <input class="form-control border border-dark-subtle mb-2" type="text" :value="email" @input.prevent="updateEmail(index, $event.target.value)" placeholder="Correo electrónico" />
+                    <div class="d-flex">
+                        <input class="form-control border border-dark-subtle mb-2" type="text" :value="email.email" @input.prevent="updateEmail(index, $event.target.value)" placeholder="Correo electrónico" />
+                        <select class="form-select ms-2 mb-2" v-model="email.propietario">
+                            <option hidden disabled value="">Seleccione una opción</option>
+                            <option value="Propio">Propio</option>
+                            <option value="Tercero">Tercero</option>
+                        </select>
+                    </div>
                     <button class="btn btn-secondary ms-2 mb-2" @click.prevent="removeEmail(index)" v-if="index > 0">-</button>
                     <button class="btn btn-primary ms-2 mb-2" @click.prevent="addEmail(index)" v-if="index === llamada.emails.length - 1">+</button>
                 </div>
@@ -192,38 +209,40 @@
             <div class="mb-3">
                 <label for="telefonos" class="col-form-label fw-semibold">Telefonos:</label>
                 <div v-for="(telefono, index) in llamada.telefonos" :key="index" class="d-flex mb-2">
-                <div class="d-flex">
-                    <input class="form-control border border-dark-subtle" type="text" v-model="telefono.numero" placeholder="Número de teléfono" />
-                    <select class="form-select ms-2" v-model="telefono.tipo">
-                    <option value="movil">Móvil</option>
-                    <option value="fijo">Fijo</option>
-                    </select>
-                    <select class="form-select ms-2" v-model="telefono.propietario">
-                    <option value="propio">Propio</option>
-                    <option value="tercero">Tercero</option>
-                    </select>
-                </div>
-                <button class="btn btn-secondary ms-2" @click.prevent="removeTelefono(index)" v-if="index > 0">-</button>
-                <button class="btn btn-primary ms-2" @click.prevent="addTelefono(index)" v-if="index === llamada.telefonos.length - 1">+</button>
+                    <div class="d-flex">
+                        <input class="form-control border border-dark-subtle mb-2" type="text" v-model="telefono.numero" placeholder="Número de teléfono" />
+                        <select class="form-select ms-2 mb-2" v-model="telefono.tipo">
+                            <option hidden disabled value="">Seleccione una opción</option>
+                            <option value="Móvil">Móvil</option>
+                            <option value="Fijo">Fijo</option>
+                        </select>
+                        <select class="form-select ms-2 mb-2" v-model="telefono.propietario">
+                            <option hidden disabled value="">Seleccione una opción</option>
+                            <option value="Propio">Propio</option>
+                            <option value="Tercero">Tercero</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary ms-2 mb-2" @click.prevent="removeTelefono(index)" v-if="index > 0">-</button>
+                    <button class="btn btn-primary ms-2 mb-2" @click.prevent="addTelefono(index)" v-if="index === llamada.telefonos.length - 1">+</button>
                 </div>
             </div>
             <div class="mb-4">
                 <label for="domicilio" class="col-form-label fw-semibold">Domicilio:</label>
-                <input v-model="llamada.domicilio" type="text" id="domicilio" class="form-control border border-dark-subtle"/>
+                <input placeholder="Ingrese un domicilio" v-model="llamada.domicilio" type="text" id="domicilio" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese un domicilio.
                 </div>
             </div>
             <div class="mb-4">
                 <label for="nacionalidad" class="col-form-label fw-semibold">Nacionalidad:</label>
-                <input v-model="llamada.nacionalidad" type="text" id="nacionalidad" class="form-control border border-dark-subtle"/>
+                <input placeholder="Ingrese una nacionalidad" v-model="llamada.nacionalidad" type="text" id="nacionalidad" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese una nacionalidad.
                 </div>
             </div>
             <div class="mb-3 has-validation">
                 <label for="fecha" class="col-form-label fw-semibold">Fecha de nacimiento:</label>
-                <input v-model="llamada.nacimiento" type="date" id="fecha" class="form-control border border-dark-subtle"/>
+                <input :max="hoyFechaFormateada()" v-model="llamada.nacimiento" type="date" id="fecha" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, selecciona una fecha válida.
                 </div>
@@ -297,8 +316,8 @@ export default {
                 nombre: '',
                 apellido: '',
                 dni: '',
-                emails: [""],
-                telefonos: [{ numero: '', tipo: 'movil', propietario: 'propio' }],
+                emails: [{email: '', propietario: 'Propio'}],
+                telefonos: [{ numero: '', tipo: 'Móvil', propietario: 'Propio' }],
                 domicilio: '',
                 nacionalidad: '',
                 nacimiento: '',
@@ -326,6 +345,8 @@ export default {
     },
 
     async created() {
+
+        this.llamada.nacimiento = this.hoyFechaFormateada();
         
         await apiService.get(import.meta.env.VITE_API_URL + "motivos_consulta")
             .then((response) => {
@@ -503,8 +524,8 @@ export default {
         
         addEmail(index) {
             // Agrega un nuevo input solo si el último input tiene un valor
-            if (this.llamada.emails[index].trim() !== '') {
-                this.llamada.emails.push('');
+            if (this.llamada.emails[index].email.trim() !== '') {
+                this.llamada.emails.push({email: '', propietario: 'Propio'});
             }
         },
 
@@ -517,7 +538,7 @@ export default {
 
         updateEmail(index, value) {
             // Actualiza el valor del correo electrónico manualmente
-            this.llamada.emails[index] = value;
+            this.llamada.emails[index].email = value;
         },
 
         addTelefono(index) {
@@ -532,6 +553,14 @@ export default {
             if (this.llamada.telefonos.length > 1) {
                 this.llamada.telefonos.splice(index, 1);
             }
+        },
+        
+        hoyFechaFormateada() {
+        const hoy = new Date();
+        const mes = hoy.getMonth() + 1; // Los meses en JavaScript se cuentan desde 0
+        const dia = hoy.getDate();
+        const formatoFecha = hoy.getFullYear() + '-' + (mes < 10 ? '0' : '') + mes + '-' + (dia < 10 ? '0' : '') + dia;
+        return formatoFecha;
         }
     }
 }
