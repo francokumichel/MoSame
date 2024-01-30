@@ -181,6 +181,32 @@
                 </div>
             </div>
             <!-- HACER LA CARGA DE TELÉFONO Y MAIL DE CONTACTO -->
+            <div class="mb-3">
+                <label for="emails" class="col-form-label fw-semibold">Emails:</label>
+                <div v-for="(email, index) in llamada.emails" :key="index" class="d-flex">
+                    <input class="form-control border border-dark-subtle mb-2" type="text" :value="email" @input.prevent="updateEmail(index, $event.target.value)" placeholder="Correo electrónico" />
+                    <button class="btn btn-secondary ms-2 mb-2" @click.prevent="removeEmail(index)" v-if="index > 0">-</button>
+                    <button class="btn btn-primary ms-2 mb-2" @click.prevent="addEmail(index)" v-if="index === llamada.emails.length - 1">+</button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="telefonos" class="col-form-label fw-semibold">Telefonos:</label>
+                <div v-for="(telefono, index) in llamada.telefonos" :key="index" class="d-flex mb-2">
+                <div class="d-flex">
+                    <input class="form-control border border-dark-subtle" type="text" v-model="telefono.numero" placeholder="Número de teléfono" />
+                    <select class="form-select ms-2" v-model="telefono.tipo">
+                    <option value="movil">Móvil</option>
+                    <option value="fijo">Fijo</option>
+                    </select>
+                    <select class="form-select ms-2" v-model="telefono.propietario">
+                    <option value="propio">Propio</option>
+                    <option value="tercero">Tercero</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary ms-2" @click.prevent="removeTelefono(index)" v-if="index > 0">-</button>
+                <button class="btn btn-primary ms-2" @click.prevent="addTelefono(index)" v-if="index === llamada.telefonos.length - 1">+</button>
+                </div>
+            </div>
             <div class="mb-4">
                 <label for="domicilio" class="col-form-label fw-semibold">Domicilio:</label>
                 <input v-model="llamada.domicilio" type="text" id="domicilio" class="form-control border border-dark-subtle"/>
@@ -271,6 +297,8 @@ export default {
                 nombre: '',
                 apellido: '',
                 dni: '',
+                emails: [""],
+                telefonos: [{ numero: '', tipo: 'movil', propietario: 'propio' }],
                 domicilio: '',
                 nacionalidad: '',
                 nacimiento: '',
@@ -426,6 +454,8 @@ export default {
                                         
                     this.llamada.situaciones_vulnerabilidad = JSON.stringify(this.llamada.situaciones_vulnerabilidad);
                     this.llamada.malestares_emocionales = JSON.stringify(this.llamada.malestares_emocionales);
+                    this.llamada.emails = JSON.stringify(this.llamada.emails);
+                    this.llamada.telefonos = JSON.stringify(this.llamada.telefonos);
                                         
                     await apiService.post(import.meta.env.VITE_API_URL + "llamada_0800/crear",
                         {
@@ -469,6 +499,40 @@ export default {
                 }
             });
         },
+
+        
+        addEmail(index) {
+            // Agrega un nuevo input solo si el último input tiene un valor
+            if (this.llamada.emails[index].trim() !== '') {
+                this.llamada.emails.push('');
+            }
+        },
+
+        removeEmail(index) {
+            // Elimina un input, pero deja al menos un input siempre
+            if (this.llamada.emails.length > 1) {
+                this.llamada.emails.splice(index, 1);
+            }
+        },
+
+        updateEmail(index, value) {
+            // Actualiza el valor del correo electrónico manualmente
+            this.llamada.emails[index] = value;
+        },
+
+        addTelefono(index) {
+            // Agrega un nuevo teléfono solo si el último teléfono tiene un número válido
+            if (this.llamada.telefonos[index].numero.trim() !== '') {
+                this.llamada.telefonos.push({ numero: '', tipo: 'movil', propietario: 'propio' });
+            }
+        },
+
+        removeTelefono(index) {
+            // Elimina un teléfono, pero deja al menos un teléfono siempre
+            if (this.llamada.telefonos.length > 1) {
+                this.llamada.telefonos.splice(index, 1);
+            }
+        }
     }
 }
 </script>
