@@ -43,3 +43,17 @@ def list_detalles_motivo_consulta():
 
 def get_detalle_motivo_consulta(motivo):
     return DetalleMotivoConsulta.query.filter_by(motivo=motivo).first()
+
+def list_llamadas_0800(search_term, page_num, per_page):
+    """ Consulta a la bd y obtiene los egistros paginados de las llamadas del 0800 """
+    if search_term:
+        resultados = Llamada0800.query.filter(
+            (Llamada0800.telefonos.ilike(f"%{search_term}%")) |
+            (Llamada0800.nombre.ilike(f"%{search_term}%")) |
+            (Llamada0800.apellido.ilike(f"%{search_term}%")) |
+            (Llamada0800.dni.ilike(f"%{search_term}%")) |
+            (Llamada0800.municipio_nombre.ilike(f"%{search_term}%"))
+        )
+
+        return resultados.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)
+    return Llamada0800.query.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)

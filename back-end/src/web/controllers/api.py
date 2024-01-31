@@ -39,11 +39,12 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_motivos_consulta, create_llamada_0800
+from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
 from src.core.schemas.motivo_de_la_consulta import motivo_de_la_consulta_schema, motivos_de_la_consulta_schema
+from src.core.schemas.llamada_0800 import llamada_0800_schema, llamadas_0800_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -495,8 +496,24 @@ def crear_llamada_0800():
         
         actualizar_derivacion(nueva_derivacion, motivo_derivacion)
     
-    print('prueba')
-    
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
+
+@api_blueprint.get("0800/llamadas")
+def get_llamadas_0800():
+
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    llamadas_0800 = list_llamadas_0800(search_term=search_term, page_num=page, per_page=per_page)
+
+    data = {
+        "llamadas": llamadas_0800_schema.dump(llamadas_0800),
+        "page": page,
+        "per_page": per_page,
+        "total": llamadas_0800.total
+    }
+
+    return make_response(jsonify(data)), 200
