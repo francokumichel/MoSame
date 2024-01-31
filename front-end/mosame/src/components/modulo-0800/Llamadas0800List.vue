@@ -2,7 +2,7 @@
     <table v-if="llamadas" class="table table-hover">
     <thead class="table-light">
         <tr>
-        <th scope="col">Teléfono</th>
+        <th scope="col">Teléfonos</th>
         <th scope="col">Nombre</th>
         <th scope="col">Apellido</th>
         <th scope="col">DNI</th>
@@ -27,13 +27,13 @@
         <td>{{ llamada.detalle_intervencion }}</td>
         <td>{{ llamada.identidad_genero_tipo }}</td>
         <td>{{ llamada.pronombre }}</td>
-        <!-- <td>
-            <button type="button" class="btn btn-outline-primary btn-sm" @click="asignarPersona(persona.id)" :disabled="persona.esta_asignada">{{ persona.esta_asignada ? 'Ya asignado' : 'Asignarme' }}</button>
-        </td> -->
+        <td>
+            <button v-if="llamada.definicion === 'Derivación a CETEC SM'" type="button" class="btn btn-outline-primary btn-sm">Ver seguimiento</button>
+        </td>
         </tr>
     </tbody>
     </table>
-    <p v-else>No hay derivaciones registradas en el sistema</p>    
+    <p v-else>No hay llamadas cargadas en el sistema</p>    
 </template>
 
 <script>
