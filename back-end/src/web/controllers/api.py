@@ -17,9 +17,11 @@ from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm, obtener_total_llamados_cetecsm, obtener_usuario_por_rol
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
+from src.core.general.municipio import list_municipios
 from src.core.schemas.municipio import municipios_schema
+from src.core.general.region_sanitaria import list_regiones_sanitarias
 from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
 from src.core.schemas.role import roles_schema
 from src.core.derivacion import actualizar_derivacion
@@ -40,6 +42,8 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
+from src.core.modulo_actividades.taller import get_talleres
+from src.core.schemas.taller import talleres_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -49,6 +53,8 @@ user_blueprint = Blueprint("user", __name__, url_prefix="/users")
 roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
 cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm")
 observatorio_blueprint =  Blueprint("observatorio", __name__, url_prefix="/observatorio")
+actividades_blueprint =  Blueprint("actividades", __name__, url_prefix="/actividades")
+
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
@@ -57,6 +63,7 @@ api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(roles_blueprint)
 api_blueprint.register_blueprint(cetecsm_blueprint)
 api_blueprint.register_blueprint(observatorio_blueprint)
+api_blueprint.register_blueprint(actividades_blueprint)
 
 @prueba_blueprint.get("")
 def get_all_pruebas():
@@ -671,3 +678,20 @@ def obtener_operadores_cetecsm():
 
     operadores_cetecsm = obtener_usuario_por_rol(rol="Operador CETECSM")
     return make_response(jsonify(users_schema.dump(operadores_cetecsm)))
+
+@actividades_blueprint.get("talleres")
+def obtener_talleres_actividades():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    tipo_actividad = request.args.get("actividad_seleccionada", default="", type=str)
+
+    talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
+
+    data = {
+        "talleres": talleres_schema.dump(talleres),
+        "page": page,
+        "per_page": per_page,
+        "total": talleres.total
+    }
+
+    return make_response(jsonify(data))

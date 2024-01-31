@@ -24,6 +24,7 @@ class User(db.Model):
     roles = db.relationship("Role", secondary=users_roles, backref="users")
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="usuario_carga")
     personas_cetecsm_asignadas = db.relationship("PersonaCetecsm", backref="usuario_asignado")
+    talleres_cargados = db.relationship("Taller", backref="usuario_carga")
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():

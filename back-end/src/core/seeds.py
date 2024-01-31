@@ -1,3 +1,4 @@
+import pandas as pd
 from datetime import datetime
 from src.core import prueba
 from src.core import users
@@ -7,11 +8,27 @@ from src.core import identidad_genero
 from src.core import motivo_general_acompanamiento
 from src.core import malestar_emocional
 from src.core import situaciones_vulnerabilidad
+from src.core.general import municipio
+from src.core.general import localidad
+from src.core.general import region_sanitaria
 from src.core import persona_cetecsm
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
 from src.core import derivacion
 from src.core import llamada_cetecsm
 from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
+from src.core.modulo_actividades import (
+    actividad,
+    actividades_externas,
+    actividades_internas,
+    año,
+    dispositivo,
+    division,
+    escuela,
+    nivel,
+    taller
+)
+from src.core.modulo_actividades.actividad.actividad import TiposActividades
+from src.core.modulo_actividades.año.anio import Anios
 
 def run():
 
@@ -71,6 +88,19 @@ def run():
     role_coordinator_cetecsm.permissions.append(call_cetecsm_index)
     role_coordinator_cetecsm.permissions.append(call_cetecsm_new)
     role_coordinator_cetecsm.permissions.append(operator_cetecsm_index)
+
+    # Permisos tallerista
+    activity_new = permissions.create_permission(name="activity_new")
+    activity_index = permissions.create_permission(name="activity_index")
+    statistics_show = permissions.create_permission(name="statistics_show")
+
+    role_admin_actividades = permissions.create_role(name="Administrador actividades")
+    role_trabajador_salud = permissions.create_role(name="Trabajador salud")
+
+    role_trabajador_salud.permissions.append(activity_new)
+    role_admin_actividades.permissions.append(activity_index)
+    role_admin_actividades.permissions.append(statistics_show)
+    
 
     # Permisos observatorio
     role_observatorio = permissions.create_role(name="Miembro observatorio")
@@ -141,37 +171,58 @@ def run():
 
     users.update_roles(user_observatorio, [role_observatorio])
 
+    user_trabajador_salud = users.create_user(
+        name="Trabajador salud",
+        last_name="Trabajador salud",
+        email="trabajadorsalud@gmail.com",
+        password="1234"
+    )
+
+    users.update_roles(user_trabajador_salud, [role_trabajador_salud])
+
+    user_admin_actividades = users.create_user(
+        name="Administrador",
+        last_name="Actividades",
+        email="adminactividades@gmail.com",
+        password="1234"
+    )
+
+    users.update_roles(user_admin_actividades, [role_admin_actividades])
+
     # Carga de datos correspondientes a módulo cetecsm
 
     # Carga de tabla de region sanitaria
-    region_1 = persona_cetecsm.create_region_sanitaria(tipo="I")
-    region_2 = persona_cetecsm.create_region_sanitaria(tipo="II")
-    region_3 = persona_cetecsm.create_region_sanitaria(tipo="III")
-    region_4 = persona_cetecsm.create_region_sanitaria(tipo="IV")
-    region_5 = persona_cetecsm.create_region_sanitaria(tipo="V")
-    region_6 = persona_cetecsm.create_region_sanitaria(tipo="VI")
-    region_7 = persona_cetecsm.create_region_sanitaria(tipo="VII")
-    region_8 = persona_cetecsm.create_region_sanitaria(tipo="VIII")
-    region_9 = persona_cetecsm.create_region_sanitaria(tipo="IX")
-    region_10 = persona_cetecsm.create_region_sanitaria(tipo="X")
-    region_11 = persona_cetecsm.create_region_sanitaria(tipo="XI")
-    region_12 = persona_cetecsm.create_region_sanitaria(tipo="XII")
+    region_1 = region_sanitaria.create_region_sanitaria(tipo="I")
+    region_2 = region_sanitaria.create_region_sanitaria(tipo="II")
+    region_3 = region_sanitaria.create_region_sanitaria(tipo="III")
+    region_4 = region_sanitaria.create_region_sanitaria(tipo="IV")
+    region_5 = region_sanitaria.create_region_sanitaria(tipo="V")
+    region_6 = region_sanitaria.create_region_sanitaria(tipo="VI")
+    region_7 = region_sanitaria.create_region_sanitaria(tipo="VII")
+    region_8 = region_sanitaria.create_region_sanitaria(tipo="VIII")
+    region_9 = region_sanitaria.create_region_sanitaria(tipo="IX")
+    region_10 = region_sanitaria.create_region_sanitaria(tipo="X")
+    region_11 = region_sanitaria.create_region_sanitaria(tipo="XI")
+    region_12 = region_sanitaria.create_region_sanitaria(tipo="XII")
 
-    # Carga de tabla de municipios (solo algunos para pruebas)
-    municipio_1 = persona_cetecsm.create_municipio(nombre="Bahía Blanca", region_sanitaria=region_1)
-    municipio_2 = persona_cetecsm.create_municipio(nombre="Daireaux", region_sanitaria=region_2)
-    municipio_3 = persona_cetecsm.create_municipio(nombre="Junín", region_sanitaria=region_3)
-    municipio_4 = persona_cetecsm.create_municipio(nombre="Pergamino", region_sanitaria=region_4)
-    municipio_5 = persona_cetecsm.create_municipio(nombre="Tigre", region_sanitaria=region_5)
-    municipio_6 = persona_cetecsm.create_municipio(nombre="Berazategui", region_sanitaria=region_6)
-    municipio_7 = persona_cetecsm.create_municipio(nombre="General Rodríguez", region_sanitaria=region_7)
-    municipio_8 = persona_cetecsm.create_municipio(nombre="Partido de La Costa", region_sanitaria=region_8)
-    municipio_9 = persona_cetecsm.create_municipio(nombre="Azul", region_sanitaria=region_9)
-    municipio_10 = persona_cetecsm.create_municipio(nombre="Mercedes", region_sanitaria=region_10)
-    municipio_11 = persona_cetecsm.create_municipio(nombre="La Plata", region_sanitaria=region_11)
-    municipio_12 = persona_cetecsm.create_municipio(nombre="La Matanza", region_sanitaria=region_12)
+    # Carga de tabla de municipios
+    df_municipios = pd.read_csv("public/data/municipios_regiones_sanitarias.csv")
+    for index, row in df_municipios.iterrows():
+        municipio.create_municipio(
+            nombre=row['municipio'],
+            region_sanitaria=region_sanitaria.get_by_tipo(tipo=row['region_sanitaria'])
+        )
 
-
+    # Carga de localidades
+    df_localidades = pd.read_csv("public/data/municipios_localidades.csv")
+    lista_localidades = df_localidades['nombre'].unique().tolist()    
+    for elem in lista_localidades:
+        lista_municipios = df_localidades[df_localidades['nombre'] == elem]['municipio_nombre'].tolist()
+        localidad_actual = localidad.create_localidad(
+            nombre=elem  
+        )
+        for mun in lista_municipios:
+            localidad_actual.municipios.append(municipio.get_by_name(name=mun))
 
     # Carga de tabla de motivo general de derivación
     malestar_emocional_der = motivo_general_derivacion.create_motivo_gral_der(tipo="Malestar emocional")
@@ -233,21 +284,21 @@ def run():
         dni = "35123456",
         grupo_conviviente = GrupoConviviente.AM.value,
         dio_consentimiento = True,
-        localidad = "Berazategui",
+        localidad = "Guillermo E Hudson",
         tiene_obra_social = False,
         nombre = "Roberto",
         apellido = "Fernandez",
         edad = 30,
         telefono = "1122334455",
         identidad_genero = varon,
-        municipio = municipio_1
+        municipio_id = "Berazategui"
     )
 
     persona_cetecsm_2 = persona_cetecsm.create_persona_cetecsm(
         dni = "40345678",
         grupo_conviviente = GrupoConviviente.A.value,
         dio_consentimiento = True,
-        localidad = "Hudson",
+        localidad = "Solano",
         tiene_obra_social = True,
         obra_social = "OSDE",
         nombre = "Florencia",
@@ -255,7 +306,7 @@ def run():
         edad = 25,
         telefono = "221345678",
         identidad_genero = mujer,
-        municipio = municipio_6
+        municipio_id = "Florencio Varela"
     )
 
     persona_cetecsm_3 = persona_cetecsm.create_persona_cetecsm(
@@ -263,14 +314,14 @@ def run():
         grupo_conviviente = GrupoConviviente.O.value,
         grupo_conviviente_otro = "Familia",
         dio_consentimiento = True,
-        localidad = "El Pato",
+        localidad = "Salliqueló",
         tiene_obra_social = False,
         nombre = "Eduardo",
         apellido = "Sanchez",
         edad = 26,
         telefono = "1144556677",
         identidad_genero = varon,
-        municipio = municipio_11
+        municipio_id = "Salliqueló"
     )
     
     derivacion_1 = derivacion.create_derivation(
@@ -352,7 +403,119 @@ def run():
         fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado,
         detalle_acompanamiento = "Llamado por primera vez a la persona y me brindo todos los datos",
         motivo_gral_acomp = acceso,
-)
+    )
+
+    # Carga de tablas correspondientes al módulo de actividades de prevención
+
+    dispositivo_1 = dispositivo.create_dispositivo(nombre="Dispositivo 1")
+    dispositivo_2 = dispositivo.create_dispositivo(nombre="Dispositivo 2")
+    dispositivo_3 = dispositivo.create_dispositivo(nombre="Dispositivo 3")
+
+    actividad_interna_1 = actividades_internas.create_actividad_interna(nombre="Actividad interna 1")
+    actividad_interna_2 = actividades_internas.create_actividad_interna(nombre="Actividad interna 2")
+    actividad_interna_3 = actividades_internas.create_actividad_interna(nombre="Actividad interna 3")
+
+    actividad_externa_1 = actividades_externas.create_actividad_externa(nombre="Actividad externa 1")
+    actividad_externa_2 = actividades_externas.create_actividad_externa(nombre="Actividad externa 2")
+    actividad_externa_3 = actividades_externas.create_actividad_externa(nombre="Actividad externa 3")
+    
+
+    df_escuelas = pd.read_csv("public/data/escuelas_prueba.csv")
+    lista_niveles = df_escuelas['nivel'].unique().tolist()
+
+    for elem in lista_niveles:
+        nivel.create_nivel(nombre=elem)
+
+    listado_escuelas = df_escuelas['cue'].unique().tolist()
+
+    for elem in listado_escuelas:
+        df_escuela = df_escuelas[df_escuelas['cue'] == elem][['nombre','cue','distrito','sector','modalidad']].drop_duplicates().values.tolist()[0]
+        niveles = df_escuelas[df_escuelas['cue'] == elem]['nivel'].unique().tolist()
+
+        esc = escuela.create_escuela(
+            cue=df_escuela[1],
+            nombre=df_escuela[0],
+            municipio_id=df_escuela[2],
+            sector=df_escuela[3],
+            modalidad=df_escuela[4]
+        )
+
+        for niv in niveles:
+            elem = nivel.get_by_name(name=niv)
+            esc.niveles.append(elem)
+
+    division_1 = division.create_division(nombre="1ra")
+    division_2 = division.create_division(nombre="2da")
+    division_3 = division.create_division(nombre="3ra")
+    division_4 = division.create_division(nombre="4ta")
+    division_5 = division.create_division(nombre="5ta")
+    division_6 = division.create_division(nombre="6ta")
+    division_7 = division.create_division(nombre="7ma")
+    division_a = division.create_division(nombre="A")
+    division_b = division.create_division(nombre="B")
+    division_c = division.create_division(nombre="C")
+    division_d = division.create_division(nombre="D")
+    division_e = division.create_division(nombre="E")
+    division_f = division.create_division(nombre="F")
+    division_g = division.create_division(nombre="G")
+    division_h = division.create_division(nombre="H")
+    division_i = division.create_division(nombre="I")
+    division_j = division.create_division(nombre="J")
+    division_k = division.create_division(nombre="K")
+    division_l = division.create_division(nombre="l")    
+    
+    anio_1 = año.create_anio(anio=Anios.PRIMERO.value)
+    anio_1.divisiones.append(division_1)
+    anio_1.divisiones.append(division_2)
+    anio_2 = año.create_anio(anio=Anios.TERCERO.value)
+    anio_2.divisiones = [division_1]
+
+    actividad_1 = actividad.create_actividad(
+        cant_participantes=50,
+        observaciones="Participaron los años 1 y 3",
+        tipo=TiposActividades.TALLERES.value,
+        cant_encuentros=3,
+        escuela_cue="610600",
+        anios=[anio_1, anio_2]
+    )
+
+    taller_1 = taller.create_taller(
+        municipio_id="La Plata",
+        localidad_id="La Plata",
+        dispositivo=dispositivo_1,
+        usuario_carga=user_trabajador_salud,
+        actividad=actividad_1
+    )        
+
+    actividad_2 = actividad.create_actividad(
+        cant_participantes=25,
+        observaciones="Esta actividad se dio en el marco de espacio grupal en Fcio Varela",
+        tipo=TiposActividades.ESPACIO_GRUPAL.value,
+        actividad_interna=actividad_interna_1
+    )
+
+    taller_2 = taller.create_taller(
+        municipio_id="Florencio Varela",
+        localidad_id="Florencio Varela",
+        dispositivo=dispositivo_2,
+        usuario_carga=user_trabajador_salud,
+        actividad=actividad_2
+    )
+
+    actividad_3 = actividad.create_actividad(
+        cant_participantes=20,
+        observaciones="Esta actividad se dio en el marco de Acción y promoción en la comunidad en La Matanza",
+        tipo=TiposActividades.ACCIONES_PROMOCION.value,
+        actividad_externa=actividad_externa_1
+    )
+
+    taller_3 = taller.create_taller(
+        municipio_id="La Matanza",
+        localidad_id="La Matanza",
+        dispositivo=dispositivo_2,
+        usuario_carga=user_trabajador_salud,
+        actividad=actividad_3
+    )
 
     print("Seeds cargados!")
 

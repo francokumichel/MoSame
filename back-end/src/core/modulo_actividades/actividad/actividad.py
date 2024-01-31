@@ -1,0 +1,27 @@
+from src.core.database import db
+import enum
+
+class TiposActividades(enum.Enum):
+    TALLERES = "Talleres de Salud Mental en las Escuelas"
+    ESPACIO_GRUPAL = "Espacio Grupal en el Dispositivo"
+    ACCIONES_PROMOCION = "Acciones de Promoción y Prevención en la Comunidad"
+
+actividad_anio = db.Table('actividad_anio',   
+    db.Column('actividad_id', db.Integer, db.ForeignKey('actividad.id'), primary_key=True),
+    db.Column('anio_id', db.Integer, db.ForeignKey('anio.id'), primary_key=True)                                
+)
+
+class Actividad(db.Model):
+    __tablename__ = "actividad"
+
+    id = db.Column(db.Integer, primary_key=True)
+    taller_id = db.Column(db.Integer, db.ForeignKey('taller.id'))
+    cant_participantes = db.Column(db.Integer)
+    observaciones = db.Column(db.String(256))
+    tipo = db.Column(db.String(100), nullable=False)
+    cant_encuentros = db.Column(db.Integer)
+    escuela_cue = db.Column(db.String(30), db.ForeignKey('escuela.cue'))
+    anios = db.relationship("Anio", secondary=actividad_anio, backref="actividades")
+    actividades_internas_id = db.Column(db.String(100), db.ForeignKey('actividades_internas.nombre'))
+    actividades_externas_id = db.Column(db.String(100), db.ForeignKey('actividades_externas.nombre'))
+    

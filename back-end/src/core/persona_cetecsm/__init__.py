@@ -2,31 +2,14 @@ from src.core.database import db
 from operator import attrgetter
 from sqlalchemy import func, desc, and_
 from sqlalchemy.orm import aliased
-from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm, Municipio, RegionSanitaria
+from src.core.general.municipio.municipio import Municipio
+from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
 from src.core.derivacion.derivacion import Derivacion
 from src.core.motivo_general_acompanamiento import get_motivo_gral_acomp_by_tipo
 from src.core.malestar_emocional import get_malestar_emocional_by_tipo
 from src.core.identidad_genero import get_identidad_genero_by_tipo
 from src.core.situaciones_vulnerabilidad import get_situacion_vulnerabilidad_by_tipo
-
-def create_municipio(**kwargs):
-    municipio = Municipio(**kwargs)
-    db.session.add(municipio)
-    db.session.commit()
-    return municipio
-
-def list_municipios():
-    return Municipio.query.all()
-
-def create_region_sanitaria(**kwargs):
-    region_sanitaria = RegionSanitaria(**kwargs)
-    db.session.add(region_sanitaria)
-    db.session.commit()
-    return region_sanitaria
-
-def list_regiones_sanitarias():
-    return RegionSanitaria.query.all()
 
 def create_persona_cetecsm(**kwargs):
     persona_cetecsm = PersonaCetecsm(**kwargs)

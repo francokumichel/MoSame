@@ -15,18 +15,18 @@ personacetecsm_sit_vuln = db.Table('personacetecsm_sit_vul',
     db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo'), primary_key=True)                                
 )
 
-class RegionSanitaria(db.Model):
-    __tablename__ = "region_sanitaria"
+#class RegionSanitaria(db.Model):
+#    __tablename__ = "region_sanitaria"
+#
+#    tipo = db.Column(db.String(50), primary_key=True)
+#    personas_cetecsm = db.relationship("Municipio", backref="region_sanitaria")
 
-    tipo = db.Column(db.String(50), primary_key=True)
-    personas_cetecsm = db.relationship("Municipio", backref="region_sanitaria")
-
-class Municipio(db.Model):
-    __tablename__ = "municipio"
-
-    nombre = db.Column(db.String(100), primary_key=True)
-    region_sanitaria_id = db.Column(db.String(50), db.ForeignKey('region_sanitaria.tipo'))
-    personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
+#class Municipio(db.Model):
+#    __tablename__ = "municipio"
+#
+#    nombre = db.Column(db.String(100), primary_key=True)
+#    region_sanitaria_id = db.Column(db.String(50), db.ForeignKey('region_sanitaria.tipo'))
+#    personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
 
 class PersonaCetecsm(db.Model):
     """ Clase que representa el modelo de una persona derivada a CETECSM """
