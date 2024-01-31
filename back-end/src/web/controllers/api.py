@@ -494,7 +494,8 @@ def crear_llamada_0800():
         motivo_derivacion = {'tipo':llamada['motivo_derivacion'], 'otro_tipo':llamada['motivo_derivacion_otro']}
         
         actualizar_derivacion(nueva_derivacion, motivo_derivacion)
-
+    
+    print('prueba')
     
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
