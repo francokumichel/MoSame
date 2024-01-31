@@ -9,5 +9,11 @@ class DerivacionSchema(Schema):
     descripcion = fields.Str()
     mot_gral_derivacion = fields.Nested(MotivoGralDerSchema)
 
+class DerivacionExportarSchema(Schema):
+    fecha = fields.Date()
+    dispositivo_derivacion = fields.Str()
+    nombre_operador_derivador = fields.Str()
+    descripcion = fields.Str()
+
 
 derivacion_schema = DerivacionSchema()

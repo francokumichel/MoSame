@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -52,13 +53,16 @@ export default {
     };
   },
 
+  computed: {
+    ...mapGetters(['isAuthenticated', 'user']),
+  },
+
   methods: {
     register() {
       const formData = {
         email: this.email,
         password: this.password,
       };
-
       this.$store.dispatch("login", formData);
     },
 

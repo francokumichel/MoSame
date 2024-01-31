@@ -3,7 +3,7 @@ export function displayError(toaster, error) {
         toaster.error(error, {
             max: 1,
             position: "top",
-            duration: 2000
+            duration: 4000
         });
     }, "200");
 }
@@ -13,7 +13,7 @@ export function displaySuccess(toaster, message) {
         toaster.success(message, {
             max: 1,
             position: "top",
-            duration: 2000
+            duration: 4000
         });
     }, "200");
 }
