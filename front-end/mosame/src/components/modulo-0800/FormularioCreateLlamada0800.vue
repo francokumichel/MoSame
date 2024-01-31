@@ -28,12 +28,15 @@
             </div>
             <div class="mb-3">
                 <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
-                <select class="form-select border border-dark-subtle" v-model.lazy="llamada.municipio" aria-label="Default select example">
+                <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.municipio" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in municipios" :key="key" :value="value.nombre">
                         {{ value.nombre }}
                     </option>
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione un municipio.
+                </div>
             </div>
             <div class="mb-3">
                 <label for="sujeto" class="col-form-label fw-semibold">Sujeto de la consulta:</label>

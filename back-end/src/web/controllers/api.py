@@ -1,3 +1,4 @@
+import json
 from flask import (
     Blueprint,
     jsonify,
@@ -415,7 +416,7 @@ def get_index_detalle_motivos_consulta():
 
 @api_blueprint.post("llamada_0800/crear")
 # @jwt_required()
-def crear_llamada_08002():
+def crear_llamada_0800():
     """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     # current_user = get_jwt_identity()
     # user = get_user(current_user)
@@ -456,6 +457,44 @@ def crear_llamada_08002():
         demanda_tratamiento = llamada['demanda_tratamiento'],
         email_operador = llamada['email_operador']
     )
+
+    if llamada['definicion'] == 'Derivación a CETEC SM':
+
+        # Obtengo los teléfonos de la persona
+        telefonos: list = json.loads(llamada['telefonos'])
+        print(telefonos)
+        if len(telefonos) > 0:
+            telefono = telefonos[0]['numero']
+            if len(telefonos) > 1:
+                telefono_secundario = telefonos[1]['numero']
+            else:
+                telefono_secundario = ''
+        else:
+            telefono = ''
+            telefono_secundario = ''
+
+        persona_cetecsm = create_persona_cetecsm(
+            dni=llamada['dni'],
+            dio_consentimiento=llamada['demanda_tratamiento'],
+            municipio_id=llamada['municipio'],
+            nombre=llamada['nombre'],
+            apellido=llamada['apellido'],
+            edad=llamada['edad'],
+            telefono=telefono,
+            telefono_alternativo=telefono_secundario
+        )
+
+        nueva_derivacion = create_derivation(
+            dispositivo_derivacion='0800',
+            nombre_operador_derivador=llamada['email_operador'],
+            descripcion=llamada['detalle'],
+            persona_cetecsm_derivada=persona_cetecsm)
+
+        # Formateo el motivo para que funcione bien
+        motivo_derivacion = {'tipo':llamada['motivo_derivacion'], 'otro_tipo':llamada['motivo_derivacion_otro']}
+        
+        actualizar_derivacion(nueva_derivacion, motivo_derivacion)
+
     
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
