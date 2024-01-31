@@ -3,6 +3,7 @@
     <thead class="table-light">
         <tr>
         <th scope="col">Fecha de próximo llamado</th>
+        <th v-if="esCoordinador" scope="col">Fecha de último llamado</th>
         <th scope="col">Nombre</th>
         <th scope="col">Apellido</th>
         <th scope="col">Edad</th>
@@ -17,6 +18,7 @@
         <tr v-for="persona in personasAsignadas" :key="persona">
         <td v-if="persona.fecha_prox_llamado_actual">{{ persona.fecha_prox_llamado_actual }}</td>
         <td v-else>-</td>
+        <td v-if="esCoordinador">{{ persona.fecha_ultimo_llamado || '-' }}</td>
         <td>{{ persona.nombre }}</td>
         <td>{{ persona.apellido }}</td>
         <td>{{ persona.edad }}</td>
@@ -27,7 +29,7 @@
         <td>
             <div class="d-flex align-items-center column-gap-2">
               <router-link :to="'/cetecsm/persona/perfil/' + persona.id" class="btn btn-outline-primary btn-sm">Ver perfil</router-link>
-              <router-link :to="'/cetecsm/llamada/crear/' + persona.id" class="btn btn-outline-success btn-sm">Cargar llamada</router-link>
+              <router-link v-if="!esCoordinador" :to="'/cetecsm/llamada/crear/' + persona.id" class="btn btn-outline-success btn-sm">Cargar llamada</router-link>
             </div>
         </td>
         </tr>
@@ -37,15 +39,16 @@
 </template>
 
 <script>
-import { apiService } from "@/services/api";
-import { displayError, displaySuccess } from "@/services/handlers";
-
 export default {
   name: "PersonasCetecsmAsignadasList",
   props: {
     personasAsignadas: {
       type: Array,
       default: () => [],
+    },
+    esCoordinador: {
+      type: Boolean,
+      default: false,
     },
   },
 }

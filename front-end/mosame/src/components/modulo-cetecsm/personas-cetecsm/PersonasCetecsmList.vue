@@ -6,6 +6,7 @@
         <th scope="col">Presta consentimiento</th>
         <th scope="col">Operador que deriva</th>
         <th scope="col">Región sanitaria</th>
+        <th v-if="this.$store.state.rolActual == 'Coordinador CETECSM'" scope="col">Dispositivo que deriva</th>
         <th scope="col">Nombre</th>
         <th scope="col">Apellido</th>
         <th scope="col">Edad</th>
@@ -15,7 +16,7 @@
         <th scope="col">Municipio</th>
         <th scope="col">Motivo general de la derivación</th>
         <th scope="col">Descripción</th>
-        <th scope="col">Acciones</th>
+        <th v-if="this.$store.state.rolActual == 'Operador CETECSM'" scope="col">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +26,7 @@
         <td v-else>No</td>
         <td>{{ persona.derivacion.nombre_operador_derivador }}</td>
         <td>{{ persona.municipio.region_sanitaria.tipo }}</td>
+        <td v-if="this.$store.state.rolActual == 'Coordinador CETECSM'" >{{ persona.derivacion.dispositivo_derivacion }}</td>
         <td>{{ persona.nombre }}</td>
         <td>{{ persona.apellido }}</td>
         <td>{{ persona.edad }}</td>
@@ -36,7 +38,7 @@
         <td v-if="persona.derivacion.mot_gral_derivacion.tipo != 'Otro'" >{{ persona.derivacion.mot_gral_derivacion.tipo }}</td>
         <td v-else >{{ 'Otro (' + persona.derivacion.mot_gral_derivacion.otro_tipo + ')' }}</td>
         <td>{{ persona.derivacion.descripcion }}</td>
-        <td>
+        <td v-if="this.$store.state.rolActual == 'Operador CETECSM'">
             <button type="button" class="btn btn-outline-primary btn-sm" @click="asignarPersona(persona.id)" :disabled="persona.esta_asignada">{{ persona.esta_asignada ? 'Ya asignado' : 'Asignarme' }}</button>
         </td>
         </tr>

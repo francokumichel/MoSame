@@ -1,6 +1,10 @@
 from src.core.database import db
+from operator import attrgetter
+from sqlalchemy import func, desc, and_
+from sqlalchemy.orm import aliased
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm, Municipio, RegionSanitaria
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
+from src.core.derivacion.derivacion import Derivacion
 from src.core.motivo_general_acompanamiento import get_motivo_gral_acomp_by_tipo
 from src.core.malestar_emocional import get_malestar_emocional_by_tipo
 from src.core.identidad_genero import get_identidad_genero_by_tipo
@@ -21,6 +25,9 @@ def create_region_sanitaria(**kwargs):
     db.session.commit()
     return region_sanitaria
 
+def list_regiones_sanitarias():
+    return RegionSanitaria.query.all()
+
 def create_persona_cetecsm(**kwargs):
     persona_cetecsm = PersonaCetecsm(**kwargs)
     db.session.add(persona_cetecsm)
@@ -37,19 +44,53 @@ def update_persona_cetecsm(**kwargs):
     db.session.commit()
     return persona
 
-def list_personas_cetecsm(search_term, page_num, per_page):
-    """ Consulta a la bd y obtiene los egistros paginados de los usuarios registrados en el sistema """
-    if search_term:
-        resultados = PersonaCetecsm.query.filter(
-            (PersonaCetecsm.dni.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.nombre.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.apellido.ilike(f"%{search_term}%")) |
-            (PersonaCetecsm.localidad.ilike(f"%{search_term}%"))
-        )
+def get_personas_cetecsm_todas(search_terms, page_num, per_page):
+    
+    query = PersonaCetecsm.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_personas_por_regiones,
+            'dispositivo_derivador': buscar_personas_por_dispositivo,
+            'fechas': buscar_personas_por_fecha_derivacion,
+            'edades': buscar_personas_por_edad,
+            'motivo_derivacion': buscar_personas_por_motivo_derivacion,
+            'operador': buscar_personas_por_operador
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
-        return resultados.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
-    return PersonaCetecsm.query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+def get_personas_cetecsm_todas_sin_paginar(search_terms):
+    
+    query = PersonaCetecsm.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_personas_por_regiones,
+            'dispositivo_derivador': buscar_personas_por_dispositivo,
+            'fechas': buscar_personas_por_fecha_derivacion,
+            'edades': buscar_personas_por_edad,
+            'motivo_derivacion': buscar_personas_por_motivo_derivacion,
+            'operador': buscar_personas_por_operador
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query        
 
+def get_all_personas_asignadas(page_num, per_page):
+    """ Consulta a la BD y obtiene los registros páginados de las personas cetecsm que estás asigaadas a algún operador cetecsm"""
+    personas_asignadas = PersonaCetecsm.query.filter_by(esta_asignada=True)
+    return personas_asignadas.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def list_all_personas_cetecsm_no_asignadas(page_num, per_page):
+    """ Consulta a la bd y obtiene los registros paginados de los usuarios registrados en el sistema """
+    resultados = PersonaCetecsm.query.filter_by(esta_asignada=False)
+
+    return resultados.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+    
 def list_llamadas_recibidas(page_num, per_page, persona_id):
     llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id)
     return llamadas_recibidas.order_by(LlamadaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
@@ -92,4 +133,98 @@ def actualizar_sit_vuln(persona, situaciones_vulnerabilidad):
 
         db.session.commit()
     return persona 
-     
+
+def buscar_personas_por_regiones(query, regiones_sanitarias):
+    return query.filter(PersonaCetecsm.municipio.has(Municipio.region_sanitaria_id.in_(regiones_sanitarias)))
+
+def buscar_personas_por_dispositivo(query, dispositivo):
+    return query.filter(PersonaCetecsm.derivacion.has(Derivacion.dispositivo_derivacion.ilike(f"%{dispositivo}%")))
+
+def buscar_personas_por_fecha_derivacion(query, fechas):
+    if fechas['desde'] and fechas['hasta']:
+        return query.filter(PersonaCetecsm.derivacion.has(Derivacion.fecha.between(fechas['desde'], fechas['hasta'])))
+    elif fechas['desde']:
+        return query.filter(PersonaCetecsm.derivacion.has(Derivacion.fecha >= fechas['desde']))
+    elif fechas['hasta']:
+        return query.filter(PersonaCetecsm.derivacion.has(Derivacion.fecha <= fechas['hasta']))
+
+    return query
+
+def buscar_personas_por_edad(query, edades):
+    if edades['desde'] and edades['hasta']:
+        return query.filter(PersonaCetecsm.edad.between(edades['desde'], edades['hasta']))
+    elif edades['desde']:
+        return query.filter(PersonaCetecsm.edad >= edades['desde'])
+    elif edades['hasta']:
+        return query.filter(PersonaCetecsm.edad <= edades['hasta'])
+
+    return query
+    
+def buscar_personas_por_motivo_derivacion(query, motivo_derivacion):
+    return query.filter(PersonaCetecsm.derivacion.has(Derivacion.tipo_motivo_gral == motivo_derivacion))
+
+def buscar_personas_por_operador(query, operador):
+    return query.filter(PersonaCetecsm.derivacion.has(Derivacion.nombre_operador_derivador == operador))
+
+def obtener_informacion_personas_seguimiento(search_terms, debe_paginarse=True, page_num=1, per_page=1):
+    query = PersonaCetecsm.query.filter_by(esta_asignada=True)
+    
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_personas_por_regiones,
+            'fechas': buscar_personas_por_ultima_fecha_llamado,
+            'edades': buscar_personas_por_edad,
+            'identidad_genero': buscar_personas_por_identidad_genero,
+            'mot_gral_acomp': buscar_personas_por_motivo_acomp,
+            
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+    
+    if debe_paginarse:
+        return query.order_by(PersonaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+    else:
+        return query
+
+def obtener_datos_resolucion_fecha_llamada(persona):
+    # Ordenar las llamadas por fecha
+    llamadas_ordenadas = sorted(persona.llamadas_cetecsm, key=attrgetter('fecha_llamado'))
+
+    # Obtener la fecha y resolución de la primera llamada
+    if llamadas_ordenadas:
+        resolucion_primera_llamada = llamadas_ordenadas[0].resolucion
+        fecha_primera_llamada = llamadas_ordenadas[0].fecha_llamado
+        resolucion_ultima_llamada = llamadas_ordenadas[-1].resolucion
+    else:
+        resolucion_primera_llamada = None
+        fecha_primera_llamada = None
+        resolucion_ultima_llamada = None
+
+
+    return resolucion_primera_llamada, fecha_primera_llamada, resolucion_ultima_llamada
+
+def buscar_personas_por_ultima_fecha_llamado(query, fechas):
+    subquery_primer_llamada = (
+        db.session.query(
+            LlamadaCetecsm.persona_cetecsm_id,
+            func.min(LlamadaCetecsm.fecha_llamado).label('fecha_primera_llamada')
+        )
+        .group_by(LlamadaCetecsm.persona_cetecsm_id)
+        .subquery()
+    )
+
+    if fechas['desde'] and fechas['hasta']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada.between(fechas['desde'], fechas['hasta']))
+    elif fechas['desde']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada >= fechas['desde'])
+    elif fechas['hasta']:
+        return query.filter(PersonaCetecsm.id == subquery_primer_llamada.c.persona_cetecsm_id).filter(subquery_primer_llamada.c.fecha_primera_llamada <= fechas['hasta'])
+
+    return query
+
+def buscar_personas_por_identidad_genero(query, identidad_genero):
+    return query.filter(PersonaCetecsm.identidad_genero_id == identidad_genero)
+
+def buscar_personas_por_motivo_acomp(query, mot_gral_acomp):
+    return query.filter(PersonaCetecsm.motivo_gral_acomp_id == mot_gral_acomp)
