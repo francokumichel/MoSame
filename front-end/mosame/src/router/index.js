@@ -14,6 +14,7 @@ import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsign
 import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetecsmDerivadasView.vue";
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
 import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
+import Taller from "../views/modulo-actividades-prevencion/TallerView.vue";
 import store from "@/store";
 import { displayError } from "@/services/handlers.js"
 
@@ -114,6 +115,12 @@ const router = createRouter({
             name: "observatorio-cantidad-llamadas-cetecsm",
             component: CantidadLlamadasCetecsm,
             meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
+        },
+        {
+            path:"/actividades/talleres",
+            name: "actividades-talleres",
+            component: Taller,
+            meta: { requiresAuth: true, roles: ["Administrador actividades"] },             
         },
     ],
 });

@@ -27,7 +27,7 @@ from src.core.modulo_actividades import (
     nivel,
     taller
 )
-from src.core.modulo_actividades.actividad.actividad import TiposActividades
+from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.modulo_actividades.año.anio import Anios
 
 def run():
@@ -473,13 +473,13 @@ def run():
     actividad_1 = actividad.create_actividad(
         cant_participantes=50,
         observaciones="Participaron los años 1 y 3",
-        tipo=TiposActividades.TALLERES.value,
         cant_encuentros=3,
         escuela_cue="610600",
         anios=[anio_1, anio_2]
     )
 
     taller_1 = taller.create_taller(
+        tipo=TiposActividades.TALLERES.value,
         municipio_id="La Plata",
         localidad_id="La Plata",
         dispositivo=dispositivo_1,
@@ -490,11 +490,11 @@ def run():
     actividad_2 = actividad.create_actividad(
         cant_participantes=25,
         observaciones="Esta actividad se dio en el marco de espacio grupal en Fcio Varela",
-        tipo=TiposActividades.ESPACIO_GRUPAL.value,
         actividad_interna=actividad_interna_1
     )
 
     taller_2 = taller.create_taller(
+        tipo=TiposActividades.ESPACIO_GRUPAL.value,
         municipio_id="Florencio Varela",
         localidad_id="Florencio Varela",
         dispositivo=dispositivo_2,
@@ -505,11 +505,11 @@ def run():
     actividad_3 = actividad.create_actividad(
         cant_participantes=20,
         observaciones="Esta actividad se dio en el marco de Acción y promoción en la comunidad en La Matanza",
-        tipo=TiposActividades.ACCIONES_PROMOCION.value,
         actividad_externa=actividad_externa_1
     )
 
     taller_3 = taller.create_taller(
+        tipo=TiposActividades.ACCIONES_PROMOCION.value,
         municipio_id="La Matanza",
         localidad_id="La Matanza",
         dispositivo=dispositivo_2,

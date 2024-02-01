@@ -5,7 +5,6 @@ from src.core.schemas.anio import AnioSchema
 class ActividadSchema(Schema):
     cant_participantes = fields.Int()
     observaciones = fields.Str()
-    tipo = fields.Str()
     cant_encuentros = fields.Int()
     escuela = fields.Nested(EscuelaSchema)
     anios = fields.Nested(AnioSchema, many=True)

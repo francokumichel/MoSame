@@ -43,6 +43,7 @@ from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres
+from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
@@ -683,7 +684,7 @@ def obtener_operadores_cetecsm():
 def obtener_talleres_actividades():
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
-    tipo_actividad = request.args.get("actividad_seleccionada", default="", type=str)
+    tipo_actividad = request.args.get("tipo_taller", default="", type=str)
 
     talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
 
@@ -695,3 +696,8 @@ def obtener_talleres_actividades():
     }
 
     return make_response(jsonify(data))
+
+@actividades_blueprint.get("tipos_taller")
+def get_index_tipo_talleres():
+    tipo_talleres = {tipo.name: tipo.value for tipo in TiposActividades}
+    return make_response(jsonify(tipo_talleres)), 200

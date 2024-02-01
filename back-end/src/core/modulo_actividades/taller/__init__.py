@@ -13,6 +13,6 @@ def get_talleres(tipo_actividad, page, per_page):
     talleres = Taller.query
     
     if tipo_actividad:
-        talleres = talleres.filter(Taller.actividad.has(Actividad.tipo == tipo_actividad))
+        talleres = talleres.filter(Taller.tipo == tipo_actividad)
     
     return talleres.order_by(Taller.id).paginate(page=page, per_page=per_page, error_out=True)

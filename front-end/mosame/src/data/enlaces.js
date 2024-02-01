@@ -14,7 +14,7 @@ const enlacesPorRol = {
     'Trabajador de salud': [
         { path: '/actividades/create', text: 'Actividades' },
     ],
-    'Administrador de actividades': [
+    'Administrador actividades': [
         { path: '/actividades/talleres', text: 'Talleres' },
         { path: '/actividades/estadisticas', text: 'Estadísticas' },
     ],
