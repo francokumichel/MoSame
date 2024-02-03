@@ -35,16 +35,16 @@
     </table>
     <p v-else>No hay llamadas cargadas en el sistema</p>
     <div class="modal fade" id="modalId" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title fw-bold" id="modalTitleId">Información de Derivación</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Seguimiento desde CETEC SM: {{ seguimientoDesdeCETECSM }}</p>
-            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''">Fecha del último llamado por CETEC SM: {{ fechaUltimoLlamado }}</p>
-            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''">Operador de CETEC SM: {{ operadorCETECSM }}</p>
+            <p><span class="fw-bold">Seguimiento desde CETEC SM:</span> {{ seguimientoDesdeCETECSM }}</p>
+            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''"><span class="fw-bold">Fecha del último llamado por CETEC SM:</span> {{ fechaUltimoLlamado }}</p>
+            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''"><span class="fw-bold">Operador de CETEC SM:</span> {{ operadorCETECSM }}</p>
           </div>
         </div>
       </div>
