@@ -66,9 +66,9 @@ export default {
 
   data(){
     return {
-      seguimientoDesdeCETECSM: '', // Actualiza con datos reales
-      fechaUltimoLlamado: '', // Actualiza con datos reales
-      operadorCETECSM: '', // Actualiza con datos reales
+      seguimientoDesdeCETECSM: '',
+      fechaUltimoLlamado: '',
+      operadorCETECSM: '',
     }
   },
 

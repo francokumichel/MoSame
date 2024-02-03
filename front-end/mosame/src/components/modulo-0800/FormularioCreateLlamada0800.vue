@@ -1,8 +1,9 @@
 <template>
         <h2 class="fw-bold mb-4">Registrar llamada</h2>
+        <p>Los campos marcados con <span class="text-danger">*</span> son obligatorios.</p>
         <form ref="formulario" class="px-5 needs-validation" @submit.prevent="registrarLlamada" novalidate>
             <div class="mb-3">
-                <label for="motivo_de_consulta" class="col-form-label fw-semibold">Motivo de la consulta:</label>
+                <label for="motivo_de_consulta" class="col-form-label fw-semibold">Motivo de la consulta: <span class="text-danger">*</span></label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.motivo_consulta" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in motivos" :key="key" :value="value.nombre">
@@ -27,7 +28,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
+                <label for="municipio" class="col-form-label fw-semibold">Municipio: <span class="text-danger">*</span></label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.municipio" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in municipios" :key="key" :value="value.nombre">
@@ -39,7 +40,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="sujeto" class="col-form-label fw-semibold">Sujeto de la consulta:</label>
+                <label for="sujeto" class="col-form-label fw-semibold">Sujeto de la consulta: <span class="text-danger">*</span></label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.sujeto" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in sujetos" :key="key" :value="value">
@@ -96,7 +97,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="detalle_motivo_consulta" class="col-form-label fw-semibold">Detalle del motivo de la consulta:</label>
+                <label for="detalle_motivo_consulta" class="col-form-label fw-semibold">Detalle del motivo de la consulta: <span class="text-danger">*</span></label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.detalle_motivo_consulta" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="detalle in detalle_motivos" :key="detalle.motivo" :value="detalle.motivo">
@@ -138,7 +139,7 @@
                 </div>    
             </fieldset>
             <div class="mb-3">
-                <label for="definicion" class="col-form-label fw-semibold">Definición del llamado:</label>
+                <label for="definicion" class="col-form-label fw-semibold">Definición del llamado: <span class="text-danger">*</span></label>
                 <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.definicion" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="(value, key) in definiciones" :key="key" :value="value">
@@ -148,7 +149,7 @@
             </div>
             <div v-if="llamada.definicion == 'Derivación a CETEC SM'">
                 <div class="mb-3">
-                    <label for="intervencion_sugerida" class="col-form-label fw-semibold">Intervención sugerida:</label>
+                    <label for="intervencion_sugerida" class="col-form-label fw-semibold">Intervención sugerida: <span class="text-danger">*</span></label>
                     <select required class="form-select border border-dark-subtle" v-model.lazy="llamada.intervencion_sugerida" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                         <option v-for="(value, key) in intervenciones" :key="key" :value="value">
@@ -157,7 +158,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="motivo_derivacion" class="col-form-label fw-semibold">Motivo general de la derivación:</label>
+                    <label for="motivo_derivacion" class="col-form-label fw-semibold">Motivo general de la derivación: <span class="text-danger">*</span></label>
                     <select required class="form-select border border-dark-subtle" v-model="llamada.motivo_derivacion" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                         <option v-for="motivo in motivos_grales_derivacion" :key="motivo" :value="motivo.tipo">
@@ -166,7 +167,7 @@
                     </select>
                 </div>
                 <div v-if="llamada.motivo_derivacion == 'Otro'" class="mb-4">
-                    <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación:</label>
+                    <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación: <span class="text-danger">*</span></label>
                     <input required v-model="llamada.motivo_derivacion_otro" type="text" id="otro_mot_gral_derivacion" class="form-control border border-dark-subtle"/>
                     <div class="invalid-feedback">
                         Por favor, ingrese otro tipo de motivo general de derivación.
@@ -251,21 +252,21 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="detalle" class="col-form-label fw-semibold">Detalle de la intervención:</label>
+                <label for="detalle" class="col-form-label fw-semibold">Detalle de la intervención: <span class="text-danger">*</span></label>
                 <input required v-model="llamada.detalle" type="text" id="detalle" class="form-control border border-dark-subtle"  />
                 <div class="invalid-feedback">
                     Por favor, ingrese un breve detalle de la llamada.
                 </div>
             </div>
             <div class="mb-3">
-                <label for="duracion" class="col-form-label fw-semibold">Duración aproximada de la llamada:</label>
+                <label for="duracion" class="col-form-label fw-semibold">Duración aproximada de la llamada: <span class="text-danger">*</span></label>
                 <input required v-model="llamada.duracion" type="text" id="duracion" class="form-control border border-dark-subtle"  />
                 <div class="invalid-feedback">
                     Por favor, ingrese la duración aproximada de la llamada.
                 </div>
             </div>
             <fieldset class="mb-3">
-                <legend class="col-form-label pt-0 fw-semibold">¿Demanda tratamiento?</legend>
+                <legend class="col-form-label pt-0 fw-semibold">¿Demanda tratamiento? <span class="text-danger">*</span></legend>
                 <div class="d-flex column-gap-4">
                     <div class="form-check">
                         <input class="form-check-input shadow-sm" type="radio" name="flexRadioDefault" id="flexRadioDefault1" v-model="llamada.demanda_tratamiento" :value="true" checked>
@@ -327,7 +328,7 @@ export default {
                 detalle: '',
                 duracion: '',
                 demanda_tratamiento: true,
-                email_operador: "hola"
+                email_operador: store.state.user.email
             },
 
             motivos: [],
