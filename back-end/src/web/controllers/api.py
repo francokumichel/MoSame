@@ -41,7 +41,7 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800
+from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -724,40 +724,6 @@ def crear_llamada_0800():
     llamada = data['llamada']
     print(llamada)
 
-    create_llamada_0800(
-        motivo_nombre = llamada['motivo_consulta'],
-        como_ubico_forma = llamada['como_ubico'],
-        como_ubico_otro = llamada['como_ubico_otro'],
-        municipio_nombre = llamada['municipio'],
-        sujeto = llamada['sujeto'],
-        edad = llamada['edad'],
-        identidad_genero_tipo = llamada['identidad_genero'],
-        identidad_genero_otra = llamada['identidad_genero_otra'],
-        pronombre = llamada['pronombre'],
-        grupo_conviviente = llamada['grupo_conviviente'],
-        grupo_conviviente_otro = llamada['grupo_conviviente_otro'],
-        detalle_motivo_motivo = llamada['detalle_motivo_consulta'],
-        malestares_emocionales = llamada['malestares_emocionales'],
-        malestares_emocionales_otro = llamada['malestares_emocionales_otro'],
-        situaciones_vulnerabilidad = llamada['situaciones_vulnerabilidad'],
-        definicion = llamada['definicion'],
-        intervencion_sugerida = llamada['intervencion_sugerida'],
-        motivo_derivacion = llamada['motivo_derivacion'],
-        motivo_derivacion_otro = llamada['motivo_derivacion_otro'],
-        nombre = llamada['nombre'],
-        apellido = llamada['apellido'],
-        dni = llamada['dni'],
-        telefonos = llamada['telefonos'],
-        emails = llamada['emails'],
-        domicilio = llamada['domicilio'],
-        nacionalidad = llamada['nacionalidad'],
-        nacimiento = llamada['nacimiento'],
-        detalle_intervencion = llamada['detalle'],
-        duracion = llamada['duracion'],
-        demanda_tratamiento = llamada['demanda_tratamiento'],
-        email_operador = llamada['email_operador']
-    )
-
     if llamada['definicion'] == 'Derivación a CETEC SM':
 
         # Obtengo los teléfonos de la persona
@@ -795,6 +761,43 @@ def crear_llamada_0800():
         
         actualizar_derivacion(nueva_derivacion, motivo_derivacion)
     
+    persona_cetecsm_id = persona_cetecsm.id if (llamada['definicion'] == 'Derivación a CETEC SM') else ''
+
+    create_llamada_0800(
+        motivo_nombre = llamada['motivo_consulta'],
+        como_ubico_forma = llamada['como_ubico'],
+        como_ubico_otro = llamada['como_ubico_otro'],
+        municipio_nombre = llamada['municipio'],
+        sujeto = llamada['sujeto'],
+        edad = llamada['edad'],
+        identidad_genero_tipo = llamada['identidad_genero'],
+        identidad_genero_otra = llamada['identidad_genero_otra'],
+        pronombre = llamada['pronombre'],
+        grupo_conviviente = llamada['grupo_conviviente'],
+        grupo_conviviente_otro = llamada['grupo_conviviente_otro'],
+        detalle_motivo_motivo = llamada['detalle_motivo_consulta'],
+        malestares_emocionales = llamada['malestares_emocionales'],
+        malestares_emocionales_otro = llamada['malestares_emocionales_otro'],
+        situaciones_vulnerabilidad = llamada['situaciones_vulnerabilidad'],
+        definicion = llamada['definicion'],
+        persona_cetecsm_id = persona_cetecsm_id,
+        intervencion_sugerida = llamada['intervencion_sugerida'],
+        motivo_derivacion = llamada['motivo_derivacion'],
+        motivo_derivacion_otro = llamada['motivo_derivacion_otro'],
+        nombre = llamada['nombre'],
+        apellido = llamada['apellido'],
+        dni = llamada['dni'],
+        telefonos = llamada['telefonos'],
+        emails = llamada['emails'],
+        domicilio = llamada['domicilio'],
+        nacionalidad = llamada['nacionalidad'],
+        nacimiento = llamada['nacimiento'],
+        detalle_intervencion = llamada['detalle'],
+        duracion = llamada['duracion'],
+        demanda_tratamiento = llamada['demanda_tratamiento'],
+        email_operador = llamada['email_operador']
+    )
+    
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
@@ -816,3 +819,20 @@ def get_llamadas_0800():
     }
 
     return make_response(jsonify(data)), 200
+
+@api_blueprint.get("0800/verSeguimiento/<int:llamada_id>")
+def ver_seguimiento(llamada_id):
+    llamada = get_llamada_0800_by_id(llamada_id)
+    persona_cetecsm = get_persona_cetecsm(llamada.persona_cetecsm_id)
+    if persona_cetecsm.esta_asignada:
+        operador_cetecsm = get_user(persona_cetecsm.usuario_id)
+        nom_y_ape = operador_cetecsm.name + ' ' + operador_cetecsm.last_name
+        return make_response(jsonify({
+            'esta_asignada': True,
+            'fecha_ult_llamado': obtener_fecha_ultimo_llamado(persona_cetecsm.id),
+            'operador': nom_y_ape
+        })), 200
+    else:
+        return make_response(jsonify({
+            'esta_asignada': False
+        })), 200

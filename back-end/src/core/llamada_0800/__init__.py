@@ -57,3 +57,6 @@ def list_llamadas_0800(search_term, page_num, per_page):
 
         return resultados.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)
     return Llamada0800.query.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def get_llamada_0800_by_id(llamada_id) -> Llamada0800:
+    return Llamada0800.query.get(llamada_id)

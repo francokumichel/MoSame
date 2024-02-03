@@ -78,6 +78,7 @@ class Llamada0800(db.Model):
     malestares_emocionales_otro = db.Column(db.String(100))
     situaciones_vulnerabilidad = db.Column(db.Text)
     definicion = db.Column(db.String(100))
+    persona_cetecsm_id = db.Column(db.Integer)
     intervencion_sugerida = db.Column(db.String(100))
     motivo_derivacion = db.Column(db.String(100))
     motivo_derivacion_otro = db.Column(db.String(100))

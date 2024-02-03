@@ -15,7 +15,6 @@ import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsign
 import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetecsmDerivadasView.vue";
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
 import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
-import CreateLlamadaCetecsm from "../views/CreateLlamadaCetecsmView.vue";
 import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
 import Llamadas0800View from "../views/Llamadas0800View.vue";
 import store from "@/store";
@@ -36,7 +35,7 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ["Administrador"] },
         },
         {
-            path: "/home",
+            path: "/",
             name: "home",
             component: HomeView,
             meta: { requiresAuth: true },

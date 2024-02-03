@@ -394,6 +394,7 @@ def run():
         malestares_emocionales_otro = '',
         situaciones_vulnerabilidad = '',
         definicion = 'Intervención finalizada',
+        persona_cetecsm_id = '',
         intervencion_sugerida = '',
         motivo_derivacion = '',
         motivo_derivacion_otro = '',

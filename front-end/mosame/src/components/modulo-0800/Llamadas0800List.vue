@@ -28,12 +28,27 @@
         <td>{{ llamada.identidad_genero_tipo }}</td>
         <td>{{ llamada.pronombre }}</td>
         <td>
-            <button v-if="llamada.definicion === 'Derivación a CETEC SM'" type="button" class="btn btn-outline-primary btn-sm">Ver seguimiento</button>
+            <button v-if="llamada.definicion === 'Derivación a CETEC SM'" type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalId" @click="verSeguimiento(llamada.id)">Ver seguimiento</button>
         </td>
         </tr>
     </tbody>
     </table>
-    <p v-else>No hay llamadas cargadas en el sistema</p>    
+    <p v-else>No hay llamadas cargadas en el sistema</p>
+    <div class="modal fade" id="modalId" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold" id="modalTitleId">Información de Derivación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Seguimiento desde CETEC SM: {{ seguimientoDesdeCETECSM }}</p>
+            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''">Fecha del último llamado por CETEC SM: {{ fechaUltimoLlamado }}</p>
+            <p v-if="seguimientoDesdeCETECSM != 'No está en seguimiento' && seguimientoDesdeCETECSM != ''">Operador de CETEC SM: {{ operadorCETECSM }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -49,15 +64,29 @@ export default {
     },
   },
 
+  data(){
+    return {
+      seguimientoDesdeCETECSM: '', // Actualiza con datos reales
+      fechaUltimoLlamado: '', // Actualiza con datos reales
+      operadorCETECSM: '', // Actualiza con datos reales
+    }
+  },
+
   methods: {
     
-    async asignarPersona(personaId) {
+    async verSeguimiento(llamada_id) {
       try {
-        const response = await apiService.post(import.meta.env.VITE_API_URL + `cetecsm/asignarPersona/${personaId}`);
+        this.seguimientoDesdeCETECSM = ''
+        const response = await apiService.get(import.meta.env.VITE_API_URL + `0800/verSeguimiento/${llamada_id}`);
         
         if(response.status == 200) {
-          this.$emit('asignacionRealizada');
-          displaySuccess(this.$toast, response.data.msge);
+          if (response.data.esta_asignada) {
+            this.seguimientoDesdeCETECSM = 'Está en seguimiento'
+            this.fechaUltimoLlamado = `${new Date(response.data.fecha_ult_llamado).getDate() + 1}/${new Date(response.data.fecha_ult_llamado).getMonth() + 1}/${new Date(response.data.fecha_ult_llamado).getFullYear()}`
+            this.operadorCETECSM = response.data.operador
+          } else {
+            this.seguimientoDesdeCETECSM = 'No está en seguimiento'
+          }
         }
       } catch(error) {
         displayError(this.$toast, error);

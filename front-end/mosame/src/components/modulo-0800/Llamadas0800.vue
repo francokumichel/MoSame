@@ -8,9 +8,9 @@
                 </svg>
             </button>
         </div>
-        <Llamadas0800List :llamadas="llamadas" @asignacionRealizada="loadLlamadas0800" />
+        <Llamadas0800List :llamadas="llamadas" />
         <div class="d-flex flex-row justify-content-center align-items-center">
-            <router-link :to="'/create_call_0800'" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Cargar llamada</router-link>
+            <router-link :to="'/modulo_0800/cargar_llamada'" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Cargar llamada</router-link>
             <div class="d-flex flex-row ms-auto align-items-center me-3">
                 <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
                     <label>Filas por página: </label>

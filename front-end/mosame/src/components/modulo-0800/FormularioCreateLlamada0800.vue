@@ -327,7 +327,7 @@ export default {
                 detalle: '',
                 duracion: '',
                 demanda_tratamiento: true,
-                email_operador: store.state.email
+                email_operador: "hola"
             },
 
             motivos: [],
@@ -488,7 +488,7 @@ export default {
                     .then((response) => {
                         if(response.status == 200) {
                             displaySuccess(this.$toast, "Llamada creada exitosamente");
-                            this.$router.push("/calls_0800");
+                            this.$router.push("/modulo_0800/llamadas");
                         }
                     })
                 } catch(error) {
