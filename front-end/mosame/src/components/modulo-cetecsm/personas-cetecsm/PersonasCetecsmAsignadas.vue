@@ -47,7 +47,7 @@ export default {
             searchQuery: "",
             errors: [],
             page: 1,
-            perPage: 1,
+            perPage: 5,
             cantPages: 0,
             esCoordinador: false,
         };

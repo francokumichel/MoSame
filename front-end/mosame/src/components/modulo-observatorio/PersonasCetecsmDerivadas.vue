@@ -119,7 +119,7 @@ export default {
             nombre_operador_derivador: "",
             errors: [],
             page: 1,
-            perPage: 1,
+            perPage: 5,
             cantPages: 0,
         };
     },
