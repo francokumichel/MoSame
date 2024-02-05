@@ -586,12 +586,13 @@ def obtener_informacion_personas_seguimiento_todas():
     datos_personas = []
     for persona in personas:
         resolucion_primera_llamada, fecha_primera_llamada, resolucion_ultima_llamada = obtener_datos_resolucion_fecha_llamada(persona)
+        print(persona.motivo_gral_acomp)
         datos_persona = {
             "region_sanitaria": persona.municipio.region_sanitaria.tipo,
             "edad": persona.edad,
             "identidad_genero": persona.identidad_genero_id,
             "motivo_acompanamiento": persona.motivo_gral_acomp_id,
-            "tipo_malestar_emocional": ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+            "tipo_malestar_emocional": ", ".join([motivo.tipo for motivo in persona.motivo_gral_acomp.malestares_emocionales]) if persona.motivo_gral_acomp.tipo == "Malestar emocional" else None,
             "resolucion_primera_llamada": resolucion_primera_llamada,
             "fecha_primera_llamada": fecha_primera_llamada.strftime("%Y-%m-%d"),
             "resolucion_ultima_llamada": resolucion_ultima_llamada,

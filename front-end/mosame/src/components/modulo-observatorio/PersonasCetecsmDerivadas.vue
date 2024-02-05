@@ -178,6 +178,7 @@ export default {
                 });
                 this.personas = response.data.personas;
                 this.cantPages = response.data.total;
+                console.log(this.personas)
             } catch (error) {
                 this.errors.push(error);
             }
