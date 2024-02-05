@@ -56,7 +56,7 @@ const router = createRouter({
             path:"/cetecsm/derivaciones",
             name: "cetecsm-derivaciones",
             component: PersonasCetecsm,
-            meta: { requiresAuth: true, roles: ["Operador CETECSM"] }, 
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] }, 
         },
         {
             path:"/cetecsm/derivacion/create",

@@ -74,7 +74,7 @@
                     <div class="mb-3 row">
                         <label for="genero_identidad" class="col-sm-auto col-form-label fw-semibold">Identidad de género:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.identidad_genero.tipo || '-'">
+                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.identidad_genero ? persona.identidad_genero.tipo : '-'">
                         </div>
                     </div>
                     <div class="mb-3 row">
