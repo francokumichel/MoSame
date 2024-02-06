@@ -27,6 +27,7 @@ class Municipio(db.Model):
     nombre = db.Column(db.String(100), primary_key=True)
     region_sanitaria_id = db.Column(db.String(50), db.ForeignKey('region_sanitaria.tipo'))
     personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
+    llamadas_0800 = db.relationship('Llamada0800', backref="municipio")
 
 class PersonaCetecsm(db.Model):
     """ Clase que representa el modelo de una persona derivada a CETECSM """

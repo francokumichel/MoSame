@@ -1,6 +1,7 @@
 from src.core.database import db
 import enum
 from sqlalchemy import func
+from src.core.persona_cetecsm.persona_cetecsm import Municipio
 
 class MotivoDeLaConsulta(db.Model):
     __tablename__ = "motivo_consulta"
@@ -65,7 +66,7 @@ class Llamada0800(db.Model):
     motivo_nombre = db.Column(db.String(100))
     como_ubico_forma = db.Column(db.String(100))
     como_ubico_otro = db.Column(db.String(256))
-    municipio_nombre = db.Column(db.String(100))
+    municipio_nombre = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
     sujeto = db.Column(db.String(15))
     edad = db.Column(db.Integer)
     identidad_genero_tipo = db.Column(db.String(100))
@@ -92,6 +93,6 @@ class Llamada0800(db.Model):
     nacimiento = db.Column(db.Date)
     detalle_intervencion = db.Column(db.Text)
     duracion = db.Column(db.String(50))
-    demanda_tratamiento = db.Column(db.Boolean)
+    demanda_tratamiento = db.Column(db.Boolean())
     email_operador = db.Column(db.String(100))
     fecha_y_hora_carga = db.Column(db.DateTime, default=func.current_timestamp())

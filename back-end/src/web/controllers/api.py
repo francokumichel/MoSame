@@ -41,12 +41,12 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800 import get_llamadas_0800_todas, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
 from src.core.schemas.motivo_de_la_consulta import motivo_de_la_consulta_schema, motivos_de_la_consulta_schema
-from src.core.schemas.llamada_0800 import llamada_0800_schema, llamadas_0800_schema
+from src.core.schemas.llamada_0800 import llamada_0800_schema, llamadas_0800_schema, observatorio_llamadas_0800_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -673,6 +673,47 @@ def obtener_cantidad_llamadas_todas():
     total_llamados_cetecsm = obtener_total_llamados_cetecsm(fecha_desde=fecha_desde, fecha_hasta=fecha_hasta, usuario_id=usuario_id, resolucion=resolucion)
 
     return make_response(jsonify({"total_llamados": total_llamados_cetecsm}))
+
+@observatorio_blueprint.get("llamadas_0800")
+def obtener_llamadas_0800_observatorio():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    motivo_consulta = request.args.get("motivo_consulta", default="", type=str)
+    detalle_motivo_consulta = request.args.get("detalle_motivo_consulta", default="", type=str)
+    genero = request.args.get('genero', default='', type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_consulta": motivo_consulta,
+        "detalle_motivo_consulta": detalle_motivo_consulta,
+        'genero': genero 
+    }
+
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    llamadas = get_llamadas_0800_todas(search_terms=search_terms, page_num=page, per_page=per_page)
+
+    items = {
+        "llamadas": observatorio_llamadas_0800_schema.dump(llamadas),
+        "page": page,
+        "per_page": per_page,
+        "total": llamadas.total
+    }
+
+    print(llamadas)
+
+    return make_response(jsonify(items)), 200
 
 @cetecsm_blueprint.get("operadores_cetecsm")
 def obtener_operadores_cetecsm():

@@ -15,6 +15,7 @@ import PersonasAsignadasTodasCetecsm from "../views/modulo-cetecsm/PersonasAsign
 import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetecsmDerivadasView.vue";
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
 import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
+import ObservatorioLlamadas0800View from "../views/modulo-observatorio/ObservatorioLlamadas0800View.vue"
 import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
 import Llamadas0800View from "../views/Llamadas0800View.vue";
 import store from "@/store";
@@ -134,6 +135,12 @@ const router = createRouter({
             path:"/observatorio/cantidad_llamadas_cetecsm",
             name: "observatorio-cantidad-llamadas-cetecsm",
             component: CantidadLlamadasCetecsm,
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
+        },
+        {
+            path:"/observatorio/llamadas_0800",
+            name: "observatorio-llamadas-0800",
+            component: ObservatorioLlamadas0800View,
             meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
         },
     ],

@@ -1,6 +1,7 @@
 from src.core.database import db
 from src.core.llamada_0800.llamada_0800 import Llamada0800
 from src.core.llamada_0800.llamada_0800 import MotivoDeLaConsulta, ComoUbico, DetalleMotivoConsulta
+from src.core.persona_cetecsm.persona_cetecsm import Municipio
 
 def create_llamada_0800(**kwargs):
     llamada_0800 = Llamada0800(**kwargs)
@@ -60,3 +61,53 @@ def list_llamadas_0800(search_term, page_num, per_page):
 
 def get_llamada_0800_by_id(llamada_id) -> Llamada0800:
     return Llamada0800.query.get(llamada_id)
+
+def get_llamadas_0800_todas(search_terms, page_num, per_page):
+    
+    query = Llamada0800.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_llamadas_por_regiones,
+            'fechas': buscar_llamadas_por_fecha,
+            'edades': buscar_llamadas_por_edad,
+            'motivo_consulta': buscar_llamadas_por_motivo_consulta,
+            'detalle_motivo_consulta': buscar_llamadas_por_detalle_motivo_consulta,
+            'genero': buscar_llamadas_por_genero
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def buscar_llamadas_por_regiones(query, regiones_sanitarias):
+    return query.filter(Llamada0800.municipio.has(Municipio.region_sanitaria_id.in_(regiones_sanitarias)))
+
+def buscar_llamadas_por_fecha(query, fechas):
+    if fechas['desde'] and fechas['hasta']:
+        return query.filter(Llamada0800.fecha_y_hora_carga.between(fechas['desde'], fechas['hasta']))
+    elif fechas['desde']:
+        return query.filter(Llamada0800.fecha_y_hora_carga >= fechas['desde'])
+    elif fechas['hasta']:
+        return query.filter(Llamada0800.fecha_y_hora_carga <= fechas['hasta'])
+
+    return query
+
+def buscar_llamadas_por_edad(query, edades):
+    if edades['desde'] and edades['hasta']:
+        return query.filter(Llamada0800.edad.between(edades['desde'], edades['hasta']))
+    elif edades['desde']:
+        return query.filter(Llamada0800.edad >= edades['desde'])
+    elif edades['hasta']:
+        return query.filter(Llamada0800.edad <= edades['hasta'])
+
+    return query
+    
+def buscar_llamadas_por_motivo_consulta(query, motivo_consulta):
+    return query.filter(Llamada0800.motivo_nombre == motivo_consulta)
+    
+def buscar_llamadas_por_detalle_motivo_consulta(query, detalle_motivo_consulta):
+    return query.filter(Llamada0800.detalle_motivo_motivo == detalle_motivo_consulta)
+    
+def buscar_llamadas_por_genero(query, genero):
+    return query.filter(Llamada0800.identidad_genero_tipo == genero)
