@@ -215,27 +215,6 @@ export default {
             }
         },
 
-        async exportarPersonasDerivadas() {
-            try {
-                const response = await apiService.get(import.meta.env.VITE_API_URL + "observatorio/personas_cetecsm_derivadas/exportar" , {
-                    params: {
-                        regiones_seleccionadas: this.regionesSeleccionadasString,
-                        dispositivo_derivador: this.dispositivo_derivador,
-                        fecha_desde: this.fecha_desde,
-                        fecha_hasta: this.fecha_hasta,
-                        edad_desde: this.edad_desde,
-                        edad_hasta: this.edad_hasta,
-                        mot_gral_derivacion: this.mot_gral_derivacion,
-                        nombre_operador_derivador: this.nombre_operador_derivador,
-                    },
-                });
-                this.personas = response.data.personas;
-                this.cantPages = response.data.total;
-            } catch (error) {
-                this.errors.push(error);
-            }
-        },
-
         previousPage() {
             if (this.page > 1) {
                 this.page--;
@@ -266,21 +245,22 @@ export default {
         },
 
         async exportarDatos() {
-            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/personas_cetecsm_derivadas/exportar" , {
+            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/llamadas_0800/exportar" , {
                     params: {
                         regiones_seleccionadas: this.regionesSeleccionadasString,
-                        dispositivo_derivador: this.dispositivo_derivador,
                         fecha_desde: this.fecha_desde,
                         fecha_hasta: this.fecha_hasta,
                         edad_desde: this.edad_desde,
                         edad_hasta: this.edad_hasta,
-                        mot_gral_derivacion: this.mot_gral_derivacion,
-                        nombre_operador_derivador: this.nombre_operador_derivador,
+                        motivo_consulta: this.motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        genero: this.genero
                     },})
                 .then((response) => {
                     if(response.status == 200) {
                         const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8' });
-                        saveAs(blob, 'personas_derivadas.csv');
+                        saveAs(blob, 'llamadas_0800.csv');
                         displaySuccess(this.$toast, "Archivo exportado exitosamente.")
                     }
                 })

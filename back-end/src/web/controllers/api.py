@@ -41,7 +41,7 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import get_llamadas_0800_todas, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -714,6 +714,70 @@ def obtener_llamadas_0800_observatorio():
     print(llamadas)
 
     return make_response(jsonify(items)), 200
+
+@observatorio_blueprint.get("llamadas_0800/exportar")
+def obtener_llamadas_0800_observatorio_exportar():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    motivo_consulta = request.args.get("motivo_consulta", default="", type=str)
+    detalle_motivo_consulta = request.args.get("detalle_motivo_consulta", default="", type=str)
+    genero = request.args.get('genero', default='', type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_consulta": motivo_consulta,
+        "detalle_motivo_consulta": detalle_motivo_consulta,
+        'genero': genero 
+    }
+
+    llamadas = get_llamadas_0800_todas_sin_paginar(search_terms=search_terms)
+    
+    data = [{
+        'email_operador': llamada.email_operador,
+        'motivo_consulta': llamada.motivo_nombre,
+        'como_ubico': llamada.como_ubico_forma,
+        'como_ubico_otro': llamada.como_ubico_otro,
+        'municipio': llamada.municipio,
+        'sujeto': llamada.sujeto,
+        'edad': llamada.edad,
+        'identidad_genero': llamada.identidad_genero_tipo,
+        'pronombre': llamada.pronombre,
+        'grupo_conviviente': llamada.grupo_conviviente,
+        'grupo_conviviente_otro': llamada.grupo_conviviente_otro,
+        'detalle_motivo_consulta': llamada.detalle_motivo_motivo,
+        'malestares_emocionales': llamada.malestares_emocionales,
+        'malestares_emocionales_otro': llamada.malestares_emocionales_otro,
+        'situaciones_vulnerabilidad': llamada.situaciones_vulnerabilidad,
+        'definicion_llamado': llamada.definicion,
+        'intervencion_sugerida': llamada.intervencion_sugerida,
+        'motivo_derivacion': llamada.motivo_derivacion,
+        'motivo_derivacion_otro': llamada.motivo_derivacion_otro,
+        'nombre': llamada.nombre,
+        'apellido': llamada.apellido,
+        'dni': llamada.dni,
+        'telefonos': llamada.telefonos,
+        'emails': llamada.emails,
+        'domicilio': llamada.domicilio,
+        'nacionalidad': llamada.nacionalidad,
+        'nacimiento': llamada.nacimiento,
+        'detalle_intervencion': llamada.detalle_intervencion,
+        'duracion': llamada.duracion,
+        'demanda_tratamiento': "Sí" if llamada.demanda_tratamiento else "No",
+        'fecha_y_hora_carga': llamada.fecha_y_hora_carga
+    } for llamada in llamadas]
+
+    return convert_to_csv(data, "llamadas_0800.csv")
 
 @cetecsm_blueprint.get("operadores_cetecsm")
 def obtener_operadores_cetecsm():

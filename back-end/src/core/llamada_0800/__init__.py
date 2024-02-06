@@ -80,6 +80,24 @@ def get_llamadas_0800_todas(search_terms, page_num, per_page):
                 
     return query.order_by(Llamada0800.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
+def get_llamadas_0800_todas_sin_paginar(search_terms):
+    
+    query = Llamada0800.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_llamadas_por_regiones,
+            'fechas': buscar_llamadas_por_fecha,
+            'edades': buscar_llamadas_por_edad,
+            'motivo_consulta': buscar_llamadas_por_motivo_consulta,
+            'detalle_motivo_consulta': buscar_llamadas_por_detalle_motivo_consulta,
+            'genero': buscar_llamadas_por_genero
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query
+
 def buscar_llamadas_por_regiones(query, regiones_sanitarias):
     return query.filter(Llamada0800.municipio.has(Municipio.region_sanitaria_id.in_(regiones_sanitarias)))
 
