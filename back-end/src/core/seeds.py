@@ -29,6 +29,7 @@ from src.core.modulo_actividades import (
 )
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.modulo_actividades.año.anio import Anios
+from src.core import llamada_0800
 
 def run():
 
@@ -517,5 +518,63 @@ def run():
         actividad=actividad_3
     )
 
-    print("Seeds cargados!")
+    # Cargas del 0800
 
+    # Carga de tabla de motivo de consulta
+    llamada_0800.create_motivo_consulta(nombre="Asistencia en Salud Mental")
+    llamada_0800.create_motivo_consulta(nombre="Orientación en Salud Mental")
+    llamada_0800.create_motivo_consulta(nombre="Otros")
+
+    # Carga la tabla de cómo el paciente puede haber ubicado al 0800
+    llamada_0800.create_como_ubico(forma="Búsqueda en Internet")
+    llamada_0800.create_como_ubico(forma="Redes sociales")
+    llamada_0800.create_como_ubico(forma="Material gráfico")
+    llamada_0800.create_como_ubico(forma="Por conocidos")
+    llamada_0800.create_como_ubico(forma="Derivación de un profesional")
+    llamada_0800.create_como_ubico(forma="Usuario habitual")
+    llamada_0800.create_como_ubico(forma="Medios de comunicación")
+    llamada_0800.create_como_ubico(forma="Otros")
+
+    # Carga la tabla de detalles de motivo de la consulta
+    llamada_0800.create_detalle_motivo_consulta(motivo="Consumo Problemático")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Violencia de Género")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Otras violencias")
+    llamada_0800.create_detalle_motivo_consulta(motivo="Malestar emocional")
+
+    # Carga una llamada de prueba
+    llamada_0800.create_llamada_0800(
+        motivo_nombre = 'Asistencia en Salud Mental',
+        como_ubico_forma = 'Búsqueda en Internet',
+        como_ubico_otro = '',
+        municipio_nombre = 'Azul',
+        sujeto = 'Propia',
+        edad = '18',
+        identidad_genero_tipo = 'Mujer',
+        identidad_genero_otra = '',
+        pronombre = 'Ella',
+        grupo_conviviente = 'Solo',
+        grupo_conviviente_otro = '',
+        detalle_motivo_motivo = 'Consumo Problemático',
+        malestares_emocionales = '',
+        malestares_emocionales_otro = '',
+        situaciones_vulnerabilidad = '',
+        definicion = 'Intervención finalizada',
+        persona_cetecsm_id = '',
+        intervencion_sugerida = '',
+        motivo_derivacion = '',
+        motivo_derivacion_otro = '',
+        nombre = 'Anabella',
+        apellido = 'Grugs',
+        dni = '12345678',
+        telefonos = '',
+        emails = '',
+        domicilio = 'En algún lugar',
+        nacionalidad = 'Argentina',
+        nacimiento = '',
+        detalle_intervencion = 'Hablamos',
+        duracion = 'Como 20 mins',
+        demanda_tratamiento = True,
+        email_operador = 'Operador0800@gmail.com'
+    )
+
+    print("Seeds cargados!")

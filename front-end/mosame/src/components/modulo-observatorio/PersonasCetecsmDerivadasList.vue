@@ -18,7 +18,7 @@
                 <td>{{ persona.derivacion.dispositivo_derivacion }}</td>
                 <td>{{ persona.dio_consentimiento ? "Sí" : "No" }}</td>
                 <td>{{ persona.edad }}</td>
-                <td>{{ persona.identidad_genero.tipo }}</td>
+                <td>{{ persona.identidad_genero ? persona.identidad_genero.tipo : '-'}}</td>
                 <td>{{ persona.derivacion.mot_gral_derivacion.tipo }}</td>
                 <td>{{ persona.derivacion.fecha }}</td>
                 <td>{{ persona.derivacion.nombre_operador_derivador }}</td>

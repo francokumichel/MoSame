@@ -1,8 +1,16 @@
 <template>
     <div class="table-responsive table-content border border-secondary-subtle shadow">
-        <PersonasCetecsmList :personasCetecsm="personasCetecsm" @asignacionRealizada="loadPersonaCetecsm" />
+        <div class="bg-light d-flex justify-content-center align-items-center g-3 p-4">
+            <input class="form-control w-75 me-3 border border-dark-subtle" v-model="searchQuery" type="text" placeholder="Ingrese algún teléfono, nombre, apellido, DNI o municipio" />            
+            <button @click="updatePerPage" type="button" class="btn btn-outline-success rounded-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </button>
+        </div>
+        <Llamadas0800List :llamadas="llamadas" />
         <div class="d-flex flex-row justify-content-center align-items-center">
-            <router-link v-if="this.$store.state.rolActual == 'Operador CETECSM'" :to="'/cetecsm/derivacion/create'" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Registrar derivacion</router-link>
+            <router-link :to="'/modulo_0800/cargar_llamada'" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Cargar llamada</router-link>
             <div class="d-flex flex-row ms-auto align-items-center me-3">
                 <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
                     <label>Filas por página: </label>
@@ -31,12 +39,12 @@
 
 <script>
 import { apiService } from "@/services/api";
-import PersonasCetecsmList from "./PersonasCetecsmList.vue";
+import Llamadas0800List from "./Llamadas0800List.vue";
 
 export default {
     data() {
         return {
-            personasCetecsm: [],
+            llamadas: [],
             searchQuery: "",
             errors: [],
             page: 1,
@@ -46,10 +54,10 @@ export default {
     },
 
     async created() {
-        this.loadPersonaCetecsm();
+        this.loadLlamadas0800();
     },
 
-    components: { PersonasCetecsmList },
+    components: { Llamadas0800List },
 
     computed: {
         pageInfo() {
@@ -60,16 +68,16 @@ export default {
     },
 
     methods: {
-        async loadPersonaCetecsm() {
+        async loadLlamadas0800() {
             try {
-                const response = await apiService.get(import.meta.env.VITE_API_URL + "cetecsm/personas" , {
+                const response = await apiService.get(import.meta.env.VITE_API_URL + "0800/llamadas" , {
                     params: {
                         q: this.searchQuery,
                         page: this.page,
                         per_page: this.perPage,
                     },
                 });
-                this.personasCetecsm = response.data.personas;
+                this.llamadas = response.data.llamadas;
                 this.cantPages = response.data.total;
             } catch (error) {
                 this.errors.push(error);
@@ -79,18 +87,18 @@ export default {
         previousPage() {
             if (this.page > 1) {
                 this.page--;
-                this.loadPersonaCetecsm();
+                this.loadLlamadas0800();
             }
         },
         nextPage() {
             if (this.page < this.cantPages){
                 this.page++;
-                this.loadPersonaCetecsm();
+                this.loadLlamadas0800();
             }
         },
         updatePerPage() {
             this.page = 1;
-            this.loadPersonaCetecsm();
+            this.loadLlamadas0800();
         },
     },    
 };

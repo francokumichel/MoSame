@@ -1,6 +1,7 @@
 const enlacesPorRol = {
     'Operador 0800': [
       { path: '/modulo_0800/llamadas', text: 'Llamadas' },
+      { path: '/modulo_0800/cargar_llamada', text: 'Cargar llamada'},
     ],
     'Operador CETECSM': [
       { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
@@ -20,8 +21,8 @@ const enlacesPorRol = {
     ],
     'Miembro observatorio': [
         { path: '/observatorio/llamadas_0800', text: 'Llamadas 0800' },
-        { path: '/observatorio/personas_cetecsm_derivadas', text: 'Personas derivadas a CETEC SM' },
-        { path: '/observatorio/personas_cetecsm_seguimiento', text: 'Personas en seguimiento por CETEC SM' },
+        { path: '/observatorio/personas_cetecsm_derivadas', text: 'Personas derivadas CETEC SM' },
+        { path: '/observatorio/personas_cetecsm_seguimiento', text: 'Personas en seguimiento CETEC SM' },
         { path: '/observatorio/cantidad_llamadas_cetecsm', text: 'Cantidad total de llamadas CETEC SM' },
         { path: '/observatorio/talleres', text: 'Talleres' },
     ],

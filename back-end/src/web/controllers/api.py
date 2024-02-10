@@ -1,3 +1,4 @@
+import json
 from flask import (
     Blueprint,
     jsonify,
@@ -45,6 +46,12 @@ from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema
+from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
+from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
+from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
+from src.core.schemas.motivo_de_la_consulta import motivo_de_la_consulta_schema, motivos_de_la_consulta_schema
+from src.core.schemas.llamada_0800 import llamada_0800_schema, llamadas_0800_schema, observatorio_llamadas_0800_schema
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/")
 prueba_blueprint = Blueprint("prueba", __name__, url_prefix="/prueba")
@@ -587,12 +594,13 @@ def obtener_informacion_personas_seguimiento_todas():
     datos_personas = []
     for persona in personas:
         resolucion_primera_llamada, fecha_primera_llamada, resolucion_ultima_llamada = obtener_datos_resolucion_fecha_llamada(persona)
+        print(persona.motivo_gral_acomp)
         datos_persona = {
             "region_sanitaria": persona.municipio.region_sanitaria.tipo,
             "edad": persona.edad,
             "identidad_genero": persona.identidad_genero_id,
             "motivo_acompanamiento": persona.motivo_gral_acomp_id,
-            "tipo_malestar_emocional": ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+            "tipo_malestar_emocional": ", ".join([motivo.tipo for motivo in persona.motivo_gral_acomp.malestares_emocionales]) if persona.motivo_gral_acomp.tipo == "Malestar emocional" else None,
             "resolucion_primera_llamada": resolucion_primera_llamada,
             "fecha_primera_llamada": fecha_primera_llamada.strftime("%Y-%m-%d"),
             "resolucion_ultima_llamada": resolucion_ultima_llamada,
@@ -674,6 +682,111 @@ def obtener_cantidad_llamadas_todas():
 
     return make_response(jsonify({"total_llamados": total_llamados_cetecsm}))
 
+@observatorio_blueprint.get("llamadas_0800")
+def obtener_llamadas_0800_observatorio():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    motivo_consulta = request.args.get("motivo_consulta", default="", type=str)
+    detalle_motivo_consulta = request.args.get("detalle_motivo_consulta", default="", type=str)
+    genero = request.args.get('genero', default='', type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_consulta": motivo_consulta,
+        "detalle_motivo_consulta": detalle_motivo_consulta,
+        'genero': genero 
+    }
+
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    llamadas = get_llamadas_0800_todas(search_terms=search_terms, page_num=page, per_page=per_page)
+
+    items = {
+        "llamadas": observatorio_llamadas_0800_schema.dump(llamadas),
+        "page": page,
+        "per_page": per_page,
+        "total": llamadas.total
+    }
+
+    print(llamadas)
+
+    return make_response(jsonify(items)), 200
+
+@observatorio_blueprint.get("llamadas_0800/exportar")
+def obtener_llamadas_0800_observatorio_exportar():
+    regiones_sanitarias = request.args.get("regiones_seleccionadas", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    edad_desde = request.args.get("edad_desde", default=None, type=int)
+    edad_hasta = request.args.get("edad_hasta", default=None, type=int)
+    motivo_consulta = request.args.get("motivo_consulta", default="", type=str)
+    detalle_motivo_consulta = request.args.get("detalle_motivo_consulta", default="", type=str)
+    genero = request.args.get('genero', default='', type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "edades": {
+            "desde": edad_desde,
+            "hasta": edad_hasta
+        },
+        "motivo_consulta": motivo_consulta,
+        "detalle_motivo_consulta": detalle_motivo_consulta,
+        'genero': genero 
+    }
+
+    llamadas = get_llamadas_0800_todas_sin_paginar(search_terms=search_terms)
+    
+    data = [{
+        'email_operador': llamada.email_operador,
+        'motivo_consulta': llamada.motivo_nombre,
+        'como_ubico': llamada.como_ubico_forma,
+        'como_ubico_otro': llamada.como_ubico_otro,
+        'municipio': llamada.municipio,
+        'sujeto': llamada.sujeto,
+        'edad': llamada.edad,
+        'identidad_genero': llamada.identidad_genero_tipo,
+        'pronombre': llamada.pronombre,
+        'grupo_conviviente': llamada.grupo_conviviente,
+        'grupo_conviviente_otro': llamada.grupo_conviviente_otro,
+        'detalle_motivo_consulta': llamada.detalle_motivo_motivo,
+        'malestares_emocionales': llamada.malestares_emocionales,
+        'malestares_emocionales_otro': llamada.malestares_emocionales_otro,
+        'situaciones_vulnerabilidad': llamada.situaciones_vulnerabilidad,
+        'definicion_llamado': llamada.definicion,
+        'intervencion_sugerida': llamada.intervencion_sugerida,
+        'motivo_derivacion': llamada.motivo_derivacion,
+        'motivo_derivacion_otro': llamada.motivo_derivacion_otro,
+        'nombre': llamada.nombre,
+        'apellido': llamada.apellido,
+        'dni': llamada.dni,
+        'telefonos': llamada.telefonos,
+        'emails': llamada.emails,
+        'domicilio': llamada.domicilio,
+        'nacionalidad': llamada.nacionalidad,
+        'nacimiento': llamada.nacimiento,
+        'detalle_intervencion': llamada.detalle_intervencion,
+        'duracion': llamada.duracion,
+        'demanda_tratamiento': "Sí" if llamada.demanda_tratamiento else "No",
+        'fecha_y_hora_carga': llamada.fecha_y_hora_carga
+    } for llamada in llamadas]
+
+    return convert_to_csv(data, "llamadas_0800.csv")
+
 @cetecsm_blueprint.get("operadores_cetecsm")
 def obtener_operadores_cetecsm():
 
@@ -701,3 +814,162 @@ def obtener_talleres_actividades():
 def get_index_tipo_talleres():
     tipo_talleres = {tipo.name: tipo.value for tipo in TiposActividades}
     return make_response(jsonify(tipo_talleres)), 200
+    return make_response(jsonify(users_schema.dump(operadores_cetecsm)))# Api para la parte del 0800
+
+@api_blueprint.get("sujetos_consulta")
+def get_index_sujeto_consulta():
+    sujetos_consulta = {sujeto.name: sujeto.value for sujeto in SujetoDeLaConsulta}
+    return make_response(jsonify(sujetos_consulta)), 200
+
+@api_blueprint.get("pronombres")
+def get_index_pronombres():
+    pronombres = {pronombre.name: pronombre.value for pronombre in Pronombre}
+    return make_response(jsonify(pronombres)), 200
+
+@api_blueprint.get("definiciones_llamada_0800")
+def get_index_definiciones_llamada():
+    definiciones = {definicion.name: definicion.value for definicion in DefinicionLlamada}
+    return make_response(jsonify(definiciones)), 200
+
+@api_blueprint.get("intervenciones_sugeridas")
+def get_index_intervenciones_sugeridas():
+    intervenciones = {intervencion.name: intervencion.value for intervencion in IntervecionSugerida}
+    return make_response(jsonify(intervenciones)), 200
+
+@api_blueprint.get("motivos_consulta")
+def get_index_motivos_consulta():
+    motivos = list_motivos_consulta()
+    return make_response(jsonify(motivos_de_la_consulta_schema.dump(motivos))), 200
+
+@api_blueprint.get("como_ubico")
+def get_index_como_ubico():
+    formas = list_como_ubico()
+    return make_response(jsonify(como_ubico_schema_many.dump(formas))), 200
+
+@api_blueprint.get("detalle_motivos_consulta")
+def get_index_detalle_motivos_consulta():
+    motivos = list_detalles_motivo_consulta()
+    return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
+
+@api_blueprint.post("llamada_0800/crear")
+# @jwt_required()
+def crear_llamada_0800():
+    """ Función que permite a un usuario Operador del 0800 cargar una llamada """
+    # current_user = get_jwt_identity()
+    # user = get_user(current_user)
+    data = request.get_json()
+    llamada = data['llamada']
+    print(llamada)
+
+    if llamada['definicion'] == 'Derivación a CETEC SM':
+
+        # Obtengo los teléfonos de la persona
+        telefonos: list = json.loads(llamada['telefonos'])
+        print(telefonos)
+        if len(telefonos) > 0:
+            telefono = telefonos[0]['numero']
+            if len(telefonos) > 1:
+                telefono_secundario = telefonos[1]['numero']
+            else:
+                telefono_secundario = ''
+        else:
+            telefono = ''
+            telefono_secundario = ''
+
+        persona_cetecsm = create_persona_cetecsm(
+            dni=llamada['dni'],
+            dio_consentimiento=llamada['demanda_tratamiento'],
+            municipio_id=llamada['municipio'],
+            nombre=llamada['nombre'],
+            apellido=llamada['apellido'],
+            edad=llamada['edad'],
+            telefono=telefono,
+            telefono_alternativo=telefono_secundario
+        )
+
+        nueva_derivacion = create_derivation(
+            dispositivo_derivacion='0800',
+            nombre_operador_derivador=llamada['email_operador'],
+            descripcion=llamada['detalle'],
+            persona_cetecsm_derivada=persona_cetecsm)
+
+        # Formateo el motivo para que funcione bien
+        motivo_derivacion = {'tipo':llamada['motivo_derivacion'], 'otro_tipo':llamada['motivo_derivacion_otro']}
+        
+        actualizar_derivacion(nueva_derivacion, motivo_derivacion)
+    
+    persona_cetecsm_id = persona_cetecsm.id if (llamada['definicion'] == 'Derivación a CETEC SM') else ''
+
+    create_llamada_0800(
+        motivo_nombre = llamada['motivo_consulta'],
+        como_ubico_forma = llamada['como_ubico'],
+        como_ubico_otro = llamada['como_ubico_otro'],
+        municipio_nombre = llamada['municipio'],
+        sujeto = llamada['sujeto'],
+        edad = llamada['edad'],
+        identidad_genero_tipo = llamada['identidad_genero'],
+        identidad_genero_otra = llamada['identidad_genero_otra'],
+        pronombre = llamada['pronombre'],
+        grupo_conviviente = llamada['grupo_conviviente'],
+        grupo_conviviente_otro = llamada['grupo_conviviente_otro'],
+        detalle_motivo_motivo = llamada['detalle_motivo_consulta'],
+        malestares_emocionales = llamada['malestares_emocionales'],
+        malestares_emocionales_otro = llamada['malestares_emocionales_otro'],
+        situaciones_vulnerabilidad = llamada['situaciones_vulnerabilidad'],
+        definicion = llamada['definicion'],
+        persona_cetecsm_id = persona_cetecsm_id,
+        intervencion_sugerida = llamada['intervencion_sugerida'],
+        motivo_derivacion = llamada['motivo_derivacion'],
+        motivo_derivacion_otro = llamada['motivo_derivacion_otro'],
+        nombre = llamada['nombre'],
+        apellido = llamada['apellido'],
+        dni = llamada['dni'],
+        telefonos = llamada['telefonos'],
+        emails = llamada['emails'],
+        domicilio = llamada['domicilio'],
+        nacionalidad = llamada['nacionalidad'],
+        nacimiento = llamada['nacimiento'],
+        detalle_intervencion = llamada['detalle'],
+        duracion = llamada['duracion'],
+        demanda_tratamiento = llamada['demanda_tratamiento'],
+        email_operador = llamada['email_operador']
+    )
+    
+    resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@api_blueprint.get("0800/llamadas")
+def get_llamadas_0800():
+
+    search_term = request.args.get("q", default="", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    llamadas_0800 = list_llamadas_0800(search_term=search_term, page_num=page, per_page=per_page)
+
+    data = {
+        "llamadas": llamadas_0800_schema.dump(llamadas_0800),
+        "page": page,
+        "per_page": per_page,
+        "total": llamadas_0800.total
+    }
+
+    return make_response(jsonify(data)), 200
+
+@api_blueprint.get("0800/verSeguimiento/<int:llamada_id>")
+def ver_seguimiento(llamada_id):
+    llamada = get_llamada_0800_by_id(llamada_id)
+    persona_cetecsm = get_persona_cetecsm(llamada.persona_cetecsm_id)
+    if persona_cetecsm.esta_asignada:
+        operador_cetecsm = get_user(persona_cetecsm.usuario_id)
+        nom_y_ape = operador_cetecsm.name + ' ' + operador_cetecsm.last_name
+        return make_response(jsonify({
+            'esta_asignada': True,
+            'fecha_ult_llamado': obtener_fecha_ultimo_llamado(persona_cetecsm.id),
+            'operador': nom_y_ape
+        })), 200
+    else:
+        return make_response(jsonify({
+            'esta_asignada': False
+        })), 200

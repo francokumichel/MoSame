@@ -9,7 +9,7 @@
                 <legend class="col-form-label col-auto pt-0 fw-semibold">Regiones sanitarias:</legend>
                 <div v-for="region_sanitaria in regiones_sanitarias" :key="region_sanitaria" :value="region_sanitaria.tipo" class="form-check">
                     <input
-                        class="form-check-input shadow-sm"
+                        class="form-check-input shadow-sm ms-0"
                         type="checkbox"
                         :id="region_sanitaria.tipo"
                         :value="region_sanitaria.tipo"
@@ -18,10 +18,6 @@
                     <label :for="region_sanitaria" class="form-check-label">{{ region_sanitaria.tipo }}</label>
                 </div>    
             </fieldset>
-            <div class="mb-3">
-                <label for="dispositivo_derivador" class="col-form-label fw-semibold">Dispositivo que deriva:</label>
-                <input v-model="dispositivo_derivador" type="text" id="nombre" class="form-control shadow-sm" />
-            </div>
             <div class="mb-3">
                 <label for="fecha_derivacion" class="col-form-label fw-semibold">Fecha de derivación:</label>
                 <div class="row g-3">
@@ -49,23 +45,37 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="mot_gral_derivacion" class="col-form-label fw-semibold">Motivo general de derivación:</label>
-                <select class="form-select border border-dark-subtle" v-model="mot_gral_derivacion" aria-label="Default select example">
-                    <option></option>
-                    <option v-for="motivo in motivos_grales_derivacion" :key="motivo" :value="motivo.tipo">
-                        {{ motivo.tipo }}
+                <label for="motivo_consulta" class="col-form-label fw-semibold">Motivo de la consulta:</label>
+                <select class="form-select border border-dark-subtle" v-model="motivo_consulta" aria-label="Default select example">
+                    <option value="">Todos</option>
+                    <option v-for="motivo in motivos_consulta" :key="motivo" :value="motivo.nombre">
+                        {{ motivo.nombre }}
                     </option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="nombre_operador_derivador" class="col-form-label fw-semibold">Nombre operador derivador:</label>
-                <input v-model="nombre_operador_derivador" type="text" id="nombre_operador_derivador" class="form-control shadow-sm" />
+                <label for="detalle_motivo_consulta" class="col-form-label fw-semibold">Detalle del motivo de la consulta:</label>
+                <select class="form-select border border-dark-subtle" v-model="detalle_motivo_consulta" aria-label="Default select example">
+                    <option value="">Todos</option>
+                    <option v-for="motivo in detalles_motivo_consulta" :key="motivo" :value="motivo.motivo">
+                        {{ motivo.motivo }}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="generos" class="col-form-label fw-semibold">Identidad de género:</label>
+                <select class="form-select border border-dark-subtle" v-model="genero" aria-label="Default select example">
+                    <option value="">Todas</option>
+                    <option v-for="genero in generos" :key="genero" :value="genero.tipo">
+                        {{ genero.tipo }}
+                    </option>
+                </select>
             </div>
             <button @click="updatePerPage" type="button" class="btn btn-primary shadow">Buscar</button>
         </div>
     </div>
     <div class="table-responsive table-content border border-secondary-subtle shadow">
-        <PersonasCetecsmDerivadasList :personas="personas" />
+        <ObservatorioLlamadas0800List :llamadas="llamadas" />
         <div class="d-flex flex-row justify-content-center align-items-center">
             <div class="d-flex flex-row align-items-center">
                 <button class="ms-4 mb-3 btn btn-outline-success shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Agregar filtros</button>
@@ -101,22 +111,24 @@
 import { saveAs } from 'file-saver';
 import { apiService } from "@/services/api";
 import { displayError, displaySuccess } from "@/services/handlers.js"
-import PersonasCetecsmDerivadasList from "./PersonasCetecsmDerivadasList.vue";
+import ObservatorioLlamadas0800List from "@/components/modulo-observatorio/ObservatorioLlamadas0800List.vue";
 
 export default {
     data() {
         return {
-            personas: [],
+            llamadas: [],
             regiones_seleccionadas: [],
             regiones_sanitarias: [],
-            dispositivo_derivador: "",
             fecha_desde: null,
             fecha_hasta: null,
             edad_desde: null,
             edad_hasta: null,
-            mot_gral_derivacion: "",
-            motivos_grales_derivacion: [],
-            nombre_operador_derivador: "",
+            motivo_consulta: "",
+            motivos_consulta: [],
+            detalle_motivo_consulta: '',
+            detalles_motivo_consulta: [],
+            genero: '',
+            generos: [],
             errors: [],
             page: 1,
             perPage: 5,
@@ -125,7 +137,7 @@ export default {
     },
 
     async created() {
-        this.cargarPersonasDerivadas();
+        this.cargarLlamadas();
         await apiService.get(import.meta.env.VITE_API_URL + "regiones_sanitarias")
             .then((response) => {
                 this.regiones_sanitarias = response.data;
@@ -135,17 +147,35 @@ export default {
                 this.errores.push(e);
             });
         
-        await apiService.get(import.meta.env.VITE_API_URL + "mot_grales_derivacion")
+        await apiService.get(import.meta.env.VITE_API_URL + "motivos_consulta")
             .then((response) => {
-                this.motivos_grales_derivacion = response.data;
+                this.motivos_consulta = response.data;
             })
             .catch((e) => {
                 console.log(e)
                 this.errores.push(e);
+            });
+        
+        await apiService.get(import.meta.env.VITE_API_URL + "detalle_motivos_consulta")
+            .then((response) => {
+                this.detalles_motivo_consulta = response.data;
             })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            });
+        
+        await apiService.get(import.meta.env.VITE_API_URL + "identidades_genero")
+            .then((response) => {
+                this.generos = response.data;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            });
     },
 
-    components: { PersonasCetecsmDerivadasList },
+    components: { ObservatorioLlamadas0800List },
 
     computed: {
         pageInfo() {
@@ -160,46 +190,26 @@ export default {
     },
 
     methods: {
-        async cargarPersonasDerivadas() {
+        async cargarLlamadas() {
             try {
-                const response = await apiService.get(import.meta.env.VITE_API_URL + "observatorio/personas_cetecsm_derivadas" , {
+                const response = await apiService.get(import.meta.env.VITE_API_URL + "observatorio/llamadas_0800" , {
                     params: {
                         regiones_seleccionadas: this.regionesSeleccionadasString,
-                        dispositivo_derivador: this.dispositivo_derivador,
                         fecha_desde: this.fecha_desde,
                         fecha_hasta: this.fecha_hasta,
                         edad_desde: this.edad_desde,
                         edad_hasta: this.edad_hasta,
-                        mot_gral_derivacion: this.mot_gral_derivacion,
-                        nombre_operador_derivador: this.nombre_operador_derivador,
+                        motivo_consulta: this.motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        genero: this.genero,
                         page: this.page,
                         per_page: this.perPage,
                     },
                 });
-                this.personas = response.data.personas;
+                this.llamadas = response.data.llamadas;
                 this.cantPages = response.data.total;
-                console.log(this.personas)
-            } catch (error) {
-                this.errors.push(error);
-            }
-        },
-
-        async exportarPersonasDerivadas() {
-            try {
-                const response = await apiService.get(import.meta.env.VITE_API_URL + "observatorio/personas_cetecsm_derivadas/exportar" , {
-                    params: {
-                        regiones_seleccionadas: this.regionesSeleccionadasString,
-                        dispositivo_derivador: this.dispositivo_derivador,
-                        fecha_desde: this.fecha_desde,
-                        fecha_hasta: this.fecha_hasta,
-                        edad_desde: this.edad_desde,
-                        edad_hasta: this.edad_hasta,
-                        mot_gral_derivacion: this.mot_gral_derivacion,
-                        nombre_operador_derivador: this.nombre_operador_derivador,
-                    },
-                });
-                this.personas = response.data.personas;
-                this.cantPages = response.data.total;
+                console.log(this.llamadas)
             } catch (error) {
                 this.errors.push(error);
             }
@@ -208,18 +218,18 @@ export default {
         previousPage() {
             if (this.page > 1) {
                 this.page--;
-                this.cargarPersonasDerivadas();
+                this.cargarLlamadas();
             }
         },
         nextPage() {
             if (this.page < this.cantPages){
                 this.page++;
-                this.cargarPersonasDerivadas();
+                this.cargarLlamadas();
             }
         },
         updatePerPage() {
             this.page = 1;
-            this.cargarPersonasDerivadas();
+            this.cargarLlamadas();
         },
 
         actualizarLista(lista, elemento) {
@@ -235,21 +245,22 @@ export default {
         },
 
         async exportarDatos() {
-            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/personas_cetecsm_derivadas/exportar" , {
+            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/llamadas_0800/exportar" , {
                     params: {
                         regiones_seleccionadas: this.regionesSeleccionadasString,
-                        dispositivo_derivador: this.dispositivo_derivador,
                         fecha_desde: this.fecha_desde,
                         fecha_hasta: this.fecha_hasta,
                         edad_desde: this.edad_desde,
                         edad_hasta: this.edad_hasta,
-                        mot_gral_derivacion: this.mot_gral_derivacion,
-                        nombre_operador_derivador: this.nombre_operador_derivador,
+                        motivo_consulta: this.motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        detalle_motivo_consulta: this.detalle_motivo_consulta,
+                        genero: this.genero
                     },})
                 .then((response) => {
                     if(response.status == 200) {
                         const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8' });
-                        saveAs(blob, 'personas_derivadas.csv');
+                        saveAs(blob, 'llamadas_0800.csv');
                         displaySuccess(this.$toast, "Archivo exportado exitosamente.")
                     }
                 })

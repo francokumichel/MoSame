@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from "../views/LoginView.vue";
 import UsersView from"../views/UsersView.vue";
 import FormUsers from "../views/FormUserView.vue";
+import HomeView from "../views/HomeView.vue";
 import PersonasCetecsm from "../views/PersonaCetecsmView.vue";
 import CreateDerivacionView from "../views/CreateDerivacionView.vue";
 import PersonasCetecsmAsignadas from "../views/PersonasCetecsmAsignadasView.vue";
@@ -15,6 +16,9 @@ import PersonasCetecsmDerivadas from "../views/modulo-observatorio/PersonasCetec
 import PersonasCetecsmSeguimiento from "../views/modulo-observatorio/PersonasCetecsmSeguimientoView.vue";
 import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamadasCetecsmView.vue";
 import Taller from "../views/modulo-actividades-prevencion/TallerView.vue";
+import ObservatorioLlamadas0800View from "../views/modulo-observatorio/ObservatorioLlamadas0800View.vue"
+import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
+import Llamadas0800View from "../views/Llamadas0800View.vue";
 import store from "@/store";
 import { displayError } from "@/services/handlers.js"
 
@@ -33,6 +37,12 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ["Administrador"] },
         },
         {
+            path: "/",
+            name: "home",
+            component: HomeView,
+            meta: { requiresAuth: true },
+        },
+        {
             path:"/users/create",
             name: "users-create",
             component: FormUsers,
@@ -48,7 +58,7 @@ const router = createRouter({
             path:"/cetecsm/derivaciones",
             name: "cetecsm-derivaciones",
             component: PersonasCetecsm,
-            meta: { requiresAuth: true, roles: ["Operador CETECSM"] }, 
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] }, 
         },
         {
             path:"/cetecsm/derivacion/create",
@@ -84,7 +94,19 @@ const router = createRouter({
             path:"/cetecsm/llamada/crear/:id",
             name: "cetecsm-crear-llamada",
             component: CreateLlamadaCetecsm,
-            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },             
+            meta: { requiresAuth: true, roles: ["Operador CETECSM", "Coordinador CETECSM"] },
+        },
+        {
+            path:"/modulo_0800/cargar_llamada",
+            name: "0800-crear-llamada",
+            component: CreateLlamada0800View,
+            meta: { requiresAuth: true },
+        },
+        {
+            path:"/modulo_0800/llamadas",
+            name: "0800-llamadas",
+            component: Llamadas0800View,
+            meta: { requiresAuth: true },
         },
         {
             path:"/cetecsm/operadores",
@@ -121,6 +143,10 @@ const router = createRouter({
             name: "actividades-talleres",
             component: Taller,
             meta: { requiresAuth: true, roles: ["Administrador actividades"] },             
+            path:"/observatorio/llamadas_0800",
+            name: "observatorio-llamadas-0800",
+            component: ObservatorioLlamadas0800View,
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
         },
     ],
 });

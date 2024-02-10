@@ -32,9 +32,10 @@ def create_app(env="development", static_folder="../static"):
     @app.cli.command(name="resetdb")
     def resetdb():
         database.reset_db()
-
-    @app.cli.command(name="seedsdb")
-    def seedsdb():
         seeds.run()
+
+    #@app.cli.command(name="seedsdb")
+    #def seedsdb():
+    #    seeds.run()
 
     return app
