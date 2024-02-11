@@ -142,7 +142,9 @@ const router = createRouter({
             path:"/actividades/talleres",
             name: "actividades-talleres",
             component: Taller,
-            meta: { requiresAuth: true, roles: ["Administrador actividades"] },             
+            meta: { requiresAuth: true, roles: ["Administrador actividades"] },
+        },    
+        {                 
             path:"/observatorio/llamadas_0800",
             name: "observatorio-llamadas-0800",
             component: ObservatorioLlamadas0800View,

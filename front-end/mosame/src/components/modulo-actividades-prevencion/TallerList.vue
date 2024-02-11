@@ -1,5 +1,5 @@
 <template>
-    <table v-if="talleres" class="table table-hover">
+    <table v-if="talleres" class="table table-sm table-hover">
         <thead class="table-light">
             <tr>
                 <th scope="col">Fecha y hora de carga</th>
@@ -26,7 +26,7 @@
                 <td v-if="tipoTaller == 'Talleres de Salud Mental en las Escuelas'" >{{ formatAnioDivisiones(taller.actividad.anios) }}</td>
                 <td v-if="tipoTaller == 'Talleres de Salud Mental en las Escuelas'" >{{ taller.actividad.cant_encuentros }}</td>
                 <td v-if="tipoTaller == 'Espacio Grupal en el Dispositivo'">{{ taller.actividad.actividades_internas_id }}</td>
-                <td v-else="tipoTaller == 'Acciones de Promoción y Prevención en la Comunidad'">{{ talleres.actividad.actividades_externas_id }}</td>
+                <td v-else-if="tipoTaller == 'Acciones de Promoción y Prevención en la Comunidad'">{{ taller.actividad.actividades_externas_id }}</td>
                 <td>{{ taller.actividad.cant_participantes }}</td>
                 <td>{{ taller.actividad.observaciones }}</td>
                 <td>{{ taller.localidad_id }}</td>
@@ -54,8 +54,7 @@ export default {
     methods: {
         formatAnioDivisiones(anios) {
             return anios.map(anio => {
-                const divisionesStr = anio.divisiones.map(division => division.nombre).join(', ');
-                return `${anio.anio} (${divisionesStr})`;
+                return `${anio.anio} (${anio.divisiones})`;
             }).join(', ');
         },
             

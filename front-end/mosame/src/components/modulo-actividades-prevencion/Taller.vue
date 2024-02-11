@@ -1,5 +1,5 @@
 <template>
-    <div class="table-responsive table-content table-sm border border-secondary-subtle shadow">
+    <div class="bg-light border border-secondary-subtle shadow">
         <div class="d-flex flex-row align-items-center m-3">
             <label for="tipos_actividad col-auto">Tipo taller: </label>
             <div class="col-auto ms-3">

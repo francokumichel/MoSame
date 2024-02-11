@@ -1,11 +1,6 @@
 from src.core.database import db
 import enum
 
-anio_division = db.Table('anio_division',   
-    db.Column('anio_id', db.Integer, db.ForeignKey('anio.id'), primary_key=True),
-    db.Column('division_id', db.String(5), db.ForeignKey('division.nombre'), primary_key=True)                                
-)
-
 class Anios(enum.Enum):
     PRIMERO = "1ro"
     SEGUNDO = "2do"
@@ -15,10 +10,31 @@ class Anios(enum.Enum):
     SEXTO = "6to"
     SEPTIMO = "7mo"
 
+class Divisiones(enum.Enum):
+    PRIMERA = "1ra"
+    SEGUNDA = "2da"
+    TERCERA = "3ra"
+    CUARTA = "4ta"
+    QUINTA = "5ta"
+    SEXTA = "6ta"
+    SEPTIMA = "7ma"
+    DIVISION_A = "A"
+    DIVISION_B = "B"
+    DIVISION_C = "C"
+    DIVISION_D = "D"
+    DIVISION_E = "E"
+    DIVISION_F = "F"
+    DIVISION_G = "G"
+    DIVISION_H = "H"
+    DIVISION_I = "I"
+    DIVISION_J = "J"
+    DIVISION_K = "K"
+    DIVISION_L = "L"
+
 class Anio(db.Model):
     __tablename__ = "anio"
 
     id = db.Column(db.Integer, primary_key=True)
     anio = db.Column(db.String(5))
-    divisiones = db.relationship("Division", secondary=anio_division, backref="anios")
+    divisiones = db.Column(db.Text)
 

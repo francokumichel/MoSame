@@ -1,7 +1,7 @@
 from src.core.database import db
 from src.core.llamada_0800.llamada_0800 import Llamada0800
 from src.core.llamada_0800.llamada_0800 import MotivoDeLaConsulta, ComoUbico, DetalleMotivoConsulta
-from src.core.persona_cetecsm.persona_cetecsm import Municipio
+from src.core.general.municipio.municipio import Municipio
 
 def create_llamada_0800(**kwargs):
     llamada_0800 = Llamada0800(**kwargs)

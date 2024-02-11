@@ -814,7 +814,8 @@ def obtener_talleres_actividades():
 def get_index_tipo_talleres():
     tipo_talleres = {tipo.name: tipo.value for tipo in TiposActividades}
     return make_response(jsonify(tipo_talleres)), 200
-    return make_response(jsonify(users_schema.dump(operadores_cetecsm)))# Api para la parte del 0800
+    
+# Api para la parte del 0800
 
 @api_blueprint.get("sujetos_consulta")
 def get_index_sujeto_consulta():

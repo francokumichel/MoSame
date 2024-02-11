@@ -22,13 +22,11 @@ from src.core.modulo_actividades import (
     actividades_internas,
     año,
     dispositivo,
-    division,
     escuela,
-    nivel,
     taller
 )
 from src.core.modulo_actividades.taller.taller import TiposActividades
-from src.core.modulo_actividades.año.anio import Anios
+from src.core.modulo_actividades.año.anio import Anios, Divisiones
 from src.core import llamada_0800
 
 def run():
@@ -422,10 +420,6 @@ def run():
     
 
     df_escuelas = pd.read_csv("public/data/escuelas_prueba.csv")
-    lista_niveles = df_escuelas['nivel'].unique().tolist()
-
-    for elem in lista_niveles:
-        nivel.create_nivel(nombre=elem)
 
     listado_escuelas = df_escuelas['cue'].unique().tolist()
 
@@ -438,38 +432,19 @@ def run():
             nombre=df_escuela[0],
             municipio_id=df_escuela[2],
             sector=df_escuela[3],
-            modalidad=df_escuela[4]
+            modalidad=df_escuela[4],
+            niveles=", ".join(niveles)
         )
-
-        for niv in niveles:
-            elem = nivel.get_by_name(name=niv)
-            esc.niveles.append(elem)
-
-    division_1 = division.create_division(nombre="1ra")
-    division_2 = division.create_division(nombre="2da")
-    division_3 = division.create_division(nombre="3ra")
-    division_4 = division.create_division(nombre="4ta")
-    division_5 = division.create_division(nombre="5ta")
-    division_6 = division.create_division(nombre="6ta")
-    division_7 = division.create_division(nombre="7ma")
-    division_a = division.create_division(nombre="A")
-    division_b = division.create_division(nombre="B")
-    division_c = division.create_division(nombre="C")
-    division_d = division.create_division(nombre="D")
-    division_e = division.create_division(nombre="E")
-    division_f = division.create_division(nombre="F")
-    division_g = division.create_division(nombre="G")
-    division_h = division.create_division(nombre="H")
-    division_i = division.create_division(nombre="I")
-    division_j = division.create_division(nombre="J")
-    division_k = division.create_division(nombre="K")
-    division_l = division.create_division(nombre="l")    
     
-    anio_1 = año.create_anio(anio=Anios.PRIMERO.value)
-    anio_1.divisiones.append(division_1)
-    anio_1.divisiones.append(division_2)
-    anio_2 = año.create_anio(anio=Anios.TERCERO.value)
-    anio_2.divisiones = [division_1]
+    anio_1 = año.create_anio(
+        anio=Anios.PRIMERO.value,
+        divisiones=", ".join([Divisiones.DIVISION_A.value, Divisiones.DIVISION_B.value])
+    )
+
+    anio_2 = año.create_anio(
+        anio=Anios.TERCERO.value,
+        divisiones=", ".join([Divisiones.DIVISION_A.value, Divisiones.DIVISION_C.value])
+    )
 
     actividad_1 = actividad.create_actividad(
         cant_participantes=50,

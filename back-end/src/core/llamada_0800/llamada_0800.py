@@ -1,7 +1,7 @@
 from src.core.database import db
 import enum
 from sqlalchemy import func
-from src.core.persona_cetecsm.persona_cetecsm import Municipio
+from src.core.general.municipio.municipio import Municipio
 
 class MotivoDeLaConsulta(db.Model):
     __tablename__ = "motivo_consulta"
