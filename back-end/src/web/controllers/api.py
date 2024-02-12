@@ -41,7 +41,7 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800 import create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -56,6 +56,7 @@ user_blueprint = Blueprint("user", __name__, url_prefix="/users")
 roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
 cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm")
 observatorio_blueprint =  Blueprint("observatorio", __name__, url_prefix="/observatorio")
+admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
@@ -64,6 +65,7 @@ api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(roles_blueprint)
 api_blueprint.register_blueprint(cetecsm_blueprint)
 api_blueprint.register_blueprint(observatorio_blueprint)
+api_blueprint.register_blueprint(admin_blueprint)
 
 @prueba_blueprint.get("")
 def get_all_pruebas():
@@ -821,7 +823,7 @@ def get_index_detalle_motivos_consulta():
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
 
 @api_blueprint.post("llamada_0800/crear")
-# @jwt_required()
+@jwt_required()
 def crear_llamada_0800():
     """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     # current_user = get_jwt_identity()
@@ -942,3 +944,16 @@ def ver_seguimiento(llamada_id):
         return make_response(jsonify({
             'esta_asignada': False
         })), 200
+
+@admin_blueprint.get("opciones")
+def get_opciones():
+    motivos = [motivo['nombre'] for motivo in motivos_de_la_consulta_schema.dump(list_motivos_consulta())]
+    return make_response(jsonify(motivos)), 200
+
+@admin_blueprint.post("guardar-opciones")
+def save_opciones():
+    vaciar_motivos_consulta()
+    motivos = json.loads(request.get_json()['opciones'])
+    for motivo in motivos:
+        create_motivo_consulta(nombre=motivo)
+    return make_response(), 200

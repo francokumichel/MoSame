@@ -28,6 +28,7 @@ const enlacesPorRol = {
     ],
     'Administrador': [
         { path: '/users', text: 'Usuarios' },
+        { path: '/editar_opciones', text: 'Editar opciones' }
     ],
 };
   

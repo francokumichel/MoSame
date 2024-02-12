@@ -21,6 +21,18 @@ def list_motivos_consulta():
 def get_motivo_consulta(nombre):
     return MotivoDeLaConsulta.query.filter_by(nombre=nombre).first()
 
+def vaciar_motivos_consulta():
+    try:
+        # Elimina todas las tuplas de la tabla
+        db.session.query(MotivoDeLaConsulta).delete()
+        db.session.commit()
+        return True
+    except Exception as e:
+        # Maneja cualquier error que ocurra durante la eliminación
+        db.session.rollback()
+        print("Error al vaciar la tabla:", str(e))
+        return False
+
 def create_como_ubico(**kwargs):
     como_ubico = ComoUbico(**kwargs)
     db.session.add(como_ubico)

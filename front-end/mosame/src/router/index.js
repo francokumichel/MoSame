@@ -18,6 +18,7 @@ import CantidadLlamadasCetecsm from "../views/modulo-observatorio/CantidadLlamad
 import ObservatorioLlamadas0800View from "../views/modulo-observatorio/ObservatorioLlamadas0800View.vue"
 import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
 import Llamadas0800View from "../views/Llamadas0800View.vue";
+import EditarOpcionesView from "../views/modulo-general/EditarOpcionesView.vue"
 import store from "@/store";
 import { displayError } from "@/services/handlers.js"
 
@@ -142,6 +143,12 @@ const router = createRouter({
             name: "observatorio-llamadas-0800",
             component: ObservatorioLlamadas0800View,
             meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
+        },
+        {
+            path: "/editar_opciones",
+            name: "editar-opciones",
+            component: EditarOpcionesView,
+            meta: { requiresAuth: true, roles: ["Administrador"] },
         },
     ],
 });
