@@ -7,5 +7,5 @@ def create_localidad(**kwargs):
     db.session.commit()
     return localidad
 
-def list_municipios():
+def list_localidades():
     return Localidad.query.all()

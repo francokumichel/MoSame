@@ -12,3 +12,7 @@ def list_municipios():
 
 def get_by_name(name):
     return Municipio.query.filter_by(nombre=name).first()
+
+def get_localidades_by_municipio(municipio):
+    municipio = get_by_name(name=municipio)
+    return municipio.localidades

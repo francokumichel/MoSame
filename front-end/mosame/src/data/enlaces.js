@@ -12,8 +12,8 @@ const enlacesPorRol = {
         { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
         { path: "/cetecsm/personas/asignadas_todas", text: 'Personas en seguimiento' },
     ],
-    'Trabajador de salud': [
-        { path: '/actividades/create', text: 'Actividades' },
+    'Trabajador salud': [
+        { path: '/actividades/cargar_taller', text: 'Actividades' },
     ],
     'Administrador actividades': [
         { path: '/actividades/talleres', text: 'Talleres' },

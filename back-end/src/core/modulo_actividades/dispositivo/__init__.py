@@ -6,3 +6,6 @@ def create_dispositivo(**kwargs):
     db.session.add(dispositivo)
     db.session.commit()
     return dispositivo
+
+def list_dispositivos():
+    return Dispositivo.query.all()

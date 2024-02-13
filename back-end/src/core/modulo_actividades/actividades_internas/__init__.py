@@ -6,3 +6,6 @@ def create_actividad_interna(**kwargs):
     db.session.add(actividad_interna)
     db.session.commit()
     return actividad_interna
+
+def list_actividades_internas():
+    return ActividadesInternas.query.all()

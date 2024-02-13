@@ -20,7 +20,7 @@ from src.core.users import find_user_by_email, get_user, create_user, get_roles,
 from src.core.schemas.user import user_schema, users_schema
 from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
-from src.core.general.municipio import list_municipios
+from src.core.general.municipio import list_municipios, get_localidades_by_municipio
 from src.core.schemas.municipio import municipios_schema
 from src.core.general.region_sanitaria import list_regiones_sanitarias
 from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
@@ -46,6 +46,19 @@ from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema
+from src.core.modulo_actividades.dispositivo import list_dispositivos
+from src.core.schemas.dispositivo import dispositivos_schema
+from src.core.modulo_actividades.actividades_internas import list_actividades_internas
+from src.core.schemas.actividades_internas import actividades_internas_schema
+from src.core.modulo_actividades.actividades_externas import list_actividades_externas
+from src.core.schemas.actividades_externas import actividades_externas_schema
+from src.core.modulo_actividades.año.anio import Anios, Divisiones
+from src.core.modulo_actividades.año import create_anio
+from src.core.modulo_actividades.escuela import get_escuelas_by_municipio
+from src.core.schemas.escuela import escuela_schema, escuelas_schema
+from src.core.schemas.localidad import localidades_schema
+from src.core.modulo_actividades.actividad import create_actividad
+from src.core.modulo_actividades.taller import create_taller
 from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
@@ -814,7 +827,94 @@ def obtener_talleres_actividades():
 def get_index_tipo_talleres():
     tipo_talleres = {tipo.name: tipo.value for tipo in TiposActividades}
     return make_response(jsonify(tipo_talleres)), 200
+
+@actividades_blueprint.get("dispositivos")
+def get_index_dispositivos():
+    dispositivos = list_dispositivos()
+    return make_response(jsonify(dispositivos_schema.dump(dispositivos))), 200
+
+@actividades_blueprint.get("años")
+def get_index_años():
+    años = {año.name: año.value for año in Anios}
+    return make_response(jsonify(años)), 200
+
+@actividades_blueprint.get("divisiones")
+def get_index_divisiones():
+    divisiones = {division.name: division.value for division in Divisiones}
+    return make_response(jsonify(divisiones)), 200
+
+@actividades_blueprint.get("actividades_internas")
+def get_index_actividades_internas():
+    actividades_internas = list_actividades_internas()
+    return make_response(jsonify(actividades_internas_schema.dump(actividades_internas)))
+
+@actividades_blueprint.get("actividades_externas")
+def get_index_actividades_externas():
+    actividades_externas = list_actividades_externas()
+    return make_response(jsonify(actividades_externas_schema.dump(actividades_externas)))
+
+@actividades_blueprint.get("escuelas")
+def get_index_escuelas():
+    municipio = request.args.get("municipio", default="", type=str)
+    escuelas = get_escuelas_by_municipio(municipio)
+    return make_response(jsonify(escuelas_schema.dump(escuelas)))
+
+@actividades_blueprint.get("localidades")
+def get_index_localidades():
+    municipio = request.args.get("municipio", default="", type=str)
+    localidades = get_localidades_by_municipio(municipio)
+    return make_response(jsonify(localidades_schema.dump(localidades)))
+
+@actividades_blueprint.post("registrar_taller")
+@jwt_required()
+def registrar_taller():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    actividad = data['actividad']
+    taller = data['taller']
     
+    if actividad['tipo'] == 'Talleres de Salud Mental en las Escuelas':
+        escuela = data['escuela']
+        años = []
+        for año in actividad['anios']:
+            anio = create_anio(anio=año['anio'], divisiones=", ".join(año['divisiones']))
+            años.append(anio)
+
+        act = create_actividad(
+            cant_participantes=actividad['cant_participantes'],
+            observaciones=actividad['observaciones'],
+            cant_encuentros=actividad['cant_encuentros'],
+            escuela_cue=escuela['cue'],
+            anios=años,
+        )
+
+    elif actividad['tipo'] == 'Espacio Grupal en el Dispositivo':
+        act = create_actividad(
+            cant_participantes=actividad['cant_participantes'],
+            observaciones=actividad['observaciones'],
+            actividades_internas_id=actividad['actividad_interna']
+        )
+
+    else:
+        act = create_actividad(
+            cant_participantes=actividad['cant_participantes'],
+            observaciones=actividad['observaciones'],
+            actividades_externas_id=actividad['actividad_externa']
+        )
+    
+    create_taller(
+        tipo=actividad['tipo'],
+        municipio_id=taller['municipio']['nombre'],
+        localidad_id=taller['localidad'],
+        dispositivo_id=taller['dispositivo'],
+        usuario_id=current_user,
+        actividad=act
+    )
+
+    resp = make_response(jsonify({"msge": "Taller cargado exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
 # Api para la parte del 0800
 
 @api_blueprint.get("sujetos_consulta")

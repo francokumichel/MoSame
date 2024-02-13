@@ -6,3 +6,6 @@ def create_actividad_externa(**kwargs):
     db.session.add(actividad_externa)
     db.session.commit()
     return actividad_externa
+
+def list_actividades_externas():
+    return ActividadesExternas.query.all()
