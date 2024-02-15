@@ -20,6 +20,7 @@ import CreateLlamada0800View from "../views/CreateLlamada0800View.vue";
 import Llamadas0800View from "../views/Llamadas0800View.vue";
 import Taller from "../views/modulo-actividades-prevencion/TallerView.vue";
 import TallerForm from "../views/modulo-actividades-prevencion/TallerFormView.vue";
+import Estadisticas from "../views/modulo-actividades-prevencion/EstadisticasView.vue";
 import store from "@/store";
 import { displayError } from "@/services/handlers.js"
 
@@ -156,6 +157,12 @@ const router = createRouter({
             name: "actividades-cargar-taller",
             component: TallerForm,
             meta: { requiresAuth: true, roles: ["Trabajador salud"] },
+        },
+        {
+            path:"/actividades/estadisticas",
+            name: "actividades-estadisticas",
+            component: Estadisticas,
+            meta: { requiresAuth: true, roles: ["Administrador actividades"] },
         },
     ],
 });

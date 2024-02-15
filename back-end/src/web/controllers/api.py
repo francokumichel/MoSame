@@ -4,6 +4,7 @@ from flask import (
     jsonify,
     make_response,
     request,
+    send_file
 )
 
 from flask_jwt_extended import (
@@ -914,6 +915,10 @@ def registrar_taller():
     resp = make_response(jsonify({"msge": "Taller cargado exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
     return resp
+
+@api_blueprint.get("municipios_geojson")
+def get_municipios_geojson():
+    return send_file('../../public/data/municipios_geo.geojson', mimetype='application/json'), 200
 
 # Api para la parte del 0800
 
