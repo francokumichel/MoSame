@@ -33,6 +33,18 @@ def vaciar_motivos_consulta():
         print("Error al vaciar la tabla:", str(e))
         return False
 
+def vaciar_como_ubico():
+    try:
+        # Elimina todas las tuplas de la tabla
+        db.session.query(ComoUbico).delete()
+        db.session.commit()
+        return True
+    except Exception as e:
+        # Maneja cualquier error que ocurra durante la eliminación
+        db.session.rollback()
+        print("Error al vaciar la tabla:", str(e))
+        return False
+
 def create_como_ubico(**kwargs):
     como_ubico = ComoUbico(**kwargs)
     db.session.add(como_ubico)

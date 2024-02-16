@@ -35,13 +35,13 @@ from src.core.schemas.prueba import prueba_schema
 from src.core.motivo_general_acompanamiento import list_mot_gral_acomp
 from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_schema
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
-from src.core.identidad_genero import list_identidades_genero
+from src.core.identidad_genero import create_identidad_genero, list_identidades_genero, vaciar_identidad_genero
 from src.core.schemas.identidad_genero import identidades_genero_schema
 from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_motivos_consulta
+from src.core.llamada_0800 import create_como_ubico, create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_como_ubico, vaciar_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -945,15 +945,32 @@ def ver_seguimiento(llamada_id):
             'esta_asignada': False
         })), 200
 
-@admin_blueprint.get("opciones")
-def get_opciones():
-    motivos = [motivo['nombre'] for motivo in motivos_de_la_consulta_schema.dump(list_motivos_consulta())]
-    return make_response(jsonify(motivos)), 200
+@admin_blueprint.get("opciones/<string:opcion>")
+def get_opciones(opcion):
+    match opcion:
+        case 'motivos_consulta':
+            opciones = [opcion['nombre'] for opcion in motivos_de_la_consulta_schema.dump(list_motivos_consulta())]
+        case 'como_ubico':
+            opciones = [opcion['forma'] for opcion in como_ubico_schema_many.dump(list_como_ubico())]
+        case 'generos':
+            opciones = [opcion['tipo'] for opcion in identidades_genero_schema.dump(list_identidades_genero())]
+    return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
 def save_opciones():
-    vaciar_motivos_consulta()
-    motivos = json.loads(request.get_json()['opciones'])
-    for motivo in motivos:
-        create_motivo_consulta(nombre=motivo)
+    opcion = request.get_json()['opcion']
+    opciones = json.loads(request.get_json()['opciones'])
+    match opcion:
+        case 'motivos_consulta':
+            vaciar_motivos_consulta()
+            for opcion in opciones:
+                create_motivo_consulta(nombre=opcion)
+        case 'como_ubico':
+            vaciar_como_ubico()
+            for opcion in opciones:
+                create_como_ubico(forma=opcion)
+            for opcion in opciones:
+                create_identidad_genero(tipo=opcion)
+        case 'generos':
+            vaciar_identidad_genero()
     return make_response(), 200

@@ -1,10 +1,21 @@
 <template>
-        <h2 class="fw-bold mb-4">Registrar llamada</h2>
-        <form ref="formulario" class="px-5 needs-validation" @submit.prevent="registrarLlamada" novalidate>
+        <h2 class="fw-bold mb-4">Editar opciones</h2>
+        <form ref="formulario" class="px-5 needs-validation" @submit.prevent="guardarOpciones" novalidate>
+            <div class="mb-3">
+                <label for="opciones" class="col-form-label fw-semibold">Seleccione las opciones a editar:</label>
+                <select required class="form-select border border-dark-subtle" v-model.lazy="opcion" @change="getOpciones()">
+                    <option value="motivos_consulta">Motivos de la consulta</option>
+                    <option value="como_ubico">Medios por el cual se ubicó al 0800</option>
+                    <option value="generos">Identidades de género</option>
+                    <option value="detalles_motivo_consulta">Detalles del motivo de la consulta</option>
+                    <option value="malestares_emocionales">Tipos de malestar emocional</option>
+                    <option value="situaciones_vulnerabilidad">Tipos de situación de vulnerabilidad</option>
+                </select>
+            </div>
             <div class="mb-3">
                 <label for="opciones" class="col-form-label fw-semibold">Opciones:</label>
                 <div v-for="(opcion, index) in opciones" :key="index" class="d-flex">
-                    <input required class="form-control border border-dark-subtle mb-2" type="text" :value="opcion" @input.prevent="updateOpcion(index, $event.target.value)" placeholder="Opción nueva" />
+                    <input required class="form-control border border-dark-subtle mb-2" maxlength="100" type="text" :value="opcion" @input.prevent="updateOpcion(index, $event.target.value)" placeholder="Opción nueva" />
                     <button class="btn btn-secondary ms-2 mb-2" @click.prevent="removeOpcion(index)" v-if="opciones.length > 1">-</button>
                     <button class="btn btn-primary ms-2 mb-2" @click.prevent="addOpcion(index)" v-if="index === opciones.length - 1">+</button>
                 </div>
@@ -24,12 +35,20 @@ export default {
         return {
             opciones: [],
             errores: [],
+            opcion: "motivos_consulta"
         }
     },
 
     async created() {
 
-        await apiService.get(import.meta.env.VITE_API_URL + "admin/opciones")
+        this.getOpciones();
+        
+    },
+
+    methods: {
+
+        async getOpciones() {
+            await apiService.get(import.meta.env.VITE_API_URL + "admin/opciones/" + `${this.opcion}`)
             .then((response) => {
                 this.opciones = response.data;
                 console.log(response.data)
@@ -38,10 +57,9 @@ export default {
                 console.log(e)
                 this.errores.push(e);
             })
-    },
+        },
 
-    methods: {
-        async registrarLlamada() {
+        async guardarOpciones() {
             const form = this.$refs.formulario;
 
         // Verificar si alguna opción está vacía
@@ -56,6 +74,7 @@ export default {
                                         
                     await apiService.post(import.meta.env.VITE_API_URL + "admin/guardar-opciones",
                         {
+                            opcion: this.opcion,
                             opciones: opciones_str,
                         })
                     .then((response) => {

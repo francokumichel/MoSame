@@ -183,13 +183,13 @@ def run():
     otro_mot_gral_derivacion = motivo_general_derivacion.create_motivo_gral_der(tipo="Otro")
 
     # Carga de tabla de identidad de genero
-    mujer = identidad_genero.create(tipo="Mujer")
-    varon = identidad_genero.create(tipo="Varón")
-    mujer_trans = identidad_genero.create(tipo="Mujer trans")
-    varon_trans = identidad_genero.create(tipo="Varón trans")
-    no_binarie = identidad_genero.create(tipo="No binarie")
-    otra_identidad = identidad_genero.create(tipo="Otra identidad")
-    ns_nc = identidad_genero.create(tipo="NS/NC")
+    mujer = identidad_genero.create_identidad_genero(tipo="Mujer")
+    varon = identidad_genero.create_identidad_genero(tipo="Varón")
+    mujer_trans = identidad_genero.create_identidad_genero(tipo="Mujer trans")
+    varon_trans = identidad_genero.create_identidad_genero(tipo="Varón trans")
+    no_binarie = identidad_genero.create_identidad_genero(tipo="No binarie")
+    otra_identidad = identidad_genero.create_identidad_genero(tipo="Otra identidad")
+    ns_nc = identidad_genero.create_identidad_genero(tipo="NS/NC")
 
 
     # Carga de tabla motivo general de acompañamiento
