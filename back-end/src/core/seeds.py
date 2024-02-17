@@ -198,33 +198,33 @@ def run():
     acceso = motivo_general_acompanamiento.create(tipo="Acceso a atención en Salud Mental")
 
     # Carga de tabla malestar emocional
-    angustia = malestar_emocional.create(tipo="Angustia/Ansiedad")
-    temor = malestar_emocional.create(tipo="Temor/Miedo")
-    soledad = malestar_emocional.create(tipo="Sentimiento de soledad")
-    duelo = malestar_emocional.create(tipo="Duelo")
-    insomnio = malestar_emocional.create(tipo="Dificultades para dormir - insomnio")
-    ideacion_suicida = malestar_emocional.create(tipo="Ideación suicida")
-    intento_suicidio = malestar_emocional.create(tipo="Intento de suicidio")
-    alucinaciones = malestar_emocional.create(tipo="Presentación de delirios - alucinaciones")
-    trastorno_alimentacion = malestar_emocional.create(tipo="Trastornos de la alimentación")
-    violencias = malestar_emocional.create(tipo="Violencias")
-    consumos_problematicos = malestar_emocional.create(tipo="Consumos problemáticos")
-    otro_malestar_emocional = malestar_emocional.create(tipo="Otro")
+    angustia = malestar_emocional.create_malestar_emocional(tipo="Angustia/Ansiedad")
+    temor = malestar_emocional.create_malestar_emocional(tipo="Temor/Miedo")
+    soledad = malestar_emocional.create_malestar_emocional(tipo="Sentimiento de soledad")
+    duelo = malestar_emocional.create_malestar_emocional(tipo="Duelo")
+    insomnio = malestar_emocional.create_malestar_emocional(tipo="Dificultades para dormir - insomnio")
+    ideacion_suicida = malestar_emocional.create_malestar_emocional(tipo="Ideación suicida")
+    intento_suicidio = malestar_emocional.create_malestar_emocional(tipo="Intento de suicidio")
+    alucinaciones = malestar_emocional.create_malestar_emocional(tipo="Presentación de delirios - alucinaciones")
+    trastorno_alimentacion = malestar_emocional.create_malestar_emocional(tipo="Trastornos de la alimentación")
+    violencias = malestar_emocional.create_malestar_emocional(tipo="Violencias")
+    consumos_problematicos = malestar_emocional.create_malestar_emocional(tipo="Consumos problemáticos")
+    otro_malestar_emocional = malestar_emocional.create_malestar_emocional(tipo="Otro")
 
     # Carga de tabla de situaciones de vulnerabilidad
-    fallecimiento = situaciones_vulnerabilidad.create(tipo="Fallecimiento de vinculo significativo")
-    situacion_calle = situaciones_vulnerabilidad.create(tipo="Situación de calle")
-    violencia_genero = situaciones_vulnerabilidad.create(tipo="Violencia de género")
-    violencia_intrafamiliar = situaciones_vulnerabilidad.create(tipo="Violencia intrafamiliar")
-    violencia_institucional = situaciones_vulnerabilidad.create(tipo="Violencia institucional")
-    violencia_laboral = situaciones_vulnerabilidad.create(tipo="Violencia laboral")
-    dificultad_acceso_salud = situaciones_vulnerabilidad.create(tipo="Dificultades para el acceso al sistema de salud")
-    dificultad_acceso_alimento = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso al alimento")
-    dificultad_acceso_medicacion_sm = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - SM")
-    dificultad_acceso_medicacion = situaciones_vulnerabilidad.create(tipo="Dificultad para el acceso a medicación - otra (no SM)")
-    pedido_certificado = situaciones_vulnerabilidad.create(tipo="Pedido certificado CUD")
-    otra_situacion_vulnerabilidad = situaciones_vulnerabilidad.create(tipo="Otro")
-    ninguna_sit_vuln = situaciones_vulnerabilidad.create(tipo="Ninguna situación de vulnerabilidad")
+    fallecimiento = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Fallecimiento de vinculo significativo")
+    situacion_calle = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Situación de calle")
+    violencia_genero = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Violencia de género")
+    violencia_intrafamiliar = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Violencia intrafamiliar")
+    violencia_institucional = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Violencia institucional")
+    violencia_laboral = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Violencia laboral")
+    dificultad_acceso_salud = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Dificultades para el acceso al sistema de salud")
+    dificultad_acceso_alimento = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Dificultad para el acceso al alimento")
+    dificultad_acceso_medicacion_sm = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Dificultad para el acceso a medicación - SM")
+    dificultad_acceso_medicacion = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Dificultad para el acceso a medicación - otra (no SM)")
+    pedido_certificado = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Pedido certificado CUD")
+    otra_situacion_vulnerabilidad = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Otro")
+    ninguna_sit_vuln = situaciones_vulnerabilidad.create_situacion_vulnerabilidad(tipo="Ninguna situación de vulnerabilidad")
 
 
     # Carga de tabla de personas_cetecsm
@@ -239,7 +239,8 @@ def run():
         edad = 30,
         telefono = "1122334455",
         identidad_genero = varon,
-        municipio = municipio_1
+        municipio = municipio_1,
+        situaciones_vulnerabilidad = '["Dificultades para el acceso al sistema de salud","Pedido certificado CUD"]'
     )
 
     persona_cetecsm_2 = persona_cetecsm.create_persona_cetecsm(
@@ -269,7 +270,8 @@ def run():
         edad = 26,
         telefono = "1144556677",
         identidad_genero = varon,
-        municipio = municipio_11
+        municipio = municipio_11,
+        situaciones_vulnerabilidad = '["Dificultad para el acceso a medicación - SM"]'
     )
     
     derivacion_1 = derivacion.create_derivation(
@@ -312,8 +314,6 @@ def run():
     )
 
 
-    persona_cetecsm_1.situaciones_vulnerabilidad.append(dificultad_acceso_salud)
-    persona_cetecsm_1.situaciones_vulnerabilidad.append(pedido_certificado)
     persona_cetecsm.update_persona_cetecsm(
         id=llamada_cetecsm_1.persona_cetecsm_id,
         fecha_prox_llamado_actual=llamada_cetecsm_1.fecha_prox_llamado,
@@ -345,7 +345,6 @@ def run():
         persona_cetecsm_llamada = persona_cetecsm_3
     )
 
-    persona_cetecsm_3.situaciones_vulnerabilidad.append(dificultad_acceso_medicacion)
     persona_cetecsm.update_persona_cetecsm(
         id=llamada_cetecsm_3.persona_cetecsm_id, 
         fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado,
