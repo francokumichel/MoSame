@@ -37,11 +37,11 @@ from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_sche
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
 from src.core.identidad_genero import create_identidad_genero, list_identidades_genero, vaciar_identidad_genero
 from src.core.schemas.identidad_genero import identidades_genero_schema
-from src.core.malestar_emocional import list_malestares_emocionales
+from src.core.malestar_emocional import create_malestar_emocional, list_malestares_emocionales, vaciar_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
-from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
+from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.llamada_0800 import create_como_ubico, create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_como_ubico, vaciar_motivos_consulta
+from src.core.llamada_0800 import create_como_ubico, create_detalle_motivo_consulta, create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_como_ubico, vaciar_detalles_motivo_consulta, vaciar_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -954,6 +954,12 @@ def get_opciones(opcion):
             opciones = [opcion['forma'] for opcion in como_ubico_schema_many.dump(list_como_ubico())]
         case 'generos':
             opciones = [opcion['tipo'] for opcion in identidades_genero_schema.dump(list_identidades_genero())]
+        case 'detalles_motivo_consulta':
+            opciones = [opcion['motivo'] for opcion in detalle_motivos_de_la_consulta_schema.dump(list_detalles_motivo_consulta())]
+        case 'malestares_emocionales':
+            opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
+        case 'situaciones_vulnerabilidad':
+            opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
     return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
@@ -969,8 +975,20 @@ def save_opciones():
             vaciar_como_ubico()
             for opcion in opciones:
                 create_como_ubico(forma=opcion)
+        case 'generos_todavia_no':
+            vaciar_identidad_genero()
             for opcion in opciones:
                 create_identidad_genero(tipo=opcion)
-        case 'generos':
-            vaciar_identidad_genero()
+        case 'detalles_motivo_consulta':
+            vaciar_detalles_motivo_consulta()
+            for opcion in opciones:
+                create_detalle_motivo_consulta(motivo=opcion)
+        case 'malestares_emocionales':
+            vaciar_malestares_emocionales()
+            for opcion in opciones:
+                create_malestar_emocional(tipo=opcion)
+        case 'situaciones_vulnerabilidad':
+            vaciar_situaciones_vulnerabilidad()
+            for opcion in opciones:
+                create_situacion_vulnerabilidad(tipo=opcion)
     return make_response(), 200
