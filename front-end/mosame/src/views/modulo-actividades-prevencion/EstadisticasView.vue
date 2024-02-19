@@ -8,12 +8,14 @@
 </template>
 
 <script>
-    import EstadisticasParciales from "@/components/modulo-actividades-prevencion/EstadisticasParciales.vue";
+import EstadisticasParciales from "@/components/modulo-actividades-prevencion/EstadisticasParciales.vue";
 
-    export default {
-        name: "EstadisticasView",
-        components: {
-            EstadisticasParciales,
-        },
-    };
+export default {
+    name: "EstadisticasView",
+    components: {
+        EstadisticasParciales,
+    },
+};
+
+
 </script>

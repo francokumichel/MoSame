@@ -44,7 +44,7 @@ from src.core.malestar_emocional import list_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.modulo_actividades.taller import get_talleres
+from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema
 from src.core.modulo_actividades.dispositivo import list_dispositivos
@@ -916,9 +916,37 @@ def registrar_taller():
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
-@api_blueprint.get("municipios_geojson")
-def get_municipios_geojson():
-    return send_file('../../public/data/municipios_geo.geojson', mimetype='application/json'), 200
+@actividades_blueprint.get("estadisticas")
+def get_estadisticas():
+    tipo_taller = request.args.get("tipo_taller", default="Talleres de Salud Mental en las Escuelas", type=str)
+    parametro_agrupacion = request.args.get("param_agrupacion", default="Año", type=str)
+    tipo_actividad = request.args.get("tipo_actividad", default="Todas", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    dict_params = {'Año': 'fecha_hora_carga','Municipio': 'municipio_id', 'Región sanitaria': 'region_sanitaria_id', 'Dispositivo': 'dispositivo_id'}
+
+    estadisticas = obtener_estadisticas(tipo_taller, dict_params[parametro_agrupacion], tipo_actividad, page, per_page)
+    lista = []
+
+    for estadistica in estadisticas:
+        data_estadisticas = {
+            'agrupado_por': getattr(estadistica, dict_params[parametro_agrupacion]),
+            'cantidad_talleres': estadistica.cant_talleres,
+            'cantidad_encuentros': estadistica.cant_encuentros,
+            'cantidad_escuelas': estadistica.cant_escuelas,
+            'cantidad_participantes': estadistica.cant_participantes
+        }
+        lista.append(data_estadisticas)
+    
+    data = {
+        'estadisticas': lista,
+        'page': page,
+        'per_page': per_page,
+        'total': estadisticas.total
+    }
+
+    return make_response(jsonify(data))
 
 # Api para la parte del 0800
 

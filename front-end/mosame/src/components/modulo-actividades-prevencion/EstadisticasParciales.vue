@@ -1,130 +1,172 @@
 <template>
-  <div ref="mapa"></div>
+  <div class="shadow-sm p-3">
+    <h4 class="fw-semibold mb-3">Estadística {{ tipoEstadistica }}</h4>
+    <div class="row g-3 mb-4">
+      <div class="col-auto ms-3">
+        <label for="tipos_actividad" class="mb-1">Tipo taller: </label>
+        <select class="form-select" v-model="tipoTaller" @change="cargarActividades" aria-label="Default select example">
+            <option v-for="tipo in tiposTaller" :key="tipo" :value="tipo">{{ tipo }}</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <label for="tipos_actividad" class="mb-1">Tipo estadística: </label>
+        <select class="form-select" v-model="tipoEstadistica" aria-label="Default select example">
+            <option value="Parcial">Parcial</option>
+            <option value="Total">Total</option>
+        </select>            
+      </div>
+      <div v-if="tipoEstadistica == 'Parcial'" class="col-auto">
+        <label for="tipos_actividad" class="mb-1">Agrupar por: </label>
+        <select class="form-select" v-model="paramAgrupacion" @change="updatePerPage" aria-label="Default select example">
+            <option value="Región sanitaria">Región sanitaria</option>
+            <option value="Dispositivo">Dispositivo</option>
+            <option value="Municipio">Municipio</option>
+        </select>
+      </div>
+      <div v-if="tipoTaller != 'Talleres de Salud Mental en las Escuelas'" class="col-auto">
+        <label for="tipos_actividad" class="mb-1">Actividad: </label>
+        <select class="form-select" v-model="tipoActividad" @change="updatePerPage" aria-label="Default select example">
+            <option>Todas</option>
+            <option v-for="actividad in actividades" :key="actividad" :value="actividad.nombre">{{ actividad.nombre }}</option>
+        </select>
+      </div>
+    </div>
+    <EstadisticasTabla :estadisticas="estadisticas" :tipoTaller="tipoTaller" :paramAgrupacion="paramAgrupacion"/>
+    <div class="d-flex flex-row justify-content-center align-items-center">
+      <div class="d-flex flex-row ms-auto align-items-center me-3">
+        <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
+          <label>Filas por página: </label>
+          <input class="form-control-sm bg-light" type="number" name="per_page" id="per_page"
+          min="1" v-model="perPage" :max="cantPages" @input="updatePerPage" />
+          <p class="mb-0">{{ pageInfo }}</p>
+        </div>
+        <nav class="ms-5 me-2" aria-label="Page navigation example">
+          <ul class="pagination">
+            <li @click="previousPage" :class="{ 'disabled': page === 1 }" class="page-item">
+              <a class="page-link border border-0" href="#" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li @click="nextPage" :class="{ 'disabled': page*this.perPage >= this.cantPages }" class="page-item">
+              <a class="page-link border border-0" href="#" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
 </template>
-  
+
 <script>
-import { apiService } from '@/services/api';
-import * as d3 from 'd3';
-import d3Tip from 'd3-tip';
+import EstadisticasTabla from './EstadisticasTabla.vue';
+import { apiService } from "@/services/api";
 
 export default {
   data() {
     return {
-      geojson: null,
-      dataReady: false,
+      estadisticas: [],
+      errores: [],
+      paramAgrupacion: 'Municipio',
+      tipoActividad: 'Todas',
+      tiposTaller: [],
+      tipoTaller: '',
+      actividades: [],
+      tipoEstadistica: 'Parcial',
+      page: 1,
+      perPage: 5,
+      cantPages: 0,
     }
   },
 
   async created() {
-    await apiService.get("municipios_geojson")
+    await apiService.get(import.meta.env.VITE_API_URL + "actividades/tipos_taller")
       .then((response) => {
-          this.geojson = response.data;
-          this.dataReady = true;
+          this.tiposTaller = response.data;
+          this.tipoTaller = this.tiposTaller.TALLERES;
       })
       .catch((e) => {
           console.log(e)
           this.errores.push(e);
-      });
+      })  
+    this.cargarEstadisticas();
+  },
+
+  components: { EstadisticasTabla },
+
+  computed: {
+    pageInfo() {
+        const start = (this.page - 1) * this.perPage + 1;
+        const end = Math.min(start + this.perPage - 1, this.cantPages);
+        return `${start}-${end} de ${this.cantPages}`;
+    }
   },
 
   watch: {
-    dataReady: function(newVal) {
-        if (newVal) {
-            this.initializeMap();
-        }
+    tipoTaller(newTipoTaller) {
+      if(this.tipoTaller != this.tiposTaller.TALLERES) {
+        this.cargarActividades();
+      }
+      this.updatePerPage();
+    },
+    tipoEstadistica(newTipoEstadistica) {
+      if(this.tipoEstadistica == 'Total') {
+        this.paramAgrupacion = 'Año';
+      }
+      this.updatePerPage();
     }
   },
 
   methods: {
-    initializeMap() {
-      // Configurar dimensiones del mapa
-      const width = 1200;
-      const height = 800;
+    async cargarEstadisticas() {
+      try {
+          const response = await apiService.get(import.meta.env.VITE_API_URL + "actividades/estadisticas" , {
+              params: {
+                  tipo_taller: this.tipoTaller,
+                  param_agrupacion: this.paramAgrupacion,
+                  tipo_actividad: this.tipoActividad,
+                  page: this.page,
+                  per_page: this.perPage,
+              },
+          });
+          this.estadisticas = response.data.estadisticas;
+          this.cantPages = response.data.total;
+      } catch (error) {
+          this.errores.push(error);
+      }
+    },
 
-      // Crear lienzo SVG
-      const mapa = this.$refs.mapa;
-      const svg = d3.select(mapa)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+    async cargarActividades() {
+      const actividad = this.tipoTaller == 'Espacio Grupal en el Dispositivo' ? 'actividades_internas' : 'actividades_externas'
+    
+      await apiService.get(import.meta.env.VITE_API_URL + "actividades/" + actividad)
+        .then((response) => {
+            this.actividades = response.data;
+        })
+        .catch((e) => {
+            console.log(e)
+            this.errores.push(e);
+        })
+    },
 
-      // Configurar proyección y ruta
-      const projection = d3.geoMercator().fitSize([width, height], this.geojson);
-      const path = d3.geoPath().projection(projection);
+    previousPage() {
+      if (this.page > 1) {
+        this.page--;
+        this.cargarEstadisticas();
+      }
+    },
+    nextPage() {
+      if (this.page < this.cantPages){
+        this.page++;
+        this.cargarEstadisticas();
+      }
+    },
+    updatePerPage() {
+      this.page = 1;
+      this.cargarEstadisticas();
+    },
+  },
 
-      const Tooltip = d3.select(mapa)
-        .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "2px")
-        .style("border-radius", "5px")
-        .style("padding", "5px")
-        .style("margin", "20px")
-        .style("width", "600px")
-
-
-        var mouseover = function(d) {
-          Tooltip
-            .style("opacity", 1)
-          d3.select(this)
-            .style("stroke", "black")
-            .style("opacity", 1)
-        }
-        var mousemove = function(event, d) {
-          var tooltipContent = "Municipio: " + d.properties.nombre;
-          console.log(tooltipContent)
-          Tooltip
-            .html(tooltipContent)
-            .style("left", (event.pageX - mapa.getBoundingClientRect().left + 10) + "px")
-            .style("top", (event.pageY - mapa.getBoundingClientRect().top + 10) + "px")
-        }
-        var mouseout = function(d) {
-          Tooltip
-            .style("opacity", 0)
-          d3.select(this)
-            .style("stroke", "black")
-            .style("opacity", 0.8)
-        }
-        
-        var zoomed = function(event, d) {
-          svg.selectAll('path')
-            .attr('transform', event.transform);  // Aplicar la transformación de zoom a los elementos del mapa
-        }
-
-        const zoom = d3.zoom()
-          .scaleExtent([1, 8])  // Establecer el rango de escala permitido
-          .on("zoom", zoomed);
-
-        svg.call(zoom);
-
-      // Dibujar límites de municipios
-      svg.selectAll('path')
-        .data(this.geojson.features)
-        .enter().append('path')
-        .attr('d', path)
-        .attr('stroke', 'black')
-        .attr('stroke-width', 0.5)
-        .attr('fill', '#FFFFFF')
-        .on('mouseover', mouseover)
-        .on("mousemove", mousemove)
-        .on('mouseout', mouseout);
-    }
-  }
-  
-};
-</script>
-
-<style>
-
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 4px;
-  pointer-events: none;
 }
-</style>
+</script>
