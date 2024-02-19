@@ -193,9 +193,9 @@ def run():
 
 
     # Carga de tabla motivo general de acompañamiento
-    malestar_emocional_acomp = motivo_general_acompanamiento.create(tipo="Malestar emocional")
-    orientacion_acomp = motivo_general_acompanamiento.create(tipo="Orientación y asesoramiento")
-    acceso = motivo_general_acompanamiento.create(tipo="Acceso a atención en Salud Mental")
+    malestar_emocional_acomp = motivo_general_acompanamiento.create_mot_gral_acomp(tipo="Malestar emocional")
+    orientacion_acomp = motivo_general_acompanamiento.create_mot_gral_acomp(tipo="Orientación y asesoramiento")
+    acceso = motivo_general_acompanamiento.create_mot_gral_acomp(tipo="Acceso a atención en Salud Mental")
 
     # Carga de tabla malestar emocional
     angustia = malestar_emocional.create_malestar_emocional(tipo="Angustia/Ansiedad")
@@ -238,7 +238,7 @@ def run():
         apellido = "Fernandez",
         edad = 30,
         telefono = "1122334455",
-        identidad_genero = varon,
+        identidad_genero_id = "Varón",
         municipio = municipio_1,
         situaciones_vulnerabilidad = '["Dificultades para el acceso al sistema de salud","Pedido certificado CUD"]'
     )
@@ -254,7 +254,7 @@ def run():
         apellido = "Gomez",
         edad = 25,
         telefono = "221345678",
-        identidad_genero = mujer,
+        identidad_genero_id = "Mujer",
         municipio = municipio_6
     )
 
@@ -269,7 +269,7 @@ def run():
         apellido = "Sanchez",
         edad = 26,
         telefono = "1144556677",
-        identidad_genero = varon,
+        identidad_genero_id = "Varón",
         municipio = municipio_11,
         situaciones_vulnerabilidad = '["Dificultad para el acceso a medicación - SM"]'
     )
@@ -332,7 +332,7 @@ def run():
         id=llamada_cetecsm_1.persona_cetecsm_id,
         fecha_prox_llamado_actual=llamada_cetecsm_2.fecha_prox_llamado,
         detalle_acompanamiento = "En la primer llamada hablamos bastante. En la segunda llamada hablamos menos.",
-        motivo_gral_acomp = orientacion_acomp
+        motivo_gral_acomp = "Orientación y asesoramiento"
     )
 
 
@@ -349,7 +349,7 @@ def run():
         id=llamada_cetecsm_3.persona_cetecsm_id, 
         fecha_prox_llamado_actual=llamada_cetecsm_3.fecha_prox_llamado,
         detalle_acompanamiento = "Llamado por primera vez a la persona y me brindo todos los datos",
-        motivo_gral_acomp = acceso,
+        motivo_gral_acomp = "Acceso a atención en Salud Mental",
     )
 
     # Cargas del 0800

@@ -32,7 +32,7 @@ from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
-from src.core.motivo_general_acompanamiento import list_mot_gral_acomp
+from src.core.motivo_general_acompanamiento import create_mot_gral_acomp, list_mot_gral_acomp, vaciar_mot_gral_acomp
 from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_schema
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
 from src.core.identidad_genero import create_identidad_genero, list_identidades_genero, vaciar_identidad_genero
@@ -960,6 +960,8 @@ def get_opciones(opcion):
             opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
         case 'situaciones_vulnerabilidad':
             opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
+        case 'motivos_acompanamiento':
+            opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
     return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
@@ -975,7 +977,7 @@ def save_opciones():
             vaciar_como_ubico()
             for opcion in opciones:
                 create_como_ubico(forma=opcion)
-        case 'generos_todavia_no':
+        case 'generos':
             vaciar_identidad_genero()
             for opcion in opciones:
                 create_identidad_genero(tipo=opcion)
@@ -991,4 +993,8 @@ def save_opciones():
             vaciar_situaciones_vulnerabilidad()
             for opcion in opciones:
                 create_situacion_vulnerabilidad(tipo=opcion)
+        case 'motivos_acompanamiento':
+            vaciar_mot_gral_acomp()
+            for opcion in opciones:
+                create_mot_gral_acomp(tipo=opcion)
     return make_response(), 200

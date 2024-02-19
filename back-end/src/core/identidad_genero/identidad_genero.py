@@ -5,5 +5,3 @@ class IdentidadGenero(db.Model):
     __tablename__ = "identidad_genero"
 
     tipo = db.Column(db.String(100), primary_key=True)
-    otro_tipo = db.Column(db.String(100), default="")
-    personas_cetecsm = db.relationship("PersonaCetecsm", backref="identidad_genero")
