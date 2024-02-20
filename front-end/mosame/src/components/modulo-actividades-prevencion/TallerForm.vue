@@ -18,8 +18,8 @@
             <label for="localidad" class="col-form-label fw-semibold">Localidad: <span class="text-danger">*</span></label>
             <select required class="form-select border border-dark-subtle" v-model.lazy="taller.localidad" aria-label="Default select example" :disabled="localidades.length == 0">
                 <option hidden disabled value="">Seleccione una opción</option>
-                <option v-for="localidad in localidades" :key="localidad" :value="localidad.nombre">
-                    {{ localidad.nombre }}
+                <option v-for="localidad in localidades" :key="localidad" :value="localidad">
+                    {{ localidad }}
                 </option>
             </select>
             <div class="invalid-feedback">
@@ -136,7 +136,7 @@
             </div>
             <div v-if="actividad.tipo == 'Espacio Grupal en el Dispositivo'" class="mb-3">
                 <label for="actividad_interna" class="col-form-label fw-semibold">Actividad: <span class="text-danger">*</span></label>
-                <select required class="form-select border border-dark-subtle" v-model.lazy="actividad.actividad_interna" aria-label="Default select example">
+                <select required class="form-select border border-dark-subtle" v-model.lazy="actividad.actividades" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="actividad in actividades_internas" :key="actividad" :value="actividad.nombre">
                         {{ actividad.nombre }}
@@ -148,7 +148,7 @@
             </div>
             <div v-if="actividad.tipo == 'Acciones de Promoción y Prevención en la Comunidad'" class="mb-3">
                 <label for="actividad_externa" class="col-form-label fw-semibold">Actividad: <span class="text-danger">*</span></label>
-                <select required class="form-select border border-dark-subtle" v-model.lazy="actividad.actividad_externa" aria-label="Default select example">
+                <select required class="form-select border border-dark-subtle" v-model.lazy="actividad.actividades" aria-label="Default select example">
                     <option hidden disabled value="">Seleccione una opción</option>
                     <option v-for="actividad in actividades_externas" :key="actividad" :value="actividad.nombre">
                         {{ actividad.nombre }}
@@ -188,8 +188,7 @@ export default {
                 cant_participantes: '',
                 cant_encuentros: '',
                 observaciones: '',
-                actividad_interna: '',
-                actividad_externa: ''
+                actividades: '',
             },
 
             escuela_seleccionada: null,
@@ -201,7 +200,8 @@ export default {
             anios: [],
             divisiones: [],
             actividades_internas: [],
-            actividades_externas: []
+            actividades_externas: [],
+            errores: [],
         }
     },
 
@@ -300,7 +300,7 @@ export default {
         },
 
         async cargarEscuelasYLocalidades() {
-            this.localidades = this.taller.municipio.localidades;
+            this.localidades = this.taller.municipio.localidades.split(', ');
             console.log(this.taller.municipio.nombre)
             await apiService.get(import.meta.env.VITE_API_URL + "actividades/escuelas", {
                     params: {
