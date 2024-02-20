@@ -35,14 +35,14 @@ from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
-from src.core.motivo_general_acompanamiento import list_mot_gral_acomp
+from src.core.motivo_general_acompanamiento import create_mot_gral_acomp, list_mot_gral_acomp, vaciar_mot_gral_acomp
 from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_schema
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
-from src.core.identidad_genero import list_identidades_genero
+from src.core.identidad_genero import create_identidad_genero, list_identidades_genero, vaciar_identidad_genero
 from src.core.schemas.identidad_genero import identidades_genero_schema
-from src.core.malestar_emocional import list_malestares_emocionales
+from src.core.malestar_emocional import create_malestar_emocional, list_malestares_emocionales, vaciar_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
-from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
+from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
@@ -61,6 +61,7 @@ from src.core.schemas.localidad import localidades_schema
 from src.core.modulo_actividades.actividad import create_actividad
 from src.core.modulo_actividades.taller import create_taller
 from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800 import create_como_ubico, create_detalle_motivo_consulta, create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_como_ubico, vaciar_detalles_motivo_consulta, vaciar_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -76,7 +77,7 @@ roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
 cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm")
 observatorio_blueprint =  Blueprint("observatorio", __name__, url_prefix="/observatorio")
 actividades_blueprint =  Blueprint("actividades", __name__, url_prefix="/actividades")
-
+admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
@@ -86,6 +87,7 @@ api_blueprint.register_blueprint(roles_blueprint)
 api_blueprint.register_blueprint(cetecsm_blueprint)
 api_blueprint.register_blueprint(observatorio_blueprint)
 api_blueprint.register_blueprint(actividades_blueprint)
+api_blueprint.register_blueprint(admin_blueprint)
 
 @prueba_blueprint.get("")
 def get_all_pruebas():
@@ -986,7 +988,7 @@ def get_index_detalle_motivos_consulta():
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
 
 @api_blueprint.post("llamada_0800/crear")
-# @jwt_required()
+@jwt_required()
 def crear_llamada_0800():
     """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     # current_user = get_jwt_identity()
@@ -1107,3 +1109,57 @@ def ver_seguimiento(llamada_id):
         return make_response(jsonify({
             'esta_asignada': False
         })), 200
+
+@admin_blueprint.get("opciones/<string:opcion>")
+def get_opciones(opcion):
+    match opcion:
+        case 'motivos_consulta':
+            opciones = [opcion['nombre'] for opcion in motivos_de_la_consulta_schema.dump(list_motivos_consulta())]
+        case 'como_ubico':
+            opciones = [opcion['forma'] for opcion in como_ubico_schema_many.dump(list_como_ubico())]
+        case 'generos':
+            opciones = [opcion['tipo'] for opcion in identidades_genero_schema.dump(list_identidades_genero())]
+        case 'detalles_motivo_consulta':
+            opciones = [opcion['motivo'] for opcion in detalle_motivos_de_la_consulta_schema.dump(list_detalles_motivo_consulta())]
+        case 'malestares_emocionales':
+            opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
+        case 'situaciones_vulnerabilidad':
+            opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
+        case 'motivos_acompanamiento':
+            opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
+    return make_response(jsonify(opciones)), 200
+
+@admin_blueprint.post("guardar-opciones")
+def save_opciones():
+    opcion = request.get_json()['opcion']
+    opciones = json.loads(request.get_json()['opciones'])
+    match opcion:
+        case 'motivos_consulta':
+            vaciar_motivos_consulta()
+            for opcion in opciones:
+                create_motivo_consulta(nombre=opcion)
+        case 'como_ubico':
+            vaciar_como_ubico()
+            for opcion in opciones:
+                create_como_ubico(forma=opcion)
+        case 'generos':
+            vaciar_identidad_genero()
+            for opcion in opciones:
+                create_identidad_genero(tipo=opcion)
+        case 'detalles_motivo_consulta':
+            vaciar_detalles_motivo_consulta()
+            for opcion in opciones:
+                create_detalle_motivo_consulta(motivo=opcion)
+        case 'malestares_emocionales':
+            vaciar_malestares_emocionales()
+            for opcion in opciones:
+                create_malestar_emocional(tipo=opcion)
+        case 'situaciones_vulnerabilidad':
+            vaciar_situaciones_vulnerabilidad()
+            for opcion in opciones:
+                create_situacion_vulnerabilidad(tipo=opcion)
+        case 'motivos_acompanamiento':
+            vaciar_mot_gral_acomp()
+            for opcion in opciones:
+                create_mot_gral_acomp(tipo=opcion)
+    return make_response(), 200

@@ -51,10 +51,10 @@ class PersonaCetecsm(db.Model):
     derivacion = db.relationship('Derivacion', backref="persona_cetecsm_derivada", uselist=False)
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    identidad_genero_id = db.Column(db.String(100), db.ForeignKey('identidad_genero.tipo'))
-    motivo_gral_acomp_id = db.Column(db.String(100), db.ForeignKey("motivo_general_acompanamiento.tipo"))
+    identidad_genero_id = db.Column(db.String(100))
+    motivo_gral_acomp_id = db.Column(db.String(100))
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
-    situaciones_vulnerabilidad = db.relationship('SituacionVulnerabilidad', secondary=personacetecsm_sit_vuln, backref="personas_cetecsm")
+    situaciones_vulnerabilidad = db.Column(db.Text)
     
     def update(self, **kwargs):
         for key, value in kwargs.items():
