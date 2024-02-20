@@ -891,24 +891,19 @@ def registrar_taller():
             anios=años,
         )
 
-    elif actividad['tipo'] == 'Espacio Grupal en el Dispositivo':
-        act = create_actividad(
-            cant_participantes=actividad['cant_participantes'],
-            observaciones=actividad['observaciones'],
-            actividades_internas_id=actividad['actividad_interna']
-        )
-
     else:
+        print('aca estoy :/')
+        print(actividad)
         act = create_actividad(
             cant_participantes=actividad['cant_participantes'],
             observaciones=actividad['observaciones'],
-            actividades_externas_id=actividad['actividad_externa']
+            actividad=str(actividad['actividades'])
         )
     
     create_taller(
         tipo=actividad['tipo'],
         municipio_id=taller['municipio']['nombre'],
-        localidad_id=taller['localidad'],
+        localidad=taller['localidad'],
         dispositivo_id=taller['dispositivo'],
         usuario_id=current_user,
         actividad=act

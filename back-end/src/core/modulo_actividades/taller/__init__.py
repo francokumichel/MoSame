@@ -30,8 +30,8 @@ def obtener_estadisticas(tipo_taller, agrupar_por, actividad, page, per_page):
     
     filtro_actividad = {
         TiposActividades.TALLERES.value: True,
-        TiposActividades.ESPACIO_GRUPAL.value: True if actividad == 'Todas' else Actividad.actividades_internas_id == actividad,
-        TiposActividades.ACCIONES_PROMOCION.value: True if actividad == 'Todas' else Actividad.actividades_externas_id == actividad,
+        TiposActividades.ESPACIO_GRUPAL.value: True if actividad == 'Todas' else Actividad.actividad == actividad,
+        TiposActividades.ACCIONES_PROMOCION.value: True if actividad == 'Todas' else Actividad.actividad == actividad,
     }
 
     result = db.session.query( 

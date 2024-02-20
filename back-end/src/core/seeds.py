@@ -206,22 +206,20 @@ def run():
 
     # Carga de tabla de municipios
     df_municipios = pd.read_csv("public/data/municipios_regiones_sanitarias.csv")
+    df_localidades = pd.read_csv("public/data/municipios_localidades.csv")
     for index, row in df_municipios.iterrows():
         municipio.create_municipio(
             nombre=row['municipio'],
-            region_sanitaria=region_sanitaria.get_by_tipo(tipo=row['region_sanitaria'])
+            region_sanitaria=region_sanitaria.get_by_tipo(tipo=row['region_sanitaria']),
+            localidades=", ".join(df_localidades[df_localidades['municipio_nombre'] == row['municipio']]['nombre'].tolist())
         )
 
     # Carga de localidades
-    df_localidades = pd.read_csv("public/data/municipios_localidades.csv")
     lista_localidades = df_localidades['nombre'].unique().tolist()    
     for elem in lista_localidades:
-        lista_municipios = df_localidades[df_localidades['nombre'] == elem]['municipio_nombre'].tolist()
-        localidad_actual = localidad.create_localidad(
+        localidad.create_localidad(
             nombre=elem  
         )
-        for mun in lista_municipios:
-            localidad_actual.municipios.append(municipio.get_by_name(name=mun))
 
     # Carga de tabla de motivo general de derivación
     malestar_emocional_der = motivo_general_derivacion.create_motivo_gral_der(tipo="Malestar emocional")
@@ -456,7 +454,7 @@ def run():
     taller_1 = taller.create_taller(
         tipo=TiposActividades.TALLERES.value,
         municipio_id="La Plata",
-        localidad_id="La Plata",
+        localidad="La Plata",
         dispositivo=dispositivo_1,
         usuario_carga=user_trabajador_salud,
         actividad=actividad_1
@@ -465,13 +463,13 @@ def run():
     actividad_2 = actividad.create_actividad(
         cant_participantes=25,
         observaciones="Esta actividad se dio en el marco de espacio grupal en Fcio Varela",
-        actividad_interna=actividad_interna_1
+        actividad="Actividad interna 1"
     )
 
     taller_2 = taller.create_taller(
         tipo=TiposActividades.ESPACIO_GRUPAL.value,
         municipio_id="Florencio Varela",
-        localidad_id="Florencio Varela",
+        localidad="Florencio Varela",
         dispositivo=dispositivo_2,
         usuario_carga=user_trabajador_salud,
         actividad=actividad_2
@@ -480,13 +478,13 @@ def run():
     actividad_3 = actividad.create_actividad(
         cant_participantes=20,
         observaciones="Esta actividad se dio en el marco de Acción y promoción en la comunidad en La Matanza",
-        actividad_externa=actividad_externa_1
+        actividad="Actividad externa 1"
     )
 
     taller_3 = taller.create_taller(
         tipo=TiposActividades.ACCIONES_PROMOCION.value,
         municipio_id="La Matanza",
-        localidad_id="La Matanza",
+        localidad="La Matanza",
         dispositivo=dispositivo_2,
         usuario_carga=user_trabajador_salud,
         actividad=actividad_3

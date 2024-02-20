@@ -106,14 +106,13 @@ export default {
   watch: {
     tipoTaller(newTipoTaller) {
       if(this.tipoTaller != this.tiposTaller.TALLERES) {
+        this.tipoActividad = 'Todas';
         this.cargarActividades();
       }
       this.updatePerPage();
     },
     tipoEstadistica(newTipoEstadistica) {
-      if(this.tipoEstadistica == 'Total') {
-        this.paramAgrupacion = 'Año';
-      }
+      this.tipoEstadistica == 'Total' ? this.paramAgrupacion = 'Año' : this.paramAgrupacion = 'Municipio'
       this.updatePerPage();
     }
   },

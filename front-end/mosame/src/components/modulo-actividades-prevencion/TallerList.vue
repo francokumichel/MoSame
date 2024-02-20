@@ -25,11 +25,10 @@
                 <td v-if="tipoTaller == 'Talleres de Salud Mental en las Escuelas'" >{{ taller.actividad.escuela.modalidad }}</td>
                 <td v-if="tipoTaller == 'Talleres de Salud Mental en las Escuelas'" >{{ formatAnioDivisiones(taller.actividad.anios) }}</td>
                 <td v-if="tipoTaller == 'Talleres de Salud Mental en las Escuelas'" >{{ taller.actividad.cant_encuentros }}</td>
-                <td v-if="tipoTaller == 'Espacio Grupal en el Dispositivo'">{{ taller.actividad.actividades_internas_id }}</td>
-                <td v-else-if="tipoTaller == 'Acciones de Promoción y Prevención en la Comunidad'">{{ taller.actividad.actividades_externas_id }}</td>
+                <td v-if="tipoTaller != 'Talleres de Salud Mental en las Escuelas'">{{ taller.actividad.actividad }}</td>
                 <td>{{ taller.actividad.cant_participantes }}</td>
                 <td>{{ taller.actividad.observaciones }}</td>
-                <td>{{ taller.localidad_id }}</td>
+                <td>{{ taller.localidad }}</td>
                 <td>{{ taller.municipio.nombre }}</td>
             </tr>
         </tbody>
