@@ -8,8 +8,7 @@ class ActividadSchema(Schema):
     cant_encuentros = fields.Int()
     escuela = fields.Nested(EscuelaSchema)
     anios = fields.Nested(AnioSchema, many=True)
-    actividades_internas_id = fields.Str()
-    actividades_externas_id = fields.Str()
+    actividad = fields.Str()
 
 actividad_schema = ActividadSchema()
 actividades_schema = ActividadSchema(many=True)

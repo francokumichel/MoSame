@@ -15,7 +15,7 @@ class Taller(db.Model):
     fecha_hora_carga = db.Column(db.Date, default=datetime.now())
     tipo = db.Column(db.String(100), nullable=False)
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
-    localidad_id = db.Column(db.String(100), db.ForeignKey('localidad.nombre'))
+    localidad = db.Column(db.String(100))
     dispositivo_id = db.Column(db.String(100), db.ForeignKey('dispositivo.nombre'))
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     actividad = db.relationship('Actividad', backref="taller", uselist=False)
