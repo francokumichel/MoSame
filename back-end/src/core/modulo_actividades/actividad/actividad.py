@@ -16,5 +16,6 @@ class Actividad(db.Model):
     cant_encuentros = db.Column(db.Integer)
     escuela_cue = db.Column(db.String(30), db.ForeignKey('escuela.cue'))
     anios = db.relationship("Anio", secondary=actividad_anio, backref="actividades")
-    actividad = db.Column(db.String(100))
+    actividades_internas_id = db.Column(db.String(100), db.ForeignKey('actividades_internas.nombre'))
+    actividades_externas_id = db.Column(db.String(100), db.ForeignKey('actividades_externas.nombre'))
     

@@ -290,7 +290,7 @@ def run():
         edad = 30,
         telefono = "1122334455",
         identidad_genero_id = "Varón",
-        municipio = "Berazategui",
+        municipio_id = "Berazategui",
         situaciones_vulnerabilidad = '["Dificultades para el acceso al sistema de salud","Pedido certificado CUD"]'
     )
 
@@ -306,7 +306,7 @@ def run():
         edad = 25,
         telefono = "221345678",
         identidad_genero_id = "Mujer",
-        municipio = "Florencio Varela"
+        municipio_id = "Florencio Varela"
     )
 
     persona_cetecsm_3 = persona_cetecsm.create_persona_cetecsm(
@@ -321,7 +321,7 @@ def run():
         edad = 26,
         telefono = "1144556677",
         identidad_genero_id = "Varón",
-        municipio = "Salliqueló",
+        municipio_id = "Salliqueló",
         situaciones_vulnerabilidad = '["Dificultad para el acceso a medicación - SM"]'
     )
     
