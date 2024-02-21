@@ -255,16 +255,16 @@ def asignar_persona_cetecsm(persona_id):
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
-@me_blueprint.get("personasAsignadas")
-@jwt_required()
+@me_blueprint.get("personas_asignadas")
+#@jwt_required()
 def get_personas_cetecsm_asignadas():
-    current_user = get_jwt_identity()
+#    current_user = get_jwt_identity()
 
     search_term = request.args.get("q", default="", type=str)
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
 
-    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page, user_id=current_user)
+    personas = get_personas_asignadas(search_term=search_term, page_num=page, per_page=per_page, user_id=3)
     
     data = {
         "personas": personas_cetecsm_schemas.dump(personas),
@@ -346,7 +346,6 @@ def editar_persona_cetecsm(id):
     """ Función que permite a un usuario administrador actualizar los datos de otro usuario """    
     data = request.get_json()
     persona = data['persona']
-    print(persona)
     persona_cetecsm = get_persona_cetecsm(id=id)
     persona_cetecsm.update(
         dni=persona['dni'], 
@@ -361,12 +360,12 @@ def editar_persona_cetecsm(id):
         telefono=persona['telefono'],
         telefono_alternativo=persona['telefono_alternativo'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        identidad_genero_otra=persona['identidad_genero_otra'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
-
     
     resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
@@ -390,12 +389,12 @@ def crear_llamada_cetecsm(id):
         tiene_obra_social=persona['tiene_obra_social'],
         obra_social=persona['obra_social'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
-        fecha_prox_llamado_actual=llamada['fecha_prox_llamado']
+        fecha_prox_llamado_actual=llamada['fecha_prox_llamado'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
 
     create_llamada_cetecsm(
         detalle=llamada['detalle'],

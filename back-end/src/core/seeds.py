@@ -289,7 +289,7 @@ def run():
         telefono = "1122334455",
         identidad_genero_id = "Varón",
         municipio_id = "Berazategui",
-        situaciones_vulnerabilidad = '["Dificultades para el acceso al sistema de salud","Pedido certificado CUD"]'
+        situaciones_vulnerabilidad = 'Dificultades para el acceso al sistema de salud, Pedido certificado CUD'
     )
 
     persona_cetecsm_2 = persona_cetecsm.create_persona_cetecsm(
@@ -320,7 +320,7 @@ def run():
         telefono = "1144556677",
         identidad_genero_id = "Varón",
         municipio_id = "Salliqueló",
-        situaciones_vulnerabilidad = '["Dificultad para el acceso a medicación - SM"]'
+        situaciones_vulnerabilidad = 'Dificultad para el acceso a medicación - SM'
     )
     
     derivacion_1 = derivacion.create_derivation(

@@ -52,10 +52,13 @@ class PersonaCetecsm(db.Model):
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     identidad_genero_id = db.Column(db.String(100))
+    identidad_genero_otra = db.Column(db.String(100))
     motivo_gral_acomp_id = db.Column(db.String(100))
+    malestares_emocionales = db.Column(db.Text)
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
     situaciones_vulnerabilidad = db.Column(db.Text)
     
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+        db.session.commit()

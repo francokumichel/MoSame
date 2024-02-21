@@ -23,19 +23,19 @@
                 <label for="localidad" class="col-form-label fw-semibold">Localidad:</label>
                 <input v-model.lazy="persona.localidad" type="text" id="localidad" class="form-control shadow-sm" />
             </div>
-            <div v-if="!existeDato.identidad_genero">
+            <div v-if="!existeDato.identidad_genero_id">
                 <div class="mb-3">
                     <label for="identidad_genero" class="col-form-label fw-semibold">Identidad de género:</label>
-                    <select class="form-select border border-dark-subtle" v-model="persona.identidad_genero" aria-label="Default select example">
+                    <select class="form-select border border-dark-subtle" v-model="persona.identidad_genero_id" aria-label="Default select example">
                         <option v-for="genero in generos" :key="genero" :value="genero">
                             {{ genero.tipo }}
                         </option>
                     </select>
                 </div>
-                <div v-if="persona.identidad_genero">
-                    <div v-if="persona.identidad_genero.tipo == 'Otra identidad'" class="mb-3">
-                        <label for="identidad_genero_otro" class="col-form-label fw-semibold">Indique otra identidad de género:</label>
-                        <input v-model="persona.identidad_genero.otro_tipo" type="text" id="identidad_genero_otro" class="form-control shadow-sm" required />
+                <div v-if="persona.identidad_genero_id">
+                    <div v-if="persona.identidad_genero_id == 'Otra identidad'" class="mb-3">
+                        <label for="identidad_genero_otra" class="col-form-label fw-semibold">Indique otra identidad de género:</label>
+                        <input v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
                         <div class="invalid-feedback">
                             Por favor, ingresa otra identidad de genero.
                         </div>
@@ -68,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <div v-if="!existeDato.motivo_gral_acomp">    
+            <div v-if="!existeDato.motivo_gral_acomp_id">    
                 <div class="mb-3">
                     <label for="motivo_gral_acomp" class="col-form-label fw-semibold">Motivo general de acompañamiento:</label>
                     <select class="form-select border border-dark-subtle" v-model.lazy="persona.motivo_gral_acomp" aria-label="Default select example">
@@ -77,8 +77,8 @@
                         </option>
                     </select>
                 </div>
-                <div v-if="persona.motivo_gral_acomp">
-                    <fieldset v-if="persona.motivo_gral_acomp.tipo == 'Malestar emocional'" class="row mb-3">
+                <div v-if="persona.motivo_gral_acomp_id">
+                    <fieldset v-if="persona.motivo_gral_acomp_id == 'Malestar emocional'" class="row mb-3">
                         <legend class="col-form-label col-sm-2 pt-0 fw-semibold">Malestar emocional</legend>
                         <div v-for="malestar in malestares" :key="malestar" class="form-check">
                             <input
@@ -86,7 +86,7 @@
                                 type="checkbox"
                                 :id="malestar.tipo"
                                 :value="malestar.tipo"
-                                @change="actualizarLista(persona.motivo_gral_acomp.malestares_emocionales, malestar)"
+                                @change="actualizarLista(persona['malestares_emocionales'], 'malestares_emocionales', malestar.tipo)"
                             />
                             <label :for="malestar" class="form-check-label">{{ malestar.tipo }}</label>
                         </div>    
@@ -94,14 +94,14 @@
                 </div>
             </div>    
             <fieldset v-if="!existeDato.situaciones_vulnerabilidad" class="row mb-3">
-                <legend class="col-form-label col-sm-2 pt-0 fw-semibold">Situación de vulnerabilidad</legend>
+                <legend class="col-form-label col-auto pt-0 fw-semibold">Situación de vulnerabilidad</legend>
                 <div v-for="situacion in situaciones" :key="situacion" class="form-check">
                     <input
                         class="form-check-input shadow-sm"
                         type="checkbox"
                         :id="situacion.tipo"
                         :value="situacion.tipo"
-                        @change="actualizarLista(persona.situaciones_vulnerabilidad, situacion)"
+                        @change="actualizarLista(persona['situaciones_vulnerabilidad'], 'situaciones_vulnerabilidad', situacion.tipo)"
                     />
                     <label :for="situacion" class="form-check-label">{{ situacion.tipo }}</label>
                 </div>    
@@ -262,20 +262,29 @@ export default {
             }    
         },
 
-        actualizarLista(lista, elemento) {
-            if (this.chequearLista(lista, elemento)) {
-                lista.splice(lista.indexOf(elemento), 1); 
+        actualizarLista(cadena, nombrePropiedad, situacion) {
+            const lista = cadena ? cadena.split(',').map(elem => elem.trim()) : [];
+
+            if (this.chequearLista(lista, situacion)) {
+                const index = lista.indexOf(situacion);
+                if (index !== -1) {
+                    lista.splice(index, 1);
+                }
             } else {
-                lista.push(elemento)
+                lista.push(situacion);
             }
+
+            this.persona[nombrePropiedad] = lista.join(', ')
+            
         },
 
         chequearLista(lista, elemento) {
-            return lista.some((l) => l.tipo == elemento.tipo)
+            return lista.includes(elemento);
         },
 
+
         comprobarDatos() {
-            const camposAVerificar = ["grupo_conviviente", "localidad", "identidad_genero", "tiene_obra_social", "motivo_gral_acomp", "situaciones_vulnerabilidad"]
+            const camposAVerificar = ["grupo_conviviente", "localidad", "identidad_genero_id", "tiene_obra_social", "motivo_gral_acomp_id", "situaciones_vulnerabilidad"]
             camposAVerificar.forEach((campo) => {
                 if(Array.isArray(this.persona[campo])){
                     this.existeDato[campo] = this.persona[campo].length > 0;
