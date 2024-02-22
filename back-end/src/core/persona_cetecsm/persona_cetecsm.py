@@ -15,19 +15,18 @@ personacetecsm_sit_vuln = db.Table('personacetecsm_sit_vul',
     db.Column('sit_vuln_id', db.String(100), db.ForeignKey('situaciones_vulnerabilidad.tipo'), primary_key=True)                                
 )
 
-class RegionSanitaria(db.Model):
-    __tablename__ = "region_sanitaria"
+#class RegionSanitaria(db.Model):
+#    __tablename__ = "region_sanitaria"
+#
+#    tipo = db.Column(db.String(50), primary_key=True)
+#    personas_cetecsm = db.relationship("Municipio", backref="region_sanitaria")
 
-    tipo = db.Column(db.String(50), primary_key=True)
-    personas_cetecsm = db.relationship("Municipio", backref="region_sanitaria")
-
-class Municipio(db.Model):
-    __tablename__ = "municipio"
-
-    nombre = db.Column(db.String(100), primary_key=True)
-    region_sanitaria_id = db.Column(db.String(50), db.ForeignKey('region_sanitaria.tipo'))
-    personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
-    llamadas_0800 = db.relationship('Llamada0800', backref="municipio")
+#class Municipio(db.Model):
+#    __tablename__ = "municipio"
+#
+#    nombre = db.Column(db.String(100), primary_key=True)
+#    region_sanitaria_id = db.Column(db.String(50), db.ForeignKey('region_sanitaria.tipo'))
+#    personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
 
 class PersonaCetecsm(db.Model):
     """ Clase que representa el modelo de una persona derivada a CETECSM """
@@ -52,11 +51,14 @@ class PersonaCetecsm(db.Model):
     derivacion = db.relationship('Derivacion', backref="persona_cetecsm_derivada", uselist=False)
     llamadas_cetecsm = db.relationship("LlamadaCetecsm", backref="persona_cetecsm_llamada")
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    identidad_genero_id = db.Column(db.String(100), db.ForeignKey('identidad_genero.tipo'))
-    motivo_gral_acomp_id = db.Column(db.String(100), db.ForeignKey("motivo_general_acompanamiento.tipo"))
+    identidad_genero_id = db.Column(db.String(100))
+    identidad_genero_otra = db.Column(db.String(100))
+    motivo_gral_acomp_id = db.Column(db.String(100))
+    malestares_emocionales = db.Column(db.Text)
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
-    situaciones_vulnerabilidad = db.relationship('SituacionVulnerabilidad', secondary=personacetecsm_sit_vuln, backref="personas_cetecsm")
+    situaciones_vulnerabilidad = db.Column(db.Text)
     
     def update(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+        db.session.commit()

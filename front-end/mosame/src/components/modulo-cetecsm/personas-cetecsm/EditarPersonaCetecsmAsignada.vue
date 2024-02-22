@@ -54,10 +54,7 @@
             </div>
             <div class="mb-3">
                 <label for="detalle_acompanamiento" class="col-form-label fw-semibold">Detalle del acompañamiento:</label>
-                <input v-model="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" required />
-                <div class="invalid-feedback">
-                    Por favor, ingresa un el nombre de la persona derivada.
-                </div>
+                <input v-model="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" />
             </div>
             <fieldset class="mb-3">
                 <legend class="col-form-label pt-0 fw-semibold">¿Dio consentimiento?</legend>
@@ -84,13 +81,27 @@
                     </option>
                 </select>
             </div>
+            <div v-if="persona.grupo_conviviente == 'Otro'" class="mb-3">
+                <label for="grupo_conviviente_otro" class="col-form-label fw-semibold">Otro grupo conviviente:</label>
+                <input v-model="persona.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm" required />
+                <div class="invalid-feedback">
+                    Por favor, ingrese un grupo conviviente.
+                </div>
+            </div>
             <div class="mb-3">
                 <label for="identidad_genero" class="col-form-label fw-semibold">Identidad de género:</label>
-                <select class="form-select border border-dark-subtle" v-model="persona.identidad_genero.tipo" aria-label="Default select example">
+                <select class="form-select border border-dark-subtle" v-model="persona.identidad_genero_id" aria-label="Default select example">
                     <option v-for="genero in generos" :key="genero">
                         {{ genero.tipo }}
                     </option>
                 </select>
+            </div>
+            <div v-if="persona.identidad_genero_id == 'Otra identidad'" class="mb-3">
+                <label for="identidad_genero_otra" class="col-form-label fw-semibold">Otra identidad de género:</label>
+                <input v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
+                <div class="invalid-feedback">
+                    Por favor, ingrese una identidad de género.
+                </div>
             </div>
             <fieldset class="mb-3">
                 <legend class="col-form-label pt-0 fw-semibold">¿Tiene obra social?</legend>
@@ -113,41 +124,42 @@
                 <label for="obra_social" class="col-form-label fw-semibold">¿Cual?</label>
                 <input v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
-                    Por favor, ingrese una localidad.
+                    Por favor, ingrese una obra social.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="motivo_gral_acomp" class="col-form-label fw-semibold">Motivo general de acompañamiento:</label>
-                <select class="form-select border border-dark-subtle" v-model="persona.motivo_gral_acomp.tipo" aria-label="Default select example">
+                <select class="form-select border border-dark-subtle" v-model="persona.motivo_gral_acomp_id" aria-label="Default select example">
                     <option v-for="motivo in motivosAcomp" :key="motivo">
                         {{ motivo.tipo }}
                     </option>
                 </select>
             </div>
-            <fieldset v-if="persona.motivo_gral_acomp.tipo == 'Malestar emocional'" class="row mb-3">
-                <legend class="col-form-label col-sm-2 pt-0 fw-semibold">Malestar emocional</legend>
+            <fieldset v-if="persona.motivo_gral_acomp_id == 'Malestar emocional'" class="row mb-3">
+                <legend class="col-form-label col-auto pt-0 fw-semibold">Malestar emocional</legend>
                 <div v-for="malestar in malestares" :key="malestar" class="form-check">
                     <input
                         class="form-check-input shadow-sm"
                         type="checkbox"
                         :id="malestar.tipo"
                         :value="malestar.tipo"
-                        :checked="chequearLista(persona.motivo_gral_acomp.malestares_emocionales, malestar)"
-                        @change="actualizarLista(persona.motivo_gral_acomp.malestares_emocionales, malestar)"
+                        :checked="chequearLista(persona['malestares_emocionales'] ? persona['malestares_emocionales'].split(', ') : [], malestar.tipo)"
+                        @change="actualizarLista(persona['malestares_emocionales'], 'malestares_emocionales', malestar.tipo)"
                     />
                     <label :for="malestar" class="form-check-label">{{ malestar.tipo }}</label>
                 </div>    
             </fieldset>
-            <fieldset class="row mb-3">
-                <legend class="col-form-label col-sm-2 pt-0 fw-semibold">Situación de vulnerabilidad</legend>
+            <p>{{ persona.malestares_emocionales }}</p>
+            <fieldset v-if="situaciones" class="row mb-3">
+                <legend class="col-form-label col-auto pt-0 fw-semibold">Situación de vulnerabilidad</legend>
                 <div v-for="situacion in situaciones" :key="situacion" class="form-check">
                     <input
                         class="form-check-input shadow-sm"
                         type="checkbox"
                         :id="situacion.tipo"
                         :value="situacion.tipo"
-                        :checked="chequearLista(persona.situaciones_vulnerabilidad, situacion)"
-                        @change="actualizarLista(persona.situaciones_vulnerabilidad, situacion)"
+                        :checked="chequearLista(persona['situaciones_vulnerabilidad'] ? persona['situaciones_vulnerabilidad'].split(', ') : [], situacion.tipo)"
+                        @change="actualizarLista(persona['situaciones_vulnerabilidad'], 'situaciones_vulnerabilidad', situacion.tipo)"
                     />
                     <label :for="situacion" class="form-check-label">{{ situacion.tipo }}</label>
                 </div>    
@@ -245,16 +257,25 @@ export default {
     },
 
     methods: {
-        actualizarLista(lista, elemento) {
-            if (this.chequearLista(lista, elemento)) {
-                lista.splice(lista.indexOf(elemento), 1); 
+        actualizarLista(cadena, nombrePropiedad, situacion) {
+            const lista = cadena ? cadena.split(',').map(elem => elem.trim()) : [];
+
+            if (this.chequearLista(lista, situacion)) {
+                const index = lista.indexOf(situacion);
+                if (index !== -1) {
+                    lista.splice(index, 1);
+                }
             } else {
-                lista.push(elemento)
+                lista.push(situacion);
             }
+
+            // Actualizamos la cadena en la propiedad específica del objeto
+            this.persona[nombrePropiedad] = lista.join(', ')
+            
         },
 
         chequearLista(lista, elemento) {
-            return lista.some((l) => l.tipo == elemento.tipo)
+            return lista.includes(elemento);
         },
 
         async editarPersona() {

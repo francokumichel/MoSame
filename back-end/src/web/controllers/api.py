@@ -4,6 +4,7 @@ from flask import (
     jsonify,
     make_response,
     request,
+    send_file
 )
 
 from flask_jwt_extended import (
@@ -18,9 +19,11 @@ from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm, obtener_total_llamados_cetecsm, obtener_usuario_por_rol
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, list_municipios, list_regiones_sanitarias, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
+from src.core.general.municipio import list_municipios, get_localidades_by_municipio
 from src.core.schemas.municipio import municipios_schema
+from src.core.general.region_sanitaria import list_regiones_sanitarias
 from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
 from src.core.schemas.role import roles_schema
 from src.core.derivacion import actualizar_derivacion
@@ -32,16 +35,33 @@ from src.core.llamada_cetecsm.llamada_cetecsm import ResolucionLlamado
 from src.core.schemas.llamada_cetecsm import llamadas_cetecsm_schema
 from src.core import prueba
 from src.core.schemas.prueba import prueba_schema
-from src.core.motivo_general_acompanamiento import list_mot_gral_acomp
+from src.core.motivo_general_acompanamiento import create_mot_gral_acomp, list_mot_gral_acomp, vaciar_mot_gral_acomp
 from src.core.schemas.motivo_general_acompanamiento import mot_grales_acomp_schema
 from src.core.persona_cetecsm.persona_cetecsm import GrupoConviviente
-from src.core.identidad_genero import list_identidades_genero
+from src.core.identidad_genero import create_identidad_genero, list_identidades_genero, vaciar_identidad_genero
 from src.core.schemas.identidad_genero import identidades_genero_schema
-from src.core.malestar_emocional import list_malestares_emocionales
+from src.core.malestar_emocional import create_malestar_emocional, list_malestares_emocionales, vaciar_malestares_emocionales
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
-from src.core.situaciones_vulnerabilidad import list_situaciones_vulnerabilidad
+from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
+from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
+from src.core.modulo_actividades.taller.taller import TiposActividades
+from src.core.schemas.taller import talleres_schema
+from src.core.modulo_actividades.dispositivo import list_dispositivos
+from src.core.schemas.dispositivo import dispositivos_schema
+from src.core.modulo_actividades.actividades_internas import list_actividades_internas
+from src.core.schemas.actividades_internas import actividades_internas_schema
+from src.core.modulo_actividades.actividades_externas import list_actividades_externas
+from src.core.schemas.actividades_externas import actividades_externas_schema
+from src.core.modulo_actividades.año.anio import Anios, Divisiones
+from src.core.modulo_actividades.año import create_anio
+from src.core.modulo_actividades.escuela import get_escuelas_by_municipio
+from src.core.schemas.escuela import escuela_schema, escuelas_schema
+from src.core.schemas.localidad import localidades_schema
+from src.core.modulo_actividades.actividad import create_actividad
+from src.core.modulo_actividades.taller import create_taller
 from src.core.llamada_0800 import get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id
+from src.core.llamada_0800 import create_como_ubico, create_detalle_motivo_consulta, create_motivo_consulta, get_llamadas_0800_todas, get_llamadas_0800_todas_sin_paginar, list_como_ubico, list_detalles_motivo_consulta, list_llamadas_0800, list_motivos_consulta, create_llamada_0800, get_llamada_0800_by_id, vaciar_como_ubico, vaciar_detalles_motivo_consulta, vaciar_motivos_consulta
 from src.core.llamada_0800.llamada_0800 import SujetoDeLaConsulta, Pronombre, DefinicionLlamada, IntervecionSugerida
 from src.core.schemas.como_ubico import como_ubico_schema, como_ubico_schema_many
 from src.core.schemas.detalle_motivo_de_la_consulta import detalle_motivo_de_la_consulta_schema, detalle_motivos_de_la_consulta_schema
@@ -56,6 +76,8 @@ user_blueprint = Blueprint("user", __name__, url_prefix="/users")
 roles_blueprint = Blueprint("roles", __name__, url_prefix="/roles")
 cetecsm_blueprint = Blueprint("cetecsm", __name__, url_prefix="/cetecsm")
 observatorio_blueprint =  Blueprint("observatorio", __name__, url_prefix="/observatorio")
+actividades_blueprint =  Blueprint("actividades", __name__, url_prefix="/actividades")
+admin_blueprint = Blueprint("admin", __name__, url_prefix="/admin")
 
 api_blueprint.register_blueprint(prueba_blueprint)
 api_blueprint.register_blueprint(auth_blueprint)
@@ -64,6 +86,8 @@ api_blueprint.register_blueprint(user_blueprint)
 api_blueprint.register_blueprint(roles_blueprint)
 api_blueprint.register_blueprint(cetecsm_blueprint)
 api_blueprint.register_blueprint(observatorio_blueprint)
+api_blueprint.register_blueprint(actividades_blueprint)
+api_blueprint.register_blueprint(admin_blueprint)
 
 @prueba_blueprint.get("")
 def get_all_pruebas():
@@ -231,7 +255,7 @@ def asignar_persona_cetecsm(persona_id):
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
-@me_blueprint.get("personasAsignadas")
+@me_blueprint.get("personas_asignadas")
 @jwt_required()
 def get_personas_cetecsm_asignadas():
     current_user = get_jwt_identity()
@@ -322,7 +346,6 @@ def editar_persona_cetecsm(id):
     """ Función que permite a un usuario administrador actualizar los datos de otro usuario """    
     data = request.get_json()
     persona = data['persona']
-    print(persona)
     persona_cetecsm = get_persona_cetecsm(id=id)
     persona_cetecsm.update(
         dni=persona['dni'], 
@@ -337,12 +360,12 @@ def editar_persona_cetecsm(id):
         telefono=persona['telefono'],
         telefono_alternativo=persona['telefono_alternativo'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        identidad_genero_otra=persona['identidad_genero_otra'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
-
     
     resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
@@ -366,12 +389,12 @@ def crear_llamada_cetecsm(id):
         tiene_obra_social=persona['tiene_obra_social'],
         obra_social=persona['obra_social'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
-        fecha_prox_llamado_actual=llamada['fecha_prox_llamado']
+        fecha_prox_llamado_actual=llamada['fecha_prox_llamado'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
 
     create_llamada_cetecsm(
         detalle=llamada['detalle'],
@@ -783,7 +806,145 @@ def obtener_llamadas_0800_observatorio_exportar():
 def obtener_operadores_cetecsm():
 
     operadores_cetecsm = obtener_usuario_por_rol(rol="Operador CETECSM")
-    return make_response(jsonify(users_schema.dump(operadores_cetecsm)))# Api para la parte del 0800
+    return make_response(jsonify(users_schema.dump(operadores_cetecsm)))
+
+@actividades_blueprint.get("talleres")
+def obtener_talleres_actividades():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    tipo_actividad = request.args.get("tipo_taller", default="", type=str)
+
+    talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
+
+    data = {
+        "talleres": talleres_schema.dump(talleres),
+        "page": page,
+        "per_page": per_page,
+        "total": talleres.total
+    }
+
+    return make_response(jsonify(data))
+
+@actividades_blueprint.get("tipos_taller")
+def get_index_tipo_talleres():
+    tipo_talleres = {tipo.name: tipo.value for tipo in TiposActividades}
+    return make_response(jsonify(tipo_talleres)), 200
+
+@actividades_blueprint.get("dispositivos")
+def get_index_dispositivos():
+    dispositivos = list_dispositivos()
+    return make_response(jsonify(dispositivos_schema.dump(dispositivos))), 200
+
+@actividades_blueprint.get("años")
+def get_index_años():
+    años = {año.name: año.value for año in Anios}
+    return make_response(jsonify(años)), 200
+
+@actividades_blueprint.get("divisiones")
+def get_index_divisiones():
+    divisiones = {division.name: division.value for division in Divisiones}
+    return make_response(jsonify(divisiones)), 200
+
+@actividades_blueprint.get("actividades_internas")
+def get_index_actividades_internas():
+    actividades_internas = list_actividades_internas()
+    return make_response(jsonify(actividades_internas_schema.dump(actividades_internas)))
+
+@actividades_blueprint.get("actividades_externas")
+def get_index_actividades_externas():
+    actividades_externas = list_actividades_externas()
+    return make_response(jsonify(actividades_externas_schema.dump(actividades_externas)))
+
+@actividades_blueprint.get("escuelas")
+def get_index_escuelas():
+    municipio = request.args.get("municipio", default="", type=str)
+    escuelas = get_escuelas_by_municipio(municipio)
+    return make_response(jsonify(escuelas_schema.dump(escuelas)))
+
+@actividades_blueprint.get("localidades")
+def get_index_localidades():
+    municipio = request.args.get("municipio", default="", type=str)
+    localidades = get_localidades_by_municipio(municipio)
+    return make_response(jsonify(localidades_schema.dump(localidades)))
+
+@actividades_blueprint.post("registrar_taller")
+@jwt_required()
+def registrar_taller():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    actividad = data['actividad']
+    taller = data['taller']
+    
+    if actividad['tipo'] == 'Talleres de Salud Mental en las Escuelas':
+        escuela = data['escuela']
+        años = []
+        for año in actividad['anios']:
+            anio = create_anio(anio=año['anio'], divisiones=", ".join(año['divisiones']))
+            años.append(anio)
+
+        act = create_actividad(
+            cant_participantes=actividad['cant_participantes'],
+            observaciones=actividad['observaciones'],
+            cant_encuentros=actividad['cant_encuentros'],
+            escuela_cue=escuela['cue'],
+            anios=años,
+        )
+
+    else:
+        print('aca estoy :/')
+        print(actividad)
+        act = create_actividad(
+            cant_participantes=actividad['cant_participantes'],
+            observaciones=actividad['observaciones'],
+            actividad=str(actividad['actividades'])
+        )
+    
+    create_taller(
+        tipo=actividad['tipo'],
+        municipio_id=taller['municipio']['nombre'],
+        localidad=taller['localidad'],
+        dispositivo_id=taller['dispositivo'],
+        usuario_id=current_user,
+        actividad=act
+    )
+
+    resp = make_response(jsonify({"msge": "Taller cargado exitosamente"}))
+    resp.headers["Content-Type: application/json"] = "*"
+    return resp
+
+@actividades_blueprint.get("estadisticas")
+def get_estadisticas():
+    tipo_taller = request.args.get("tipo_taller", default="Talleres de Salud Mental en las Escuelas", type=str)
+    parametro_agrupacion = request.args.get("param_agrupacion", default="Año", type=str)
+    tipo_actividad = request.args.get("tipo_actividad", default="Todas", type=str)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+
+    dict_params = {'Año': 'fecha_hora_carga','Municipio': 'municipio_id', 'Región sanitaria': 'region_sanitaria_id', 'Dispositivo': 'dispositivo_id'}
+
+    estadisticas = obtener_estadisticas(tipo_taller, dict_params[parametro_agrupacion], tipo_actividad, page, per_page)
+    lista = []
+
+    for estadistica in estadisticas:
+        data_estadisticas = {
+            'agrupado_por': getattr(estadistica, dict_params[parametro_agrupacion]),
+            'cantidad_talleres': estadistica.cant_talleres,
+            'cantidad_encuentros': estadistica.cant_encuentros,
+            'cantidad_escuelas': estadistica.cant_escuelas,
+            'cantidad_participantes': estadistica.cant_participantes
+        }
+        lista.append(data_estadisticas)
+    
+    data = {
+        'estadisticas': lista,
+        'page': page,
+        'per_page': per_page,
+        'total': estadisticas.total
+    }
+
+    return make_response(jsonify(data))
+
+# Api para la parte del 0800
 
 @api_blueprint.get("sujetos_consulta")
 def get_index_sujeto_consulta():
@@ -821,7 +982,7 @@ def get_index_detalle_motivos_consulta():
     return make_response(jsonify(detalle_motivos_de_la_consulta_schema.dump(motivos))), 200
 
 @api_blueprint.post("llamada_0800/crear")
-# @jwt_required()
+@jwt_required()
 def crear_llamada_0800():
     """ Función que permite a un usuario Operador del 0800 cargar una llamada """
     # current_user = get_jwt_identity()
@@ -942,3 +1103,57 @@ def ver_seguimiento(llamada_id):
         return make_response(jsonify({
             'esta_asignada': False
         })), 200
+
+@admin_blueprint.get("opciones/<string:opcion>")
+def get_opciones(opcion):
+    match opcion:
+        case 'motivos_consulta':
+            opciones = [opcion['nombre'] for opcion in motivos_de_la_consulta_schema.dump(list_motivos_consulta())]
+        case 'como_ubico':
+            opciones = [opcion['forma'] for opcion in como_ubico_schema_many.dump(list_como_ubico())]
+        case 'generos':
+            opciones = [opcion['tipo'] for opcion in identidades_genero_schema.dump(list_identidades_genero())]
+        case 'detalles_motivo_consulta':
+            opciones = [opcion['motivo'] for opcion in detalle_motivos_de_la_consulta_schema.dump(list_detalles_motivo_consulta())]
+        case 'malestares_emocionales':
+            opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
+        case 'situaciones_vulnerabilidad':
+            opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
+        case 'motivos_acompanamiento':
+            opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
+    return make_response(jsonify(opciones)), 200
+
+@admin_blueprint.post("guardar-opciones")
+def save_opciones():
+    opcion = request.get_json()['opcion']
+    opciones = json.loads(request.get_json()['opciones'])
+    match opcion:
+        case 'motivos_consulta':
+            vaciar_motivos_consulta()
+            for opcion in opciones:
+                create_motivo_consulta(nombre=opcion)
+        case 'como_ubico':
+            vaciar_como_ubico()
+            for opcion in opciones:
+                create_como_ubico(forma=opcion)
+        case 'generos':
+            vaciar_identidad_genero()
+            for opcion in opciones:
+                create_identidad_genero(tipo=opcion)
+        case 'detalles_motivo_consulta':
+            vaciar_detalles_motivo_consulta()
+            for opcion in opciones:
+                create_detalle_motivo_consulta(motivo=opcion)
+        case 'malestares_emocionales':
+            vaciar_malestares_emocionales()
+            for opcion in opciones:
+                create_malestar_emocional(tipo=opcion)
+        case 'situaciones_vulnerabilidad':
+            vaciar_situaciones_vulnerabilidad()
+            for opcion in opciones:
+                create_situacion_vulnerabilidad(tipo=opcion)
+        case 'motivos_acompanamiento':
+            vaciar_mot_gral_acomp()
+            for opcion in opciones:
+                create_mot_gral_acomp(tipo=opcion)
+    return make_response(), 200

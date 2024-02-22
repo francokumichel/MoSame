@@ -70,7 +70,7 @@ export default {
 
     methods: {
         async cargarAsignadas() {
-            const endpoint = !this.esCoordinador ? "me/personasAsignadas" : `cetecsm/personasAsignadas/${this.$route.params.id}`;
+            const endpoint = !this.esCoordinador ? "me/personas_asignadas" : "cetecsm/personasAsignadas/" + this.$route.params.id;
             try {
                 const response = await apiService.get(import.meta.env.VITE_API_URL + endpoint , {
                     params: {

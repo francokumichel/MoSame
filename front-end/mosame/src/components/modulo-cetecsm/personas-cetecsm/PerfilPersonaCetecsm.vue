@@ -68,13 +68,13 @@
                     <div class="mb-3 row">
                         <label for="grupo_conviviente" class="col-sm-auto col-form-label fw-semibold">Grupo conviviente:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="grupo_conviviente" :value="persona.grupo_conviviente">
+                            <input type="text" readonly class="form-control-plaintext" id="grupo_conviviente" :value="persona.grupo_conviviente != 'Otro' ? persona.grupo_conviviente : `${persona.grupo_conviviente} (${persona.grupo_conviviente_otro})`">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="genero_identidad" class="col-sm-auto col-form-label fw-semibold">Identidad de género:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.identidad_genero ? persona.identidad_genero.tipo : '-'">
+                            <input type="text" readonly class="form-control-plaintext" id="genero_identidad" :value="persona.identidad_genero_id != 'Otra identidad' ? persona.identidad_genero_id : `${persona.identidad_genero_id} (${persona.identidad_genero_otra})`">
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -89,24 +89,24 @@
                             <input type="text" readonly class="form-control-plaintext" id="obra_social" :value="persona.obra_social">
                         </div>
                     </div>
-                    <div v-if="persona.motivo_gral_acomp" class="mb-3 row">
+                    <div v-if="persona.motivo_gral_acomp_id" class="mb-3 row">
                         <label for="motivo_gral_acomp" class="col-sm-auto col-form-label fw-semibold">Motivo general de acompañamiento:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="motivo_gral_acomp" :value="persona.motivo_gral_acomp.tipo || ''">
+                            <input type="text" readonly class="form-control-plaintext" id="motivo_gral_acomp" :value="persona.motivo_gral_acomp_id || '-'">
                         </div>
                     </div>
-                    <div v-if="persona.motivo_gral_acomp && persona.motivo_gral_acomp.tipo == 'Malestar emocional'">
+                    <div v-if="persona.motivo_gral_acomp_id == 'Malestar emocional'">
                         <div class="mb-3 row">
                             <label for="malestares_emocionales" class="col-sm-auto col-form-label fw-semibold">Malestares emocionales:</label>
                             <div class="col-sm-auto">
-                                <input type="text" readonly class="form-control-plaintext" id="malestares_emocionales" :value="formatList(persona.motivo_gral_acomp.malestares_emocionales)">
+                                <input type="text" readonly class="form-control-plaintext" id="malestares_emocionales" :value="persona.malestares_emocionales || '-'">
                             </div>
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="situacion_vulnerabilidad" class="col-sm-auto col-form-label fw-semibold">Situaciones de vulnerabilidad:</label>
                         <div class="col-sm-auto">
-                            <input type="text" readonly class="form-control-plaintext" id="situacion_vulnerabilidad" :value="formatList(persona.situaciones_vulnerabilidad)">
+                            <input type="text" readonly class="form-control-plaintext" id="situacion_vulnerabilidad" :value="persona.situaciones_vulnerabilidad">
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
             </div>
             <div class="d-flex justify-content-center align-items-center column-gap-2">
                 <router-link :to="'/cetecsm/persona/llamadas/' + persona.id" class="btn btn-primary shadow-sm">Ver historial de llamadas</router-link>
-                <div v-if="esOperador()">
+                <div v-if="userRole == 'Operador CETECSM'">
                     <router-link :to="'/cetecsm/persona/editar/' + persona.id" class="btn btn-primary shadow-sm">Editar persona</router-link>
                 </div>
             </div>
@@ -156,13 +156,12 @@
 
 <script>
 import { apiService } from "@/services/api";
-import { displayError, displaySuccess } from "@/services/handlers";
+import { mapGetters } from 'vuex';
 
 export default {
     data() {
         return{
             persona: null,
-            roles: [],
             errores: [],
         }
     },
@@ -175,25 +174,16 @@ export default {
             .catch((e) => {
                 console.log(e)
                 this.errores.push(e);
-            });
+            });    
+    },
 
-        await apiService.get(import.meta.env.VITE_API_URL + "me/roles")
-            .then((response) => {
-                this.roles = response.data;
-            })
-            .catch((e) => {
-                console.log(e)
-                this.errores.push(e);
-            })    
+    computed: {
+        ...mapGetters(['userRole']),
     },
 
     methods: {
         formatList(lista) {
             return lista ? lista.map(l => l.tipo).join(', ') : '';
-        },
-
-        esOperador() {
-            return this.roles.some((role) => role.name == "Operador CETECSM");
         }
     },
 }

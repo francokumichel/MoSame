@@ -12,22 +12,23 @@ const enlacesPorRol = {
         { path: '/cetecsm/derivaciones', text: 'Personas derivadas' },
         { path: "/cetecsm/personas/asignadas_todas", text: 'Personas en seguimiento' },
     ],
-    'Trabajador de salud': [
-        { path: '/actividades/create', text: 'Actividades' },
+    'Trabajador salud': [
+        { path: '/actividades/cargar_taller', text: 'Actividades' },
     ],
-    'Administrador de actividades': [
+    'Administrador actividades': [
         { path: '/actividades/talleres', text: 'Talleres' },
         { path: '/actividades/estadisticas', text: 'Estadísticas' },
     ],
     'Miembro observatorio': [
         { path: '/observatorio/llamadas_0800', text: 'Llamadas 0800' },
-        { path: '/observatorio/personas_cetecsm_derivadas', text: 'Personas derivadas a CETEC SM' },
-        { path: '/observatorio/personas_cetecsm_seguimiento', text: 'Personas en seguimiento por CETEC SM' },
+        { path: '/observatorio/personas_cetecsm_derivadas', text: 'Personas derivadas CETEC SM' },
+        { path: '/observatorio/personas_cetecsm_seguimiento', text: 'Personas en seguimiento CETEC SM' },
         { path: '/observatorio/cantidad_llamadas_cetecsm', text: 'Cantidad total de llamadas CETEC SM' },
         { path: '/observatorio/talleres', text: 'Talleres' },
     ],
     'Administrador': [
         { path: '/users', text: 'Usuarios' },
+        { path: '/editar_opciones', text: 'Editar opciones' }
     ],
 };
   
