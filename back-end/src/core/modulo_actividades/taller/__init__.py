@@ -1,7 +1,6 @@
 from src.core.database import db
 from src.core.modulo_actividades.taller.taller import Taller, TiposActividades
 from src.core.modulo_actividades.actividad.actividad import Actividad
-from sqlalchemy import case
 
 def create_taller(**kwargs):
     taller = Taller(**kwargs)
@@ -17,6 +16,43 @@ def get_talleres(tipo_actividad, page, per_page):
         talleres = talleres.filter(Taller.tipo == tipo_actividad)
     
     return talleres.order_by(Taller.id).paginate(page=page, per_page=per_page, error_out=True)
+
+def get_talleres_todos(search_terms, page_num, per_page):
+    
+    query = Taller.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_talleres_por_regiones,
+            'fechas': buscar_talleres_por_fecha,
+            'municipio': buscar_talleres_por_municipio,
+            'gestion': buscar_talleres_por_gestion
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query.order_by(Taller.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def buscar_talleres_por_regiones(query, regiones_sanitarias):
+    from src.core.general.municipio.municipio import Municipio
+    return query.filter(Taller.municipio.has(Municipio.region_sanitaria_id.in_(regiones_sanitarias)))
+
+def buscar_talleres_por_fecha(query, fechas):
+    if fechas['desde'] and fechas['hasta']:
+        return query.filter(Taller.fecha_hora_carga.between(fechas['desde'], fechas['hasta']))
+    elif fechas['desde']:
+        return query.filter(Taller.fecha_hora_carga >= fechas['desde'])
+    elif fechas['hasta']:
+        return query.filter(Taller.fecha_hora_carga <= fechas['hasta'])
+
+    return query
+    
+def buscar_talleres_por_municipio(query, municipio):
+    return query.filter(Taller.municipio_id == municipio)
+
+def buscar_talleres_por_gestion(query, gestion):
+    from src.core.modulo_actividades.escuela.escuela import Escuela
+    return query.filter(Taller.actividad.has(Actividad.escuela.has(Escuela.sector == gestion)))
 
 def obtener_estadisticas(tipo_taller, agrupar_por, actividad, page, per_page):
 

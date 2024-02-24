@@ -44,7 +44,7 @@ from src.core.malestar_emocional import create_malestar_emocional, list_malestar
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
+from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
 from src.core.modulo_actividades.dispositivo import list_dispositivos
@@ -56,6 +56,7 @@ from src.core.schemas.actividades_externas import actividades_externas_schema
 from src.core.modulo_actividades.año.anio import Anios, Divisiones
 from src.core.modulo_actividades.año import create_anio
 from src.core.modulo_actividades.escuela import get_escuelas_by_municipio
+from src.core.modulo_actividades.escuela.escuela import Sectores
 from src.core.schemas.escuela import escuela_schema, escuelas_schema
 from src.core.schemas.localidad import localidades_schema
 from src.core.modulo_actividades.actividad import create_actividad
@@ -1162,9 +1163,25 @@ def save_opciones():
 def obtener_talleres_observatorio():
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
-    tipo_actividad = request.args.get("tipo_taller", default="", type=str)
+    regiones_sanitarias = request.args.get("regiones_sanitarias", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    municipio = request.args.get("municipio", default="", type=str)
+    gestion = request.args.get("gestion", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "municipio": municipio,
+        "gestion": gestion
+    }
 
-    talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    talleres = get_talleres_todos(search_terms=search_terms, page_num=page, per_page=per_page)
 
     data = {
         "talleres": talleres_schema_observatorio.dump(talleres),
@@ -1174,3 +1191,8 @@ def obtener_talleres_observatorio():
     }
 
     return make_response(jsonify(data))
+
+@observatorio_blueprint.get("gestiones")
+def get_index_gestiones():
+    gestiones = {gestion.name: gestion.value for gestion in Sectores}
+    return make_response(jsonify(gestiones)), 200

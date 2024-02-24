@@ -19,7 +19,7 @@
                 </div>    
             </fieldset>
             <div class="mb-3">
-                <label for="fecha_derivacion" class="col-form-label fw-semibold">Fecha de derivación:</label>
+                <label for="fecha_derivacion" class="col-form-label fw-semibold">Fecha:</label>
                 <div class="row g-3">
                     <div class="col-auto">
                         <label for="fecha_desde" class="col-form-label">Desde:</label>
@@ -32,42 +32,20 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="edad" class="col-form-label fw-semibold">Edad:</label>
-                <div class="row g-3">
-                    <div class="col-3">
-                        <label for="edad_desde" class="col-form-label">Desde:</label>
-                        <input v-model="edad_desde" type="number" min="0" max="100" class="form-control shadow-sm" placeholder="Desde" aria-label="fecha_desde">
-                    </div>
-                    <div class="col-3">
-                        <label for="edad_hasta" class="col-form-label">Hasta:</label>
-                        <input v-model="edad_hasta" type="number" min="0" max="100" class="form-control shadow-sm" placeholder="Hasta" aria-label="fecha_hasta">
-                    </div>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="motivo_consulta" class="col-form-label fw-semibold">Motivo de la consulta:</label>
-                <select class="form-select border border-dark-subtle" v-model="motivo_consulta" aria-label="Default select example">
+                <label for="municipio" class="col-form-label fw-semibold">Municipio:</label>
+                <select class="form-select border border-dark-subtle" v-model="municipio" aria-label="Default select example">
                     <option value="">Todos</option>
-                    <option v-for="motivo in motivos_consulta" :key="motivo" :value="motivo.nombre">
-                        {{ motivo.nombre }}
+                    <option v-for="municipio in municipios" :key="municipio" :value="municipio.nombre">
+                        {{ municipio.nombre }}
                     </option>
                 </select>
             </div>
             <div class="mb-3">
-                <label for="detalle_motivo_consulta" class="col-form-label fw-semibold">Detalle del motivo de la consulta:</label>
-                <select class="form-select border border-dark-subtle" v-model="detalle_motivo_consulta" aria-label="Default select example">
-                    <option value="">Todos</option>
-                    <option v-for="motivo in detalles_motivo_consulta" :key="motivo" :value="motivo.motivo">
-                        {{ motivo.motivo }}
-                    </option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="generos" class="col-form-label fw-semibold">Identidad de género:</label>
-                <select class="form-select border border-dark-subtle" v-model="genero" aria-label="Default select example">
+                <label for="gestion" class="col-form-label fw-semibold">Gestión:</label>
+                <select class="form-select border border-dark-subtle" v-model="gestion" aria-label="Default select example">
                     <option value="">Todas</option>
-                    <option v-for="genero in generos" :key="genero" :value="genero.tipo">
-                        {{ genero.tipo }}
+                    <option v-for="gestion in gestiones" :key="gestion" :value="gestion">
+                        {{ gestion }}
                     </option>
                 </select>
             </div>
@@ -75,7 +53,7 @@
         </div>
     </div>
     <div class="table-responsive table-content border border-secondary-subtle shadow">
-        <ObservatorioTalleresList :talleres="llamadas" />
+        <ObservatorioTalleresList :talleres="talleres" />
         <div class="d-flex flex-row justify-content-center align-items-center">
             <div class="d-flex flex-row align-items-center">
                 <button class="ms-4 mb-3 btn btn-outline-success shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Agregar filtros</button>
@@ -116,19 +94,15 @@ import ObservatorioTalleresList from "@/components/modulo-observatorio/Observato
 export default {
     data() {
         return {
-            llamadas: [],
+            talleres: [],
             regiones_seleccionadas: [],
             regiones_sanitarias: [],
             fecha_desde: null,
             fecha_hasta: null,
-            edad_desde: null,
-            edad_hasta: null,
-            motivo_consulta: "",
-            motivos_consulta: [],
-            detalle_motivo_consulta: '',
-            detalles_motivo_consulta: [],
-            genero: '',
-            generos: [],
+            municipios: [],
+            municipio: "",
+            gestiones: [],
+            gestion: "",
             errors: [],
             page: 1,
             perPage: 5,
@@ -137,7 +111,16 @@ export default {
     },
 
     async created() {
-        this.cargarLlamadas();
+        this.cargarTalleres();
+        await apiService.get(import.meta.env.VITE_API_URL + "municipios")
+            .then((response) => {
+                this.municipios = response.data;
+            })
+            .catch((e) => {
+                console.log(e)
+                this.errores.push(e);
+            });
+
         await apiService.get(import.meta.env.VITE_API_URL + "regiones_sanitarias")
             .then((response) => {
                 this.regiones_sanitarias = response.data;
@@ -146,28 +129,10 @@ export default {
                 console.log(e)
                 this.errores.push(e);
             });
-        
-        await apiService.get(import.meta.env.VITE_API_URL + "motivos_consulta")
+
+        await apiService.get(import.meta.env.VITE_API_URL + "observatorio/gestiones")
             .then((response) => {
-                this.motivos_consulta = response.data;
-            })
-            .catch((e) => {
-                console.log(e)
-                this.errores.push(e);
-            });
-        
-        await apiService.get(import.meta.env.VITE_API_URL + "detalle_motivos_consulta")
-            .then((response) => {
-                this.detalles_motivo_consulta = response.data;
-            })
-            .catch((e) => {
-                console.log(e)
-                this.errores.push(e);
-            });
-        
-        await apiService.get(import.meta.env.VITE_API_URL + "identidades_genero")
-            .then((response) => {
-                this.generos = response.data;
+                this.gestiones = response.data;
             })
             .catch((e) => {
                 console.log(e)
@@ -190,16 +155,21 @@ export default {
     },
 
     methods: {
-        async cargarLlamadas() {
+        async cargarTalleres() {
             try {
                 const response = await apiService.get(import.meta.env.VITE_API_URL + "observatorio/talleres" , {
                     params: {
                         page: this.page,
                         per_page: this.perPage,
+                        regiones_sanitarias: this.regionesSeleccionadasString,
+                        fecha_desde: this.fecha_desde,
+                        fecha_hasta: this.fecha_hasta,
+                        municipio: this.municipio,
+                        gestion: this.gestion
                     },
                 });
                 console.log(response.data)
-                this.llamadas = response.data.talleres;
+                this.talleres = response.data.talleres;
                 this.cantPages = response.data.total;
             } catch (error) {
                 this.errors.push(error);
@@ -209,18 +179,18 @@ export default {
         previousPage() {
             if (this.page > 1) {
                 this.page--;
-                this.cargarLlamadas();
+                this.cargarTalleres();
             }
         },
         nextPage() {
             if (this.page < this.cantPages){
                 this.page++;
-                this.cargarLlamadas();
+                this.cargarTalleres();
             }
         },
         updatePerPage() {
             this.page = 1;
-            this.cargarLlamadas();
+            this.cargarTalleres();
         },
 
         actualizarLista(lista, elemento) {
