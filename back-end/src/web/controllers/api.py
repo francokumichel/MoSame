@@ -1163,3 +1163,20 @@ def save_opciones():
             for opcion in opciones:
                 create_mot_gral_acomp(tipo=opcion)
     return make_response(), 200
+
+@api_blueprint.get("talleres")
+def obtener_talleres_observatorio():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    tipo_actividad = request.args.get("tipo_taller", default="", type=str)
+
+    talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
+
+    data = {
+        "talleres": talleres_schema.dump(talleres),
+        "page": page,
+        "per_page": per_page,
+        "total": talleres.total
+    }
+
+    return make_response(jsonify(data))

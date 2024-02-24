@@ -14,3 +14,4 @@ class Municipio(db.Model):
     personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
     talleres = db.relationship("Taller", backref="municipio")
     localidades = db.relationship("Localidad", secondary=municipio_localidad, backref="municipios")
+    llamadas_0800 = db.relationship('Llamada0800', backref="municipio")

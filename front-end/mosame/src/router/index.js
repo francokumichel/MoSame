@@ -21,7 +21,8 @@ import Llamadas0800View from "../views/Llamadas0800View.vue";
 import Taller from "../views/modulo-actividades-prevencion/TallerView.vue";
 import TallerForm from "../views/modulo-actividades-prevencion/TallerFormView.vue";
 import Estadisticas from "../views/modulo-actividades-prevencion/EstadisticasView.vue";
-import EditarOpcionesView from "../views/modulo-general/EditarOpcionesView.vue"
+import EditarOpcionesView from "../views/modulo-general/EditarOpcionesView.vue";
+import ObservatorioTalleresView from "../views/modulo-observatorio/ObservatorioTalleresView.vue"
 import store from "@/store";
 import { displayError } from "@/services/handlers.js"
 
@@ -140,7 +141,13 @@ const router = createRouter({
             name: "observatorio-cantidad-llamadas-cetecsm",
             component: CantidadLlamadasCetecsm,
             meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
-        },    
+        },
+        {                 
+            path:"/observatorio/talleres",
+            name: "observatorio-talleres",
+            component: ObservatorioTalleresView,
+            meta: { requiresAuth: true, roles: ["Miembro observatorio"] },             
+        },
         {                 
             path:"/observatorio/llamadas_0800",
             name: "observatorio-llamadas-0800",
