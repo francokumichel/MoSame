@@ -5,7 +5,7 @@ from src.core.schemas.localidad import LocalidadSchema
 class MunicipioSchema(Schema):
     nombre = fields.Str()
     region_sanitaria = fields.Nested(RegionSanitariaSchema)
-    localidades = fields.Nested(LocalidadSchema, many=True)
+    localidades = fields.Str()
 
 municipio_schema = MunicipioSchema()
 municipios_schema = MunicipioSchema(many=True)

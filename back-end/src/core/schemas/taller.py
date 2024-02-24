@@ -6,7 +6,7 @@ class TallerSchema(Schema):
     tipo = fields.Str()
     fecha_hora_carga = fields.Date()
     municipio = fields.Nested(MunicipioSchema)
-    localidad_id = fields.Str()
+    localidad = fields.Str()
     dispositivo_id = fields.Str()
     actividad = fields.Nested(ActividadSchema)
 

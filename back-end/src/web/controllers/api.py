@@ -255,7 +255,7 @@ def asignar_persona_cetecsm(persona_id):
     resp.headers["Content-Type: application/json"] = "*"
     return resp
 
-@me_blueprint.get("personasAsignadas")
+@me_blueprint.get("personas_asignadas")
 @jwt_required()
 def get_personas_cetecsm_asignadas():
     current_user = get_jwt_identity()
@@ -346,7 +346,6 @@ def editar_persona_cetecsm(id):
     """ Función que permite a un usuario administrador actualizar los datos de otro usuario """    
     data = request.get_json()
     persona = data['persona']
-    print(persona)
     persona_cetecsm = get_persona_cetecsm(id=id)
     persona_cetecsm.update(
         dni=persona['dni'], 
@@ -361,12 +360,12 @@ def editar_persona_cetecsm(id):
         telefono=persona['telefono'],
         telefono_alternativo=persona['telefono_alternativo'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        identidad_genero_otra=persona['identidad_genero_otra'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
-
     
     resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
     resp.headers["Content-Type: application/json"] = "*"
@@ -390,12 +389,12 @@ def crear_llamada_cetecsm(id):
         tiene_obra_social=persona['tiene_obra_social'],
         obra_social=persona['obra_social'],
         detalle_acompanamiento=persona['detalle_acompanamiento'],
-        fecha_prox_llamado_actual=llamada['fecha_prox_llamado']
+        fecha_prox_llamado_actual=llamada['fecha_prox_llamado'],
+        identidad_genero_id=persona['identidad_genero_id'],
+        motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
+        malestares_emocionales=persona['malestares_emocionales'],
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
     )
-
-    actualizar_identidad_genero(persona=persona_cetecsm, identidad_genero=persona['identidad_genero'])
-    actualizar_mot_gral_acomp(persona=persona_cetecsm, mot_gral_acomp=persona['motivo_gral_acomp'])
-    actualizar_sit_vuln(persona=persona_cetecsm, situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'])
 
     create_llamada_cetecsm(
         detalle=llamada['detalle'],
@@ -891,24 +890,19 @@ def registrar_taller():
             anios=años,
         )
 
-    elif actividad['tipo'] == 'Espacio Grupal en el Dispositivo':
-        act = create_actividad(
-            cant_participantes=actividad['cant_participantes'],
-            observaciones=actividad['observaciones'],
-            actividades_internas_id=actividad['actividad_interna']
-        )
-
     else:
+        print('aca estoy :/')
+        print(actividad)
         act = create_actividad(
             cant_participantes=actividad['cant_participantes'],
             observaciones=actividad['observaciones'],
-            actividades_externas_id=actividad['actividad_externa']
+            actividad=str(actividad['actividades'])
         )
     
     create_taller(
         tipo=actividad['tipo'],
         municipio_id=taller['municipio']['nombre'],
-        localidad_id=taller['localidad'],
+        localidad=taller['localidad'],
         dispositivo_id=taller['dispositivo'],
         usuario_id=current_user,
         actividad=act
