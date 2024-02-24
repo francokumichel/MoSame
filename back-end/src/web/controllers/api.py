@@ -46,7 +46,7 @@ from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad,
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
-from src.core.schemas.taller import talleres_schema
+from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
 from src.core.modulo_actividades.dispositivo import list_dispositivos
 from src.core.schemas.dispositivo import dispositivos_schema
 from src.core.modulo_actividades.actividades_internas import list_actividades_internas
@@ -1158,7 +1158,7 @@ def save_opciones():
                 create_mot_gral_acomp(tipo=opcion)
     return make_response(), 200
 
-@api_blueprint.get("talleres")
+@observatorio_blueprint.get("talleres")
 def obtener_talleres_observatorio():
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
@@ -1167,7 +1167,7 @@ def obtener_talleres_observatorio():
     talleres = get_talleres(tipo_actividad=tipo_actividad, page=page, per_page=per_page)
 
     data = {
-        "talleres": talleres_schema.dump(talleres),
+        "talleres": talleres_schema_observatorio.dump(talleres),
         "page": page,
         "per_page": per_page,
         "total": talleres.total

@@ -198,9 +198,9 @@ export default {
                         per_page: this.perPage,
                     },
                 });
-                this.llamadas = response.data.llamadas;
+                console.log(response.data)
+                this.llamadas = response.data.talleres;
                 this.cantPages = response.data.total;
-                console.log(this.llamadas)
             } catch (error) {
                 this.errors.push(error);
             }
