@@ -206,22 +206,18 @@ export default {
         },
 
         async exportarDatos() {
-            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/llamadas_0800/exportar" , {
+            await apiService.get(import.meta.env.VITE_API_URL + "observatorio/talleres/exportar" , {
                     params: {
-                        regiones_seleccionadas: this.regionesSeleccionadasString,
+                        regiones_sanitarias: this.regionesSeleccionadasString,
                         fecha_desde: this.fecha_desde,
                         fecha_hasta: this.fecha_hasta,
-                        edad_desde: this.edad_desde,
-                        edad_hasta: this.edad_hasta,
-                        motivo_consulta: this.motivo_consulta,
-                        detalle_motivo_consulta: this.detalle_motivo_consulta,
-                        detalle_motivo_consulta: this.detalle_motivo_consulta,
-                        genero: this.genero
+                        municipio: this.municipio,
+                        gestion: this.gestion
                     },})
                 .then((response) => {
                     if(response.status == 200) {
                         const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8' });
-                        saveAs(blob, 'llamadas_0800.csv');
+                        saveAs(blob, 'talleres.csv');
                         displaySuccess(this.$toast, "Archivo exportado exitosamente.")
                     }
                 })

@@ -33,6 +33,22 @@ def get_talleres_todos(search_terms, page_num, per_page):
                 
     return query.order_by(Taller.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
+def get_talleres_todos_sin_paginar(search_terms):
+    
+    query = Taller.query
+    if search_terms:
+        dict_functions = {
+            'regiones_sanitarias': buscar_talleres_por_regiones,
+            'fechas': buscar_talleres_por_fecha,
+            'municipio': buscar_talleres_por_municipio,
+            'gestion': buscar_talleres_por_gestion
+        }
+        for key, value in search_terms.items():
+            if value:
+                query = dict_functions[key](query, value)
+                
+    return query
+
 def buscar_talleres_por_regiones(query, regiones_sanitarias):
     from src.core.general.municipio.municipio import Municipio
     return query.filter(Taller.municipio.has(Municipio.region_sanitaria_id.in_(regiones_sanitarias)))

@@ -44,7 +44,7 @@ from src.core.malestar_emocional import create_malestar_emocional, list_malestar
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, obtener_estadisticas
+from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, get_talleres_todos_sin_paginar, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
 from src.core.modulo_actividades.dispositivo import list_dispositivos
@@ -1196,3 +1196,33 @@ def obtener_talleres_observatorio():
 def get_index_gestiones():
     gestiones = {gestion.name: gestion.value for gestion in Sectores}
     return make_response(jsonify(gestiones)), 200
+
+@observatorio_blueprint.get("talleres/exportar")
+def obtener_talleres_observatorio_exportar():
+    regiones_sanitarias = request.args.get("regiones_sanitarias", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    municipio = request.args.get("municipio", default="", type=str)
+    gestion = request.args.get("gestion", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "municipio": municipio,
+        "gestion": gestion
+    }
+
+    talleres = get_talleres_todos_sin_paginar(search_terms=search_terms)
+    
+    data = [{
+        'localidad': taller.localidad,
+        'municipio': taller.municipio_id,
+        'region_sanitaria': taller.municipio.region_sanitaria.tipo,
+        'dispositivo': taller.dispositivo_id,
+        'nombre_escuela': taller.actividad.escuela.nombre if taller.actividad.escuela else "",
+    } for taller in talleres]
+
+    return convert_to_csv(data, "llamadas_0800.csv")
