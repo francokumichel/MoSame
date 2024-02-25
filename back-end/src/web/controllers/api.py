@@ -1216,6 +1216,12 @@ def obtener_talleres_observatorio_exportar():
     }
 
     talleres = get_talleres_todos_sin_paginar(search_terms=search_terms)
+
+    def obtener_anios_trabajados(taller):
+        aniosTrabajados = ''
+        for anio in taller.actividad.anios:
+            aniosTrabajados += f'{anio.anio}({anio.divisiones}), '
+        return aniosTrabajados[:-2]
     
     data = [{
         'localidad': taller.localidad,
@@ -1223,6 +1229,11 @@ def obtener_talleres_observatorio_exportar():
         'region_sanitaria': taller.municipio.region_sanitaria.tipo,
         'dispositivo': taller.dispositivo_id,
         'nombre_escuela': taller.actividad.escuela.nombre if taller.actividad.escuela else "",
+        'cue_escuela': taller.actividad.escuela_cue,
+        'años_trabajados': obtener_anios_trabajados(taller),
+        'cantidad_encuentros': taller.actividad.cant_encuentros,
+        'cantidad_participantes': taller.actividad.cant_participantes,
+        'observaciones': taller.actividad.observaciones
     } for taller in talleres]
 
     return convert_to_csv(data, "llamadas_0800.csv")
