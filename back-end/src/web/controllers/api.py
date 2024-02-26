@@ -57,6 +57,7 @@ from src.core.modulo_actividades.año.anio import Anios, Divisiones
 from src.core.modulo_actividades.año import create_anio
 from src.core.modulo_actividades.escuela import get_escuelas_by_municipio
 from src.core.modulo_actividades.escuela.escuela import Sectores
+from src.core.general.localidad import create_localidad, list_localidades, vaciar_localidades
 from src.core.schemas.escuela import escuela_schema, escuelas_schema
 from src.core.schemas.localidad import localidades_schema
 from src.core.modulo_actividades.actividad import create_actividad
@@ -1120,6 +1121,8 @@ def get_opciones(opcion):
             opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
         case 'situaciones_vulnerabilidad':
             opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
+        case 'localidades':
+            opciones = [opcion['nombre'] for opcion in localidades_schema.dump(list_localidades())]
         case 'motivos_acompanamiento':
             opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
     return make_response(jsonify(opciones)), 200
@@ -1153,6 +1156,10 @@ def save_opciones():
             vaciar_situaciones_vulnerabilidad()
             for opcion in opciones:
                 create_situacion_vulnerabilidad(tipo=opcion)
+        case 'localidades':
+            vaciar_localidades()
+            for opcion in opciones:
+                create_localidad(nombre=opcion)
         case 'motivos_acompanamiento':
             vaciar_mot_gral_acomp()
             for opcion in opciones:
