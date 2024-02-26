@@ -100,7 +100,6 @@
                         {{ motivo.tipo }}
                     </option>
                 </select>
-                <p>{{ derivacion.mot_gral_derivacion.tipo }}</p>
             </div>
             <div v-if="derivacion.mot_gral_derivacion">
                 <div v-if="derivacion.mot_gral_derivacion.tipo == 'Otro'" class="mb-4">
