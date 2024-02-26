@@ -13,6 +13,8 @@
                     <option value="localidades">Localidades/barrios</option>
                     <option value="motivos_acompanamiento">Motivos generales del acompañamiento</option>
                     <option value="dispositivos">Dispositivos</option>
+                    <option value="actividades_internas">Actividades internas</option>
+                    <option value="actividades_externas">Actividades externas</option>
                 </select>
             </div>
             <div class="mb-3">

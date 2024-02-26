@@ -49,9 +49,9 @@ from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
 from src.core.modulo_actividades.dispositivo import create_dispositivo, list_dispositivos, vaciar_dispositivos
 from src.core.schemas.dispositivo import dispositivos_schema
-from src.core.modulo_actividades.actividades_internas import list_actividades_internas
+from src.core.modulo_actividades.actividades_internas import create_actividad_interna, list_actividades_internas, vaciar_acctividades_internas
 from src.core.schemas.actividades_internas import actividades_internas_schema
-from src.core.modulo_actividades.actividades_externas import list_actividades_externas
+from src.core.modulo_actividades.actividades_externas import create_actividad_externa, list_actividades_externas, vaciar_acctividades_externas
 from src.core.schemas.actividades_externas import actividades_externas_schema
 from src.core.modulo_actividades.año.anio import Anios, Divisiones
 from src.core.modulo_actividades.año import create_anio
@@ -1127,6 +1127,10 @@ def get_opciones(opcion):
             opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
         case 'dispositivos':
             opciones = [opcion['nombre'] for opcion in dispositivos_schema.dump(list_dispositivos())]
+        case 'actividades_internas':
+            opciones = [opcion['nombre'] for opcion in actividades_internas_schema.dump(list_actividades_internas())]
+        case 'actividades_externas':
+            opciones = [opcion['nombre'] for opcion in actividades_externas_schema.dump(list_actividades_externas())]
     return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
@@ -1170,6 +1174,14 @@ def save_opciones():
             vaciar_dispositivos()
             for opcion in opciones:
                 create_dispositivo(nombre=opcion)
+        case 'actividades_internas':
+            vaciar_acctividades_internas()
+            for opcion in opciones:
+                create_actividad_interna(nombre=opcion)
+        case 'actividades_externas':
+            vaciar_acctividades_externas()
+            for opcion in opciones:
+                create_actividad_externa(nombre=opcion)
     return make_response(), 200
 
 @observatorio_blueprint.get("talleres")
