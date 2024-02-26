@@ -28,14 +28,14 @@
             </fieldset>
             <div class="mb-3">
                 <label for="dispositivo_derivador" class="col-form-label fw-semibold">Dispositivo que deriva:</label>
-                <input v-model="derivacion.dispositivo_derivacion" type="text" id="dispositivo_derivador" class="form-control shadow-sm" required />
+                <input maxlength="70" v-model="derivacion.dispositivo_derivacion" type="text" id="dispositivo_derivador" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese el dispositivo que deriva.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="nombre_operador_derivador" class="col-form-label fw-semibold">Nombre del operador que deriva:</label>
-                <input v-model="derivacion.nombre_operador_derivador" type="text" id="nombre_operador_derivador" class="form-control shadow-sm" required />
+                <input maxlength="70" v-model="derivacion.nombre_operador_derivador" type="text" id="nombre_operador_derivador" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa el nombre del operador que deriva.
                 </div>
@@ -53,14 +53,14 @@
             </div>
             <div class="mb-3">
                 <label for="nombre" class="col-form-label fw-semibold">Nombre:</label>
-                <input v-model="persona.nombre" type="text" id="nombre" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.nombre" type="text" id="nombre" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa un el nombre de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="apellido" class="col-form-label fw-semibold">Apellido:</label>
-                <input v-model="persona.apellido" type="text" id="apellido" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.apellido" type="text" id="apellido" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa el apellido de la persona derivada.
                 </div>
@@ -74,21 +74,21 @@
             </div>
             <div class="mb-3">
                 <label for="dni" class="col-form-label fw-semibold">DNI:</label>
-                <input v-model="persona.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control shadow-sm" />
+                <input maxlength="8" v-model="persona.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control shadow-sm" />
                 <div class="invalid-feedback">
                     El DNI debe ingresarse sin puntos y contener entre 7 y 8 dígitos.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="telefono" class="col-form-label fw-semibold">Telefono:</label>
-                <input v-model="persona.telefono" type="tel" id="telefono" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" required />
+                <input maxlength="14" v-model="persona.telefono" type="tel" id="telefono" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese un teléfono que contenga entre 8 y 14 dígitos (ej: '1122334455').
                 </div>
             </div>
             <div class="mb-3">
                 <label for="telefono_alternativo" class="col-form-label fw-semibold">Telefono alternativo (opcional):</label>
-                <input v-model="persona.telefono_alternativo" type="tel" id="telefono_alternativo" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" />
+                <input maxlength="14" v-model="persona.telefono_alternativo" type="tel" id="telefono_alternativo" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" />
                 <div class="invalid-feedback">
                     El teléfono debe contener entre 8 y 14 dígitos (ej: '1122334455').
                 </div>
@@ -105,7 +105,7 @@
             <div v-if="derivacion.mot_gral_derivacion">
                 <div v-if="derivacion.mot_gral_derivacion.tipo == 'Otro'" class="mb-4">
                     <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación:</label>
-                    <input v-model="derivacion.mot_gral_derivacion.otro_tipo" type="text" id="otro_mot_gral_derivacion" class="form-control shadow-sm" required />
+                    <input maxlength="100" v-model="derivacion.mot_gral_derivacion.otro_tipo" type="text" id="otro_mot_gral_derivacion" class="form-control shadow-sm" required />
                     <div class="invalid-feedback">
                         Por favor, ingrese otro tipo de motivo general de derivación.
                     </div>
@@ -113,7 +113,7 @@
             </div>    
             <div class="mb-4">
                 <label for="descripcion" class="col-form-label fw-semibold">Descripción:</label>
-                <input v-model="derivacion.descripcion" type="text" id="descripcion" class="form-control shadow-sm" required />
+                <input maxlength="255" v-model="derivacion.descripcion" type="text" id="descripcion" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una descripcion de la derivación.
                 </div>

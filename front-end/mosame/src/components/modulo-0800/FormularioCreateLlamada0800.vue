@@ -22,7 +22,7 @@
             </div>
             <div v-if="llamada.como_ubico == 'Otros'" class="mb-3">
                 <label for="como_ubico_otro" class="col-form-label fw-semibold">Indique otra forma:</label>
-                <input v-model="llamada.como_ubico_otro" type="text" id="como_ubico_otro" class="form-control border border-dark-subtle"/>
+                <input maxlength="256" v-model="llamada.como_ubico_otro" type="text" id="como_ubico_otro" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa otra identidad de genero.
                 </div>
@@ -66,7 +66,7 @@
             </div>
             <div v-if="llamada.identidad_genero == 'Otra identidad'" class="mb-3">
                 <label for="identidad_genero_otro" class="col-form-label fw-semibold">Indique otra identidad de género:</label>
-                <input v-model="llamada.identidad_genero_otra" type="text" id="identidad_genero_otro" class="form-control border border-dark-subtle"/>
+                <input maxlength="100" v-model="llamada.identidad_genero_otra" type="text" id="identidad_genero_otro" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa otra identidad de genero.
                 </div>
@@ -91,7 +91,7 @@
             </div>
             <div v-if="llamada.grupo_conviviente == 'Otro'" class="mb-3">
                 <label for="grupo_conviviente_otro" class="col-form-label fw-semibold">Indique otro grupo conviviente:</label>
-                <input v-model.lazy="llamada.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm"/>
+                <input maxlength="50" v-model.lazy="llamada.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa otro grupo conviviente.
                 </div>
@@ -120,7 +120,7 @@
             </fieldset>
             <div v-if="llamada.malestares_emocionales.includes('Otro')" class="mb-3">
                 <label for="grupo_conviviente_otro" class="col-form-label fw-semibold">Indique otro malestar emocional:</label>
-                <input v-model.lazy="llamada.malestares_emocionales_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm"/>
+                <input maxlength="100" v-model.lazy="llamada.malestares_emocionales_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa otro malestar emocional.
                 </div>
@@ -168,7 +168,7 @@
                 </div>
                 <div v-if="llamada.motivo_derivacion == 'Otro'" class="mb-4">
                     <label for="otro_mot_gral_derivacion" class="col-form-label fw-semibold">Otro tipo de motivo general de derivación: <span class="text-danger">*</span></label>
-                    <input required v-model="llamada.motivo_derivacion_otro" type="text" id="otro_mot_gral_derivacion" class="form-control border border-dark-subtle"/>
+                    <input maxlength="100" required v-model="llamada.motivo_derivacion_otro" type="text" id="otro_mot_gral_derivacion" class="form-control border border-dark-subtle"/>
                     <div class="invalid-feedback">
                         Por favor, ingrese otro tipo de motivo general de derivación.
                     </div>
@@ -176,21 +176,21 @@
             </div>
             <div class="mb-3">
                 <label for="nombre" class="col-form-label fw-semibold">Nombre:</label>
-                <input placeholder="Ingrese un nombre" v-model="llamada.nombre" type="text" id="nombre" class="form-control border border-dark-subtle"/>
+                <input maxlength="50" placeholder="Ingrese un nombre" v-model="llamada.nombre" type="text" id="nombre" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa un el nombre de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="apellido" class="col-form-label fw-semibold">Apellido:</label>
-                <input placeholder="Ingrese un apellido" v-model="llamada.apellido" type="text" id="apellido" class="form-control border border-dark-subtle"/>
+                <input maxlength="50" placeholder="Ingrese un apellido" v-model="llamada.apellido" type="text" id="apellido" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingresa el apellido de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="dni" class="col-form-label fw-semibold">DNI:</label>
-                <input placeholder="Ingrese un DNI" v-model="llamada.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control border border-dark-subtle" />
+                <input maxlength="8" placeholder="Ingrese un DNI" v-model="llamada.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control border border-dark-subtle" />
                 <div class="invalid-feedback">
                     El DNI debe ingresarse sin puntos y contener entre 7 y 8 dígitos.
                 </div>
@@ -232,14 +232,14 @@
             </div>
             <div class="mb-4">
                 <label for="domicilio" class="col-form-label fw-semibold">Domicilio:</label>
-                <input placeholder="Ingrese un domicilio" v-model="llamada.domicilio" type="text" id="domicilio" class="form-control border border-dark-subtle"/>
+                <input maxlength="256" placeholder="Ingrese un domicilio" v-model="llamada.domicilio" type="text" id="domicilio" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese un domicilio.
                 </div>
             </div>
             <div class="mb-4">
                 <label for="nacionalidad" class="col-form-label fw-semibold">Nacionalidad:</label>
-                <input placeholder="Ingrese una nacionalidad" v-model="llamada.nacionalidad" type="text" id="nacionalidad" class="form-control border border-dark-subtle"/>
+                <input maxlength="50" placeholder="Ingrese una nacionalidad" v-model="llamada.nacionalidad" type="text" id="nacionalidad" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese una nacionalidad.
                 </div>
@@ -260,7 +260,7 @@
             </div>
             <div class="mb-3">
                 <label for="duracion" class="col-form-label fw-semibold">Duración aproximada de la llamada: <span class="text-danger">*</span></label>
-                <input required v-model="llamada.duracion" type="text" id="duracion" class="form-control border border-dark-subtle"  />
+                <input maxlength="50" required v-model="llamada.duracion" type="text" id="duracion" class="form-control border border-dark-subtle"  />
                 <div class="invalid-feedback">
                     Por favor, ingrese la duración aproximada de la llamada.
                 </div>

@@ -6,21 +6,21 @@
         <div class="row mb-3">
           <label for="nombre" class="col-sm-2 col-form-label fw-semibold">Nombre</label>
           <div class="col-sm-7">
-            <input v-model="user.name" type="text" id="name" class="form-control shadow-sm" required />
+            <input maxlength="50" v-model="user.name" type="text" id="name" class="form-control shadow-sm" required />
           </div>
         </div>
   
         <div class="row mb-3">
           <label for="apellido" class="col-sm-2 col-form-label fw-semibold">Apellido</label>
           <div class="col-sm-7">
-            <input v-model="user.lastName" type="text" id="lastName" class="form-control shadow-sm" required />
+            <input maxlength="50" v-model="user.lastName" type="text" id="lastName" class="form-control shadow-sm" required />
           </div>
         </div>
   
         <div class="row mb-3">
           <label for="email" class="col-sm-2 col-form-label fw-semibold">Email</label>
           <div class="col-sm-7">
-            <input v-model="user.email" type="email" id="email" class="form-control shadow-sm" required />
+            <input maxlength="50" v-model="user.email" type="email" id="email" class="form-control shadow-sm" required />
           </div>
         </div>
         

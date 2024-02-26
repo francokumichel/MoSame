@@ -160,7 +160,7 @@
             </div>
             <div class="mb-3">
                 <label for="observaciones" class="col-form-label fw-semibold">Observaciones:</label>
-                <input v-model="actividad.observaciones" type="text" id="observaciones" class="form-control border border-dark-subtle"/>
+                <input maxlength="256" v-model="actividad.observaciones" type="text" id="observaciones" class="form-control border border-dark-subtle"/>
             </div>
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-info text-white fw-semibold shadow-sm">Guardar</button>
