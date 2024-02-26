@@ -130,7 +130,7 @@
             </div>
             <div v-if="llamada.resolucion == 'Continua acompañamiento' || llamada.resolucion == 'Comunicación fallida' " class="mb-3">
                 <label for="fecha_prox_llamado" class="col-form-label fw-semibold">Fecha del próximo llamado:</label>
-                <input v-model="llamada.fecha_prox_llamado" type="date" id="fecha_prox_llamado" class="form-control shadow-sm" required />
+                <input :min="hoyFechaFormateada()" v-model="llamada.fecha_prox_llamado" type="date" id="fecha_prox_llamado" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una fecha del próximo llamado.
                 </div>
@@ -293,6 +293,14 @@ export default {
                 }
             });
         },
+        
+        hoyFechaFormateada() {
+        const hoy = new Date();
+        const mes = hoy.getMonth() + 1; // Los meses en JavaScript se cuentan desde 0
+        const dia = hoy.getDate();
+        const formatoFecha = hoy.getFullYear() + '-' + (mes < 10 ? '0' : '') + mes + '-' + (dia < 10 ? '0' : '') + dia;
+        return formatoFecha;
+        }
     }
 }
 </script>

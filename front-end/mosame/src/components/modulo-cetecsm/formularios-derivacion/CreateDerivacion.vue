@@ -4,7 +4,7 @@
         <form ref="formulario" class="px-5 needs-validation" @submit.prevent="saveDerivation" novalidate>
             <div class="mb-3 has-validation">
                 <label for="fecha" class="col-form-label fw-semibold">Fecha de derivación:</label>
-                <input v-model="derivacion.fecha" type="date" id="fecha" class="form-control shadow-sm" required />
+                <input :max="hoyFechaFormateada()" v-model="derivacion.fecha" type="date" id="fecha" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, selecciona una fecha válida.
                 </div>
@@ -205,6 +205,14 @@ export default {
                 console.log('Formulario no válido. Realiza acciones adicionales...');
                 form.classList.add('was-validated');
             }     
+        },
+        
+        hoyFechaFormateada() {
+        const hoy = new Date();
+        const mes = hoy.getMonth() + 1; // Los meses en JavaScript se cuentan desde 0
+        const dia = hoy.getDate();
+        const formatoFecha = hoy.getFullYear() + '-' + (mes < 10 ? '0' : '') + mes + '-' + (dia < 10 ? '0' : '') + dia;
+        return formatoFecha;
         }
     }
 }
