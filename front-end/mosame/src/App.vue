@@ -26,7 +26,7 @@
               <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0 me-3" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="link.path"> {{ link.text }} </router-link>
             </li>
             <li class="nav-item">
-              <a class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" ref="#" @click="logout">Cerrar sesión</a>
+              <a class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84; user-select: none; cursor: pointer;" ref="#" @click="logout">Cerrar sesión</a>
             </li>
           </ul>
         </div>
