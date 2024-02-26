@@ -47,7 +47,7 @@ from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
 from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, get_talleres_todos_sin_paginar, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
-from src.core.modulo_actividades.dispositivo import list_dispositivos
+from src.core.modulo_actividades.dispositivo import create_dispositivo, list_dispositivos, vaciar_dispositivos
 from src.core.schemas.dispositivo import dispositivos_schema
 from src.core.modulo_actividades.actividades_internas import list_actividades_internas
 from src.core.schemas.actividades_internas import actividades_internas_schema
@@ -1125,6 +1125,8 @@ def get_opciones(opcion):
             opciones = [opcion['nombre'] for opcion in localidades_schema.dump(list_localidades())]
         case 'motivos_acompanamiento':
             opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
+        case 'dispositivos':
+            opciones = [opcion['nombre'] for opcion in dispositivos_schema.dump(list_dispositivos())]
     return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
@@ -1164,6 +1166,10 @@ def save_opciones():
             vaciar_mot_gral_acomp()
             for opcion in opciones:
                 create_mot_gral_acomp(tipo=opcion)
+        case 'dispositivos':
+            vaciar_dispositivos()
+            for opcion in opciones:
+                create_dispositivo(nombre=opcion)
     return make_response(), 200
 
 @observatorio_blueprint.get("talleres")

@@ -12,6 +12,7 @@
                     <option value="situaciones_vulnerabilidad">Tipos de situación de vulnerabilidad</option>
                     <option value="localidades">Localidades/barrios</option>
                     <option value="motivos_acompanamiento">Motivos generales del acompañamiento</option>
+                    <option value="dispositivos">Dispositivos</option>
                 </select>
             </div>
             <div class="mb-3">

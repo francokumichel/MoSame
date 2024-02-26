@@ -455,7 +455,7 @@ def run():
         tipo=TiposActividades.TALLERES.value,
         municipio_id="La Plata",
         localidad="La Plata",
-        dispositivo=dispositivo_1,
+        dispositivo_id="Dispositivo 1",
         usuario_carga=user_trabajador_salud,
         actividad=actividad_1
     )        
@@ -470,7 +470,7 @@ def run():
         tipo=TiposActividades.ESPACIO_GRUPAL.value,
         municipio_id="Florencio Varela",
         localidad="Florencio Varela",
-        dispositivo=dispositivo_2,
+        dispositivo_id="Dispositivo 2",
         usuario_carga=user_trabajador_salud,
         actividad=actividad_2
     )
@@ -485,7 +485,7 @@ def run():
         tipo=TiposActividades.ACCIONES_PROMOCION.value,
         municipio_id="La Matanza",
         localidad="La Matanza",
-        dispositivo=dispositivo_2,
+        dispositivo_id="Dispositivo 2",
         usuario_carga=user_trabajador_salud,
         actividad=actividad_3
     )
