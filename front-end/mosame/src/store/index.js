@@ -37,9 +37,12 @@ export default createStore({
       state.error_msg = "";
     },
     initializeStore(state) {
-      if (localStorage.getItem("user")) {
-        state.user = `${localStorage.getItem("user")}`;
-        state.token = `${localStorage.getItem("token")}`;
+      const storedUser = JSON.parse(localStorage.getItem('user'))
+      const storedToken = localStorage.getItem('token')
+    
+      if (storedUser && storedToken) {
+        state.user = storedUser
+        state.token = storedToken
       }
     },
     setMsg(state, errorData) {

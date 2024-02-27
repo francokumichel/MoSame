@@ -16,7 +16,7 @@ class Taller(db.Model):
     tipo = db.Column(db.String(100), nullable=False)
     municipio_id = db.Column(db.String(100), db.ForeignKey('municipio.nombre'))
     localidad = db.Column(db.String(100))
-    dispositivo_id = db.Column(db.String(100), db.ForeignKey('dispositivo.nombre'))
+    dispositivo_id = db.Column(db.String(100))
     usuario_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     actividad = db.relationship('Actividad', backref="taller", uselist=False)
 

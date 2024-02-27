@@ -9,6 +9,8 @@ import Toaster from "@meforma/vue-toaster";
 
 const app = createApp(App)
 
+store.commit('initializeStore')
+
 app.use(createPinia())
 app.use(router)
 app.use(store)

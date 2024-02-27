@@ -10,7 +10,11 @@
                     <option value="detalles_motivo_consulta">Detalles del motivo de la consulta</option>
                     <option value="malestares_emocionales">Tipos de malestar emocional</option>
                     <option value="situaciones_vulnerabilidad">Tipos de situación de vulnerabilidad</option>
+                    <option value="localidades">Localidades/barrios</option>
                     <option value="motivos_acompanamiento">Motivos generales del acompañamiento</option>
+                    <option value="dispositivos">Dispositivos</option>
+                    <option value="actividades_internas">Actividades internas</option>
+                    <option value="actividades_externas">Actividades externas</option>
                 </select>
             </div>
             <div class="mb-3">

@@ -9,3 +9,4 @@ class Municipio(db.Model):
     personas_cetecsm = db.relationship("PersonaCetecsm", backref="municipio")
     talleres = db.relationship("Taller", backref="municipio")
     localidades = db.Column(db.Text)
+    llamadas_0800 = db.relationship('Llamada0800', backref="municipio")

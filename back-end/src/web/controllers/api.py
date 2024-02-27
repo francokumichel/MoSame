@@ -44,18 +44,20 @@ from src.core.malestar_emocional import create_malestar_emocional, list_malestar
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.modulo_actividades.taller import get_talleres, obtener_estadisticas
+from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, get_talleres_todos_sin_paginar, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
-from src.core.schemas.taller import talleres_schema
-from src.core.modulo_actividades.dispositivo import list_dispositivos
+from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
+from src.core.modulo_actividades.dispositivo import create_dispositivo, list_dispositivos, vaciar_dispositivos
 from src.core.schemas.dispositivo import dispositivos_schema
-from src.core.modulo_actividades.actividades_internas import list_actividades_internas
+from src.core.modulo_actividades.actividades_internas import create_actividad_interna, list_actividades_internas, vaciar_acctividades_internas
 from src.core.schemas.actividades_internas import actividades_internas_schema
-from src.core.modulo_actividades.actividades_externas import list_actividades_externas
+from src.core.modulo_actividades.actividades_externas import create_actividad_externa, list_actividades_externas, vaciar_acctividades_externas
 from src.core.schemas.actividades_externas import actividades_externas_schema
 from src.core.modulo_actividades.año.anio import Anios, Divisiones
 from src.core.modulo_actividades.año import create_anio
 from src.core.modulo_actividades.escuela import get_escuelas_by_municipio
+from src.core.modulo_actividades.escuela.escuela import Sectores
+from src.core.general.localidad import create_localidad, list_localidades, vaciar_localidades
 from src.core.schemas.escuela import escuela_schema, escuelas_schema
 from src.core.schemas.localidad import localidades_schema
 from src.core.modulo_actividades.actividad import create_actividad
@@ -1119,8 +1121,16 @@ def get_opciones(opcion):
             opciones = [opcion['tipo'] for opcion in malestares_emocionales_schema.dump(list_malestares_emocionales())]
         case 'situaciones_vulnerabilidad':
             opciones = [opcion['tipo'] for opcion in situaciones_vuln_schema.dump(list_situaciones_vulnerabilidad())]
+        case 'localidades':
+            opciones = [opcion['nombre'] for opcion in localidades_schema.dump(list_localidades())]
         case 'motivos_acompanamiento':
             opciones = [opcion['tipo'] for opcion in mot_grales_acomp_schema.dump(list_mot_gral_acomp())]
+        case 'dispositivos':
+            opciones = [opcion['nombre'] for opcion in dispositivos_schema.dump(list_dispositivos())]
+        case 'actividades_internas':
+            opciones = [opcion['nombre'] for opcion in actividades_internas_schema.dump(list_actividades_internas())]
+        case 'actividades_externas':
+            opciones = [opcion['nombre'] for opcion in actividades_externas_schema.dump(list_actividades_externas())]
     return make_response(jsonify(opciones)), 200
 
 @admin_blueprint.post("guardar-opciones")
@@ -1152,8 +1162,103 @@ def save_opciones():
             vaciar_situaciones_vulnerabilidad()
             for opcion in opciones:
                 create_situacion_vulnerabilidad(tipo=opcion)
+        case 'localidades':
+            vaciar_localidades()
+            for opcion in opciones:
+                create_localidad(nombre=opcion)
         case 'motivos_acompanamiento':
             vaciar_mot_gral_acomp()
             for opcion in opciones:
                 create_mot_gral_acomp(tipo=opcion)
+        case 'dispositivos':
+            vaciar_dispositivos()
+            for opcion in opciones:
+                create_dispositivo(nombre=opcion)
+        case 'actividades_internas':
+            vaciar_acctividades_internas()
+            for opcion in opciones:
+                create_actividad_interna(nombre=opcion)
+        case 'actividades_externas':
+            vaciar_acctividades_externas()
+            for opcion in opciones:
+                create_actividad_externa(nombre=opcion)
     return make_response(), 200
+
+@observatorio_blueprint.get("talleres")
+def obtener_talleres_observatorio():
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    regiones_sanitarias = request.args.get("regiones_sanitarias", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    municipio = request.args.get("municipio", default="", type=str)
+    gestion = request.args.get("gestion", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "municipio": municipio,
+        "gestion": gestion
+    }
+
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=1, type=int)
+    talleres = get_talleres_todos(search_terms=search_terms, page_num=page, per_page=per_page)
+
+    data = {
+        "talleres": talleres_schema_observatorio.dump(talleres),
+        "page": page,
+        "per_page": per_page,
+        "total": talleres.total
+    }
+
+    return make_response(jsonify(data))
+
+@observatorio_blueprint.get("gestiones")
+def get_index_gestiones():
+    gestiones = {gestion.name: gestion.value for gestion in Sectores}
+    return make_response(jsonify(gestiones)), 200
+
+@observatorio_blueprint.get("talleres/exportar")
+def obtener_talleres_observatorio_exportar():
+    regiones_sanitarias = request.args.get("regiones_sanitarias", default="", type=str)
+    fecha_desde = request.args.get("fecha_desde", default=None, type=str)
+    fecha_hasta = request.args.get("fecha_hasta", default=None, type=str)
+    municipio = request.args.get("municipio", default="", type=str)
+    gestion = request.args.get("gestion", default="", type=str)
+ 
+    search_terms = {
+        "regiones_sanitarias": regiones_sanitarias.split(',') if regiones_sanitarias else [],
+        "fechas": {
+            "desde": fecha_desde,
+            "hasta": fecha_hasta
+        },
+        "municipio": municipio,
+        "gestion": gestion
+    }
+
+    talleres = get_talleres_todos_sin_paginar(search_terms=search_terms)
+
+    def obtener_anios_trabajados(taller):
+        aniosTrabajados = ''
+        for anio in taller.actividad.anios:
+            aniosTrabajados += f'{anio.anio}({anio.divisiones}), '
+        return aniosTrabajados[:-2]
+    
+    data = [{
+        'localidad': taller.localidad,
+        'municipio': taller.municipio_id,
+        'region_sanitaria': taller.municipio.region_sanitaria.tipo,
+        'dispositivo': taller.dispositivo_id,
+        'nombre_escuela': taller.actividad.escuela.nombre if taller.actividad.escuela else "",
+        'cue_escuela': taller.actividad.escuela_cue,
+        'años_trabajados': obtener_anios_trabajados(taller),
+        'cantidad_encuentros': taller.actividad.cant_encuentros,
+        'cantidad_participantes': taller.actividad.cant_participantes,
+        'observaciones': taller.actividad.observaciones
+    } for taller in talleres]
+
+    return convert_to_csv(data, "llamadas_0800.csv")
