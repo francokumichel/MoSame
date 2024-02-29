@@ -2,7 +2,7 @@
   <!-- Contenedor para la imagen y el selector de rol -->
     <nav v-if="isAuthenticated && user" class="container-xxl px-4 py-4 navbar navbar-expand-lg bg-info bg-opacity-10">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
           <img src="./assets/Logo_MOSaME.png" alt="Logo MOSaME" width="200" height="50">
         </a>
         <div class="d-flex align-items-center column-gap-2">
