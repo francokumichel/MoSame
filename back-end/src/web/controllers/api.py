@@ -175,7 +175,6 @@ def update_user(id):
     user.update(name=data['name'], last_name=data["lastName"], email=data["email"])
     update_roles(user, data['roles'])
     resp = make_response(jsonify({"msge": "Usuario actualizado exitosamente"}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @user_blueprint.post("create")
@@ -186,7 +185,6 @@ def register_user():
     user = create_user(name=data['name'], last_name=data["lastName"], email=data["email"])
     update_roles(user, data['roles'])
     resp = make_response(jsonify({"msge": "Usuario registrado exitosamente."}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @roles_blueprint.get("index")
@@ -243,7 +241,6 @@ def create_derivation_cetecsm():
     actualizar_derivacion(nueva_derivacion, derivacion['mot_gral_derivacion'])    
 
     resp = make_response(jsonify({"msge": "Derivación registrada exitosamente."}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @cetecsm_blueprint.post("asignarPersona/<int:persona_id>")
@@ -254,7 +251,6 @@ def asignar_persona_cetecsm(persona_id):
     persona_cetecsm = get_persona_cetecsm(id=persona_id)
     asignar_persona(user, persona_cetecsm)
     resp = make_response(jsonify({"msge": "Persona asignada exitosamente."}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @me_blueprint.get("personas_asignadas")
@@ -370,7 +366,6 @@ def editar_persona_cetecsm(id):
     )
     
     resp = make_response(jsonify({"msge": "Los datos de la persona fueron actualizados exitosamente"}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @cetecsm_blueprint.post("llamada/crear/<int:id>")
@@ -407,7 +402,6 @@ def crear_llamada_cetecsm(id):
     )
     
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @cetecsm_blueprint.get("operadores")
@@ -680,7 +674,7 @@ def obtener_personas_cetecsm_asignadas_exportar():
         'identidad_genero': persona.identidad_genero_id,
         'obra_social': persona.obra_social,
         'motivo_acompañamiento': persona.motivo_gral_acomp_id,
-        'tipo_malestar_emocional': ", ".join(persona.motivo_gral_acomp.malestares_emocionales) if persona.motivo_gral_acomp else None,
+        'tipo_malestar_emocional': persona.malestares_emocionales if persona.motivo_gral_acomp_id else None,
         'detalle_acompanamiento': persona.detalle_acompanamiento,
         'fecha_prox_llamado': persona.fecha_prox_llamado_actual
     } for persona in personas]
@@ -734,8 +728,6 @@ def obtener_llamadas_0800_observatorio():
         "per_page": per_page,
         "total": llamadas.total
     }
-
-    print(llamadas)
 
     return make_response(jsonify(items)), 200
 
@@ -910,7 +902,6 @@ def registrar_taller():
     )
 
     resp = make_response(jsonify({"msge": "Taller cargado exitosamente"}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @actividades_blueprint.get("estadisticas")
@@ -1067,7 +1058,6 @@ def crear_llamada_0800():
     )
     
     resp = make_response(jsonify({"msge": "Llamada cargada exitosamente"}))
-    resp.headers["Content-Type: application/json"] = "*"
     return resp
 
 @api_blueprint.get("0800/llamadas")
