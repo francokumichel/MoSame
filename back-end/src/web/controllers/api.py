@@ -21,7 +21,7 @@ from src.core.users import find_user_by_email, get_user, create_user, get_roles,
 from src.core.schemas.user import user_schema, users_schema
 from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
-from src.core.general.municipio import list_municipios, get_localidades_by_municipio
+from src.core.general.municipio import get_by_name, list_municipios, get_localidades_by_municipio
 from src.core.schemas.municipio import municipios_schema
 from src.core.general.region_sanitaria import list_regiones_sanitarias
 from src.core.schemas.region_sanitaria import regiones_sanitarias_schema
@@ -1011,7 +1011,7 @@ def crear_llamada_0800():
         persona_cetecsm = create_persona_cetecsm(
             dni=llamada['dni'],
             dio_consentimiento=llamada['demanda_tratamiento'],
-            municipio_id=llamada['municipio'],
+            municipio=get_by_name(llamada['municipio']),
             nombre=llamada['nombre'],
             apellido=llamada['apellido'],
             edad=llamada['edad'],
