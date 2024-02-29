@@ -4,42 +4,42 @@
         <form ref="formulario" class="px-5 needs-validation" @submit.prevent="editarPersona" novalidate>
             <div class="mb-3 has-validation">
                 <label for="nombre" class="col-form-label fw-semibold">Nombre:</label>
-                <input v-model="persona.nombre" type="text" id="nombre" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.nombre" type="text" id="nombre" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa un el nombre de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="apellido" class="col-form-label fw-semibold">Apellido:</label>
-                <input v-model="persona.apellido" type="text" id="apellido" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.apellido" type="text" id="apellido" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingresa el apellido de la persona derivada.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="dni" class="col-form-label fw-semibold">DNI:</label>
-                <input v-model="persona.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control shadow-sm" />
+                <input maxlength="8" v-model="persona.dni" type="text" id="dni" pattern="[0-9]{7,8}" title="Ingrese el número de DNI sin puntos ('Ej: 42456789')" class="form-control shadow-sm" />
                 <div class="invalid-feedback">
                     El DNI debe ingresarse sin puntos y contener entre 7 y 8 dígitos.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="telefono" class="col-form-label fw-semibold">Telefono:</label>
-                <input v-model="persona.telefono" type="tel" id="telefono" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" required />
+                <input maxlength="14" v-model="persona.telefono" type="tel" id="telefono" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese un teléfono que contenga entre 8 y 14 dígitos (ej: '1122334455').
                 </div>
             </div>
             <div class="mb-3">
                 <label for="telefono_alternativo" class="col-form-label fw-semibold">Telefono alternativo (opcional):</label>
-                <input v-model="persona.telefono_alternativo" type="tel" id="telefono_alternativo" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" />
+                <input maxlength="14" v-model="persona.telefono_alternativo" type="tel" id="telefono_alternativo" pattern="[0-9]{8,14}" title="Ingrese un número de teléfono sin guiones ni puntos" class="form-control shadow-sm" />
                 <div class="invalid-feedback">
                     El teléfono debe contener entre 8 y 14 dígitos (ej: '1122334455').
                 </div>
             </div>
             <div class="mb-3">
                 <label for="localidad" class="col-form-label fw-semibold">Localidad:</label>
-                <input v-model="persona.localidad" type="text" id="localidad" class="form-control shadow-sm" required />
+                <input maxlength="255" v-model="persona.localidad" type="text" id="localidad" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una localidad.
                 </div>
@@ -54,7 +54,7 @@
             </div>
             <div class="mb-3">
                 <label for="detalle_acompanamiento" class="col-form-label fw-semibold">Detalle del acompañamiento:</label>
-                <input v-model="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" />
+                <input maxlength="256" v-model="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" />
             </div>
             <fieldset class="mb-3">
                 <legend class="col-form-label pt-0 fw-semibold">¿Dio consentimiento?</legend>
@@ -83,7 +83,7 @@
             </div>
             <div v-if="persona.grupo_conviviente == 'Otro'" class="mb-3">
                 <label for="grupo_conviviente_otro" class="col-form-label fw-semibold">Otro grupo conviviente:</label>
-                <input v-model="persona.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm" required />
+                <input maxlength="50" v-model="persona.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese un grupo conviviente.
                 </div>
@@ -98,7 +98,7 @@
             </div>
             <div v-if="persona.identidad_genero_id == 'Otra identidad'" class="mb-3">
                 <label for="identidad_genero_otra" class="col-form-label fw-semibold">Otra identidad de género:</label>
-                <input v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una identidad de género.
                 </div>
@@ -122,7 +122,7 @@
             </fieldset>
             <div v-if="persona.tiene_obra_social" class="mb-3">
                 <label for="obra_social" class="col-form-label fw-semibold">¿Cual?</label>
-                <input v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
+                <input maxlength="100" v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una obra social.
                 </div>

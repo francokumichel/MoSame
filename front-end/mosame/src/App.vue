@@ -2,7 +2,7 @@
   <!-- Contenedor para la imagen y el selector de rol -->
     <nav v-if="isAuthenticated && user" class="container-xxl px-4 py-4 navbar navbar-expand-lg bg-info bg-opacity-10">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
           <img src="./assets/Logo_MOSaME.png" alt="Logo MOSaME" width="200" height="50">
         </a>
         <div class="d-flex align-items-center column-gap-2">
@@ -26,7 +26,7 @@
               <router-link class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0 me-3" style="--bs-link-hover-color-rgb: 25, 135, 84;" :to="link.path"> {{ link.text }} </router-link>
             </li>
             <li class="nav-item">
-              <a class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84;" ref="#" @click="logout">Cerrar sesión</a>
+              <a class="link-info link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover fw-bold fs-6 border border-0" style="--bs-link-hover-color-rgb: 25, 135, 84; user-select: none; cursor: pointer;" ref="#" @click="logout">Cerrar sesión</a>
             </li>
           </ul>
         </div>

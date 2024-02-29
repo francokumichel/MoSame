@@ -13,7 +13,7 @@
                 </div>
                 <div v-if="!existeDato.grupo_conviviente && persona.grupo_conviviente == 'Otro'" class="mb-3">
                     <label for="grupo_conviviente_otro" class="col-form-label fw-semibold">Indique otro grupo conviviente:</label>
-                    <input v-model.lazy="persona.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm" required />
+                    <input maxlength="50" v-model.lazy="persona.grupo_conviviente_otro" type="text" id="grupo_conviviente_otro" class="form-control shadow-sm" required />
                     <div class="invalid-feedback">
                         Por favor, ingresa otro grupo conviviente.
                     </div>
@@ -21,7 +21,7 @@
             </div>    
             <div v-if="!existeDato.localidad" class="mb-3">
                 <label for="localidad" class="col-form-label fw-semibold">Localidad:</label>
-                <input v-model.lazy="persona.localidad" type="text" id="localidad" class="form-control shadow-sm" />
+                <input maxlength="255" v-model.lazy="persona.localidad" type="text" id="localidad" class="form-control shadow-sm" />
             </div>
             <div v-if="!existeDato.identidad_genero_id">
                 <div class="mb-3">
@@ -35,7 +35,7 @@
                 <div v-if="persona.identidad_genero_id">
                     <div v-if="persona.identidad_genero_id == 'Otra identidad'" class="mb-3">
                         <label for="identidad_genero_otra" class="col-form-label fw-semibold">Indique otra identidad de género:</label>
-                        <input v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
+                        <input maxlength="100" v-model="persona.identidad_genero_otra" type="text" id="identidad_genero_otra" class="form-control shadow-sm" required />
                         <div class="invalid-feedback">
                             Por favor, ingresa otra identidad de genero.
                         </div>
@@ -62,7 +62,7 @@
                 </fieldset>
                 <div v-if="persona.tiene_obra_social" class="mb-3">
                     <label for="obra_social" class="col-form-label fw-semibold">¿Cual obra social posee?:</label>
-                    <input v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
+                    <input maxlength="100" v-model="persona.obra_social" type="text" id="obra_social" class="form-control shadow-sm" required />
                     <div class="invalid-feedback">
                         Por favor, ingrese el nombre de la obra social que posee.
                     </div>
@@ -108,14 +108,14 @@
             </fieldset>
             <div class="mb-3">
                 <label for="detalle_acompanamiento" class="col-form-label fw-semibold">Detalle del acompañamiento:</label>
-                <input v-model.lazy="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" required />
+                <input maxlength="256" v-model.lazy="persona.detalle_acompanamiento" type="text" id="detalle_acompanamiento" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese un breve detalle del acompañamiento.
                 </div>
             </div>
             <div class="mb-3">
                 <label for="detalle" class="col-form-label fw-semibold">Detalle:</label>
-                <input v-model="llamada.detalle" type="text" id="detalle" class="form-control shadow-sm" required />
+                <input maxlength="256" v-model="llamada.detalle" type="text" id="detalle" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese un breve detalle de la llamada.
                 </div>
@@ -130,7 +130,7 @@
             </div>
             <div v-if="llamada.resolucion == 'Continua acompañamiento' || llamada.resolucion == 'Comunicación fallida' " class="mb-3">
                 <label for="fecha_prox_llamado" class="col-form-label fw-semibold">Fecha del próximo llamado:</label>
-                <input v-model="llamada.fecha_prox_llamado" type="date" id="fecha_prox_llamado" class="form-control shadow-sm" required />
+                <input :min="hoyFechaFormateada()" v-model="llamada.fecha_prox_llamado" type="date" id="fecha_prox_llamado" class="form-control shadow-sm" required />
                 <div class="invalid-feedback">
                     Por favor, ingrese una fecha del próximo llamado.
                 </div>
@@ -293,6 +293,14 @@ export default {
                 }
             });
         },
+        
+        hoyFechaFormateada() {
+        const hoy = new Date();
+        const mes = hoy.getMonth() + 1; // Los meses en JavaScript se cuentan desde 0
+        const dia = hoy.getDate();
+        const formatoFecha = hoy.getFullYear() + '-' + (mes < 10 ? '0' : '') + mes + '-' + (dia < 10 ? '0' : '') + dia;
+        return formatoFecha;
+        }
     }
 }
 </script>
