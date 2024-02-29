@@ -44,7 +44,7 @@ from src.core.malestar_emocional import create_malestar_emocional, list_malestar
 from src.core.schemas.malestar_emocional import malestares_emocionales_schema
 from src.core.situaciones_vulnerabilidad import create_situacion_vulnerabilidad, list_situaciones_vulnerabilidad, vaciar_situaciones_vulnerabilidad
 from src.core.schemas.situacion_vulnerabilidad import situaciones_vuln_schema
-from src.core.modulo_actividades.taller import get_talleres, get_talleres_todos, get_talleres_todos_sin_paginar, obtener_estadisticas
+from src.core.modulo_actividades.taller import get_talleres, get_talleres_escuelas_todos, get_talleres_escuelas_todos_sin_paginar, obtener_estadisticas
 from src.core.modulo_actividades.taller.taller import TiposActividades
 from src.core.schemas.taller import talleres_schema, talleres_schema_observatorio
 from src.core.modulo_actividades.dispositivo import create_dispositivo, list_dispositivos, vaciar_dispositivos
@@ -1206,7 +1206,7 @@ def obtener_talleres_observatorio():
 
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=1, type=int)
-    talleres = get_talleres_todos(search_terms=search_terms, page_num=page, per_page=per_page)
+    talleres = get_talleres_escuelas_todos(search_terms=search_terms, page_num=page, per_page=per_page)
 
     data = {
         "talleres": talleres_schema_observatorio.dump(talleres),
@@ -1240,7 +1240,7 @@ def obtener_talleres_observatorio_exportar():
         "gestion": gestion
     }
 
-    talleres = get_talleres_todos_sin_paginar(search_terms=search_terms)
+    talleres = get_talleres_escuelas_todos_sin_paginar(search_terms=search_terms)
 
     def obtener_anios_trabajados(taller):
         aniosTrabajados = ''

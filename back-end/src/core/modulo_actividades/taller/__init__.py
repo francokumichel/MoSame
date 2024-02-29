@@ -17,9 +17,9 @@ def get_talleres(tipo_actividad, page, per_page):
     
     return talleres.order_by(Taller.id).paginate(page=page, per_page=per_page, error_out=True)
 
-def get_talleres_todos(search_terms, page_num, per_page):
+def get_talleres_escuelas_todos(search_terms, page_num, per_page):
     
-    query = Taller.query
+    query = Taller.query.filter(Taller.tipo == "Talleres de Salud Mental en las Escuelas")
     if search_terms:
         dict_functions = {
             'regiones_sanitarias': buscar_talleres_por_regiones,
@@ -33,9 +33,9 @@ def get_talleres_todos(search_terms, page_num, per_page):
                 
     return query.order_by(Taller.id).paginate(page=page_num, per_page=per_page, error_out=True)
 
-def get_talleres_todos_sin_paginar(search_terms):
+def get_talleres_escuelas_todos_sin_paginar(search_terms):
     
-    query = Taller.query
+    query = Taller.query.filter(Taller.tipo == "Talleres de Salud Mental en las Escuelas")
     if search_terms:
         dict_functions = {
             'regiones_sanitarias': buscar_talleres_por_regiones,
