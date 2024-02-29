@@ -104,13 +104,13 @@ const router = createRouter({
             path:"/modulo_0800/cargar_llamada",
             name: "0800-crear-llamada",
             component: CreateLlamada0800View,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Operador 0800"] },
         },
         {
             path:"/modulo_0800/llamadas",
             name: "0800-llamadas",
             component: Llamadas0800View,
-            meta: { requiresAuth: true },
+            meta: { requiresAuth: true, roles: ["Operador 0800"] },
         },
         {
             path:"/cetecsm/operadores",
@@ -204,7 +204,8 @@ router.beforeEach((to, from, next) => {
         const userRoles = store.getters.userRole;
         if (!hasPermission(to, userRoles)) {
             // El usuario no tiene permisos para acceder a la ruta
-            displayError(toast, "No estas autorizado a acceder a esta ruta");
+            displayError(this.$toast, "No estas autorizado a acceder a esta ruta");
+            this.errores.push(error);
             next("/login");
             return;
         }
