@@ -50,7 +50,7 @@ def assigned_roles(user, rolesSelected):
     """
 
     for rol in rolesSelected:
-#        rol = get_role_by_name(role_name=role_name)
+        rol = get_role_by_name(role_name=rol)
         user.roles.append(rol)
     db.session.add(user)
     db.session.commit()

@@ -132,7 +132,7 @@ def run():
         email="admin@gmail.com",
         password="1234"
     )
-    users.update_roles(user_admin, [role_admin])
+    users.update_roles(user_admin, [role_admin.name])
 
     user_operator_0800 = users.create_user(
         name="Operador 0800",
@@ -141,7 +141,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_operator_0800, [role_operator_0800])
+    users.update_roles(user_operator_0800, [role_operator_0800.name])
 
     user_operator_cetecsm = users.create_user(
         name="Operador CETECSM",
@@ -150,7 +150,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_operator_cetecsm, [role_operator_cetecsm])
+    users.update_roles(user_operator_cetecsm, [role_operator_cetecsm.name])
     
     user_coordinator_cetecsm = users.create_user(
         name="Coordinador CETECSM",
@@ -159,7 +159,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_coordinator_cetecsm, [role_coordinator_cetecsm])
+    users.update_roles(user_coordinator_cetecsm, [role_coordinator_cetecsm.name])
 
     user_observatorio = users.create_user(
         name="Observatorio",
@@ -168,7 +168,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_observatorio, [role_observatorio])
+    users.update_roles(user_observatorio, [role_observatorio.name])
 
     user_trabajador_salud = users.create_user(
         name="Trabajador salud",
@@ -177,7 +177,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_trabajador_salud, [role_trabajador_salud])
+    users.update_roles(user_trabajador_salud, [role_trabajador_salud.name])
 
     user_admin_actividades = users.create_user(
         name="Administrador",
@@ -186,7 +186,7 @@ def run():
         password="1234"
     )
 
-    users.update_roles(user_admin_actividades, [role_admin_actividades])
+    users.update_roles(user_admin_actividades, [role_admin_actividades.name])
 
     # Carga de datos correspondientes a módulo cetecsm
 

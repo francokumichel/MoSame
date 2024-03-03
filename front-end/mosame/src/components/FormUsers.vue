@@ -76,7 +76,6 @@ export default {
             try {
                 const response = await apiService.get(import.meta.env.VITE_API_URL + "users/show/" + this.$route.params.id);
                 this.user = response.data;
-                this.user.lastName = this.user.last_name;
             } catch (error) {
                 this.errors.push(error);
             }
