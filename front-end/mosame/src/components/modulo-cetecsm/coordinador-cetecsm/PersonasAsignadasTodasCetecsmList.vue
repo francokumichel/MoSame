@@ -5,7 +5,7 @@
             <th scope="col">Nombre</th>
             <th scope="col">Apellido</th>
             <th scope="col">Cantidad de veces llamado</th>
-            <th scope="col">Email operador a cargo</th>
+            <th scope="col">Nombre y apellido del operador a cargo</th>
             <th scope="col">Resolución del último llamado</th>
         </tr>
     </thead>
@@ -14,7 +14,7 @@
             <td>{{ persona.nombre }}</td>
             <td>{{ persona.apellido }}</td>
             <td>{{ persona.cantidad_llamadas }}</td>
-            <td>{{ persona.email_operador }}</td>
+            <td>{{ persona.nombre_y_apellido_operador }}</td>
             <td>{{ persona.resolucion_ultima_llamada }}</td>
         </tr>
     </tbody>

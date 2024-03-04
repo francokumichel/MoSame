@@ -251,6 +251,7 @@ def asignar_persona_cetecsm(persona_id):
     user = get_user(current_user)
     persona_cetecsm = get_persona_cetecsm(id=persona_id)
     asignar_persona(user, persona_cetecsm)
+    persona_cetecsm.update(esta_activa=True)
     resp = make_response(jsonify({"msge": "Persona asignada exitosamente."}))
     return resp
 
@@ -390,7 +391,12 @@ def crear_llamada_cetecsm(id):
     data = request.get_json()
     persona = data['persona']
     llamada = data['llamada']
-    print(persona)
+
+    if not llamada['resolucion'] == "Continua acompañamiento" and not llamada['resolucion'] == "Comunicación fallida":
+        esta_activo = False
+    else:
+        esta_activo = True    
+
     persona_cetecsm = get_persona_cetecsm(id=id)
     persona_cetecsm.update( 
         grupo_conviviente=persona['grupo_conviviente'],
@@ -403,7 +409,8 @@ def crear_llamada_cetecsm(id):
         identidad_genero_id=persona['identidad_genero_id'],
         motivo_gral_acomp_id=persona['motivo_gral_acomp_id'],
         malestares_emocionales=persona['malestares_emocionales'],
-        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad']
+        situaciones_vulnerabilidad=persona['situaciones_vulnerabilidad'],
+        esta_activa=esta_activo
     )
 
     create_llamada_cetecsm(
@@ -481,7 +488,7 @@ def personas_asignadas_index():
                 "id": persona.id,
                 "nombre": persona.nombre,
                 "apellido": persona.apellido,
-                "email_operador": persona.usuario_asignado.email,
+                "nombre_y_apellido_operador": f"{persona.usuario_asignado.name} {persona.usuario_asignado.last_name}",
                 "cantidad_llamadas": obtener_cantidad_llamadas(persona.id),
                 "resolucion_ultima_llamada": obtener_resolucion_ultima_llamada(persona.id),
             }

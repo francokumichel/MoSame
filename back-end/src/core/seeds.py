@@ -349,9 +349,9 @@ def run():
     )
     
     users.asignar_persona(user_operator_cetecsm, persona_cetecsm_1)
-    persona_cetecsm_1.update(esta_asignada=True)
+    persona_cetecsm_1.update(esta_asignada=True, esta_activa=True)
     users.asignar_persona(user_operator_cetecsm, persona_cetecsm_3)
-    persona_cetecsm_3.update(esta_asignada=True)
+    persona_cetecsm_3.update(esta_asignada=True, esta_activa=True)
 
     llamada_cetecsm_1 = llamada_cetecsm.create_llamada_cetecsm(
         detalle = "Primer llamada",
@@ -381,7 +381,8 @@ def run():
         id=llamada_cetecsm_1.persona_cetecsm_id,
         fecha_prox_llamado_actual=llamada_cetecsm_2.fecha_prox_llamado,
         detalle_acompanamiento = "En la primer llamada hablamos bastante. En la segunda llamada hablamos menos.",
-        motivo_gral_acomp = "Orientación y asesoramiento"
+        motivo_gral_acomp = "Orientación y asesoramiento",
+        esta_activa=False
     )
 
 

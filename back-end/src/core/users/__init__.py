@@ -107,7 +107,7 @@ def get_operadores_cetecsm(page, per_page):
             func.format(subquery.c.fecha_ultimo_llamado, 'yyyy-MM-dd').label('fecha_ultimo_llamado')
         )
         .outerjoin(subquery, User.id == subquery.c.usuario_id)
-        .outerjoin(PersonaCetecsm, User.id == PersonaCetecsm.usuario_id)
+        .outerjoin(PersonaCetecsm, (User.id == PersonaCetecsm.usuario_id) & (PersonaCetecsm.esta_activa == True))
         .outerjoin(users_roles, User.id == users_roles.c.user_id)
         .outerjoin(Role, users_roles.c.role_id == Role.id)
         .filter(Role.name == 'Operador CETECSM')  # Condición para el rol específico

@@ -40,6 +40,7 @@ class PersonaCetecsm(db.Model):
     localidad = db.Column(db.String(255))
     tiene_obra_social = db.Column(db.Boolean())
     esta_asignada = db.Column(db.Boolean(), default=False)
+    esta_activa = db.Column(db.Boolean(), default=False)
     obra_social = db.Column(db.String(100))
     nombre = db.Column(db.String(100))
     apellido = db.Column(db.String(100))

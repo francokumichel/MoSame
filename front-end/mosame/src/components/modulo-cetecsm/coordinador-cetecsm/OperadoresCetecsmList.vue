@@ -5,7 +5,7 @@
             <th scope="col">Nombre</th>
             <th scope="col">Apellido</th>
             <th scope="col">Email</th>
-            <th scope="col">Cantidad de personas derivadas a CETECSM asignadas</th>
+            <th scope="col">Cantidad de personas derivadas a CETECSM asignadas activas</th>
             <th scope="col">Fecha del último llamado</th>
             <th scope="col">Acciones</th>
             </tr>
