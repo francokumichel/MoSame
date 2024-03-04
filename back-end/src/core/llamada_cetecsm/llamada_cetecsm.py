@@ -15,7 +15,7 @@ class LlamadaCetecsm(db.Model):
     __tablename__ = "llamada_cetecsm"
     
     id = db.Column(db.Integer, primary_key=True)
-    detalle = db.Column(db.String(256))
+    detalle = db.Column(db.Text)
     resolucion = db.Column(db.String(100))
     fecha_llamado = db.Column(db.Date, default=func.current_date())
     fecha_prox_llamado = db.Column(db.Date)

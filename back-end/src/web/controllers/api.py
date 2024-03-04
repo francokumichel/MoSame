@@ -1,4 +1,5 @@
-import json
+import json, os
+from io import StringIO
 from flask import (
     Blueprint,
     jsonify,
@@ -19,7 +20,7 @@ from src.web.utils.converter import convert_to_csv
 from src.core.permissions import list_roles
 from src.core.users import find_user_by_email, get_user, create_user, get_roles, update_roles, list_users, asignar_persona, get_personas_asignadas, get_operadores_cetecsm, obtener_total_llamados_cetecsm, obtener_usuario_por_rol
 from src.core.schemas.user import user_schema, users_schema
-from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, actualizar_identidad_genero, actualizar_mot_gral_acomp, actualizar_sit_vuln, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
+from src.core.persona_cetecsm import create_persona_cetecsm, list_all_personas_cetecsm_no_asignadas, get_persona_cetecsm, list_llamadas_recibidas, generar_sintesis_detalles, get_all_personas_asignadas, get_personas_cetecsm_todas, get_personas_cetecsm_todas_sin_paginar, obtener_informacion_personas_seguimiento, obtener_datos_resolucion_fecha_llamada
 from src.core.schemas.persona_cetecsm import persona_cetecsm_schemas, personas_cetecsm_schemas, personas_cetecsm_exportar_schemas
 from src.core.general.municipio import get_by_name, list_municipios, get_localidades_by_municipio
 from src.core.schemas.municipio import municipios_schema
@@ -297,6 +298,18 @@ def get_llamadas_recibidas(persona_id):
     }
 
     return make_response(jsonify(data)), 200
+
+@cetecsm_blueprint.get("persona/llamadas/generar_sintesis/<int:persona_id>")
+def get_archivo_sintesis(persona_id):
+
+    buffer, error = generar_sintesis_detalles(persona_id=persona_id)
+    
+    if error:
+        return jsonify({"error": error}), 400
+
+    response = make_response(send_file(buffer, as_attachment=True, download_name='sintesis_llamadas.txt', mimetype='text/plain'))
+    
+    return response
 
 @api_blueprint.get("municipios")
 def get_index_municipios():

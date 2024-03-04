@@ -1,7 +1,7 @@
 from src.core.database import db
+from datetime import datetime
+from io import BytesIO
 from operator import attrgetter
-from sqlalchemy import func, desc, and_
-from sqlalchemy.orm import aliased
 from src.core.general.municipio.municipio import Municipio
 from src.core.persona_cetecsm.persona_cetecsm import PersonaCetecsm
 from src.core.llamada_cetecsm.llamada_cetecsm import LlamadaCetecsm
@@ -77,6 +77,25 @@ def list_all_personas_cetecsm_no_asignadas(page_num, per_page):
 def list_llamadas_recibidas(page_num, per_page, persona_id):
     llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id)
     return llamadas_recibidas.order_by(LlamadaCetecsm.id).paginate(page=page_num, per_page=per_page, error_out=True)
+
+def generar_sintesis_detalles(persona_id):
+    llamadas_recibidas = LlamadaCetecsm.query.join(PersonaCetecsm, PersonaCetecsm.id == LlamadaCetecsm.persona_cetecsm_id).filter(PersonaCetecsm.id == persona_id).all()
+
+    if not llamadas_recibidas:
+        return None, "No hay llamadas registradas para la persona seleccionada en la base de datos para generar la síntesis."
+
+    # Crear un objeto BytesIO para almacenar el contenido del archivo en memoria
+    buffer = BytesIO()
+
+    for llamada in llamadas_recibidas:
+        fecha_formateada = f"{llamada.fecha_llamado:%Y-%m-%d}"
+        linea = f"{fecha_formateada}: {llamada.detalle}\n\n"
+        buffer.write(linea.encode('utf-8'))
+
+    # Establece el cursor al principio para asegurar que el contenido esté listo para ser leído
+    buffer.seek(0)
+
+    return buffer, None
 
 def actualizar_mot_gral_acomp(persona, mot_gral_acomp): 
 

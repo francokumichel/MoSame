@@ -2,6 +2,7 @@
     <div class="table-responsive table-content border border-secondary-subtle shadow">
         <PersonaCetecsmLlamadasList :llamadas="llamadas" />
         <div class="d-flex flex-row justify-content-center align-items-center">
+            <button @click="generarSintesis()" class="ms-4 mb-3 btn btn-outline-success shadow-sm">Descargar síntesis de detalles</button>
             <div class="d-flex flex-row ms-auto align-items-center me-3">
                 <div class="d-flex flex-row align-items-center mb-3 me-2 column-gap-3">
                     <label>Filas por página: </label>
@@ -89,6 +90,23 @@ export default {
             this.page = 1;
             this.loadPersonaCetecsmLlamadas();
         },
+
+        async generarSintesis() {
+            await apiService.get(import.meta.env.VITE_API_URL + "cetecsm/persona/llamadas/generar_sintesis/" + this.$route.params.id)
+                .then((response) => {
+                    if(response.status == 200) {
+                        const blob = new Blob([response.data], { type: 'text/plain' });
+                        saveAs(blob, 'sintesis_detalles_llamadas.txt');
+                        displaySuccess(this.$toast, "Archivo generado exitosamente.")
+                    }
+                })
+                .catch((e) => {
+                    displayError(this.$toast, e)
+                    this.errores.push(e);
+                });
+        }
+
+
     },    
 };
 
