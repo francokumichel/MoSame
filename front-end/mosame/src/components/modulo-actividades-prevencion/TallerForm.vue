@@ -102,12 +102,15 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-column ms-2 mb-2">
-                                <select required class="form-select" size="3" v-model="item.divisiones" multiple>
+                                <select required class="form-select" size="3" v-model="item.divisiones" :disabled="!item.anio" multiple>
                                     <option hidden disabled value="">Seleccione una o varias divisiones</option>
                                     <option v-for="division in ordenarValores(divisiones)" :key="division" :value="division">
                                         {{ division }}
                                     </option>
                                 </select>
+                                <div v-if="divisionesRepetidas(index) && formEnviado" class="text-danger" style="font-size:14px;">
+                                    No se pueden repetir divisiones para el mismo año
+                                </div>
                                 <div class="invalid-feedback">
                                     Por favor, seleccione al menos una division.
                                 </div>
@@ -128,7 +131,7 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="cant_participantes" class="col-form-label fw-semibold">{{ actividad.tipo == 'Talleres de Salud Mental en las Escuelas' ? 'Cantidad de jóvenes que participaron:' : 'Cantidad de participantes:'}} <span class="text-danger">*</span></label>
+                <label for="cant_participantes" class="col-form-label fw-semibold">{{ actividad.tipo == 'Talleres de Salud Mental en las Escuelas' ? 'Cantidad Promedio de Jóvenes que participaron:' : 'Cantidad de participantes:'}} <span class="text-danger">*</span></label>
                 <input required v-model="actividad.cant_participantes" type="number" min="0" id="cant_participantes" class="form-control border border-dark-subtle"/>
                 <div class="invalid-feedback">
                     Por favor, ingrese una cantidad de participantes.
@@ -160,7 +163,7 @@
             </div>
             <div class="mb-3">
                 <label for="observaciones" class="col-form-label fw-semibold">Observaciones:</label>
-                <input maxlength="256" v-model="actividad.observaciones" type="text" id="observaciones" class="form-control border border-dark-subtle"/>
+                <textarea rows="6" v-model="actividad.observaciones" id="observaciones" class="form-control border border-dark-subtle"></textarea>
             </div>
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-info text-white fw-semibold shadow-sm">Guardar</button>
@@ -191,6 +194,7 @@ export default {
                 actividades: '',
             },
 
+            formEnviado: false,
             escuela_seleccionada: null,
             municipios: [],
             localidades: [],
@@ -274,8 +278,10 @@ export default {
 
         async registrarTaller() {
             const form = this.$refs.formulario;
+            this.formEnviado = true;
+            const isValid = this.checkValidity();
 
-            if (form.checkValidity()) {
+            if (isValid) {
                 try {
                     await apiService.post(import.meta.env.VITE_API_URL + "actividades/registrar_taller",
                         {
@@ -285,7 +291,10 @@ export default {
                         })
                     .then((response) => {
                         if(response.status == 200) {
+                            this.formEnviado = false;
                             displaySuccess(this.$toast, "Taller registrado exitosamente");
+                            this.limpiarFormulario()
+                            this.$router.push({ path: this.$route.path });
                         }
                     })
                 } catch(error) {
@@ -329,6 +338,43 @@ export default {
             }
         },
 
+        divisionesRepetidas(index) {
+            const anioActual = this.actividad.anios[index].anio;
+            const divisionesActuales = this.actividad.anios[index].divisiones;
+
+            // Verifica si hay divisiones repetidas para el mismo año
+            const otrasDivisionesMismoAnio = this.actividad.anios
+                .filter((item, i) => i !== index && item.anio === anioActual)
+                .flatMap(item => item.divisiones);
+
+            return divisionesActuales.some(division => otrasDivisionesMismoAnio.includes(division));
+        },
+
+        validateForm() {
+            const selectedAnios = this.actividad.anios.map(item => item.anio);
+
+            // Verifica que no haya divisiones repetidas para el mismo año
+            const hasDuplicateDivisions = selectedAnios.some((anio, index) => this.divisionesRepetidas(index));
+
+            // Realiza otras validaciones según tus criterios
+            const basicValidation = this.actividad.anios.every(item => item.anio.trim() !== '' && item.divisiones.length > 0);
+
+            // Retorna true si todas las validaciones son exitosas, false en caso contrario
+            return basicValidation && !hasDuplicateDivisions;
+        },
+
+        checkValidity() {
+            // Realiza tu propia lógica de validación personalizada
+            const isValid = this.actividad.tipo != 'Talleres de Salud Mental en las Escuelas' ? true : this.validateForm();
+
+            // Aplica la lógica de validación de Bootstrap
+            const form = this.$refs.formulario; // Asegúrate de asignar una referencia a tu formulario en el atributo ref
+
+            // Retorna true si tanto tu lógica personalizada como la de Bootstrap son exitosas, false en caso contrario
+            return form.checkValidity() && isValid;
+        },
+
+
         ordenarValores(diccionario) {
             // Convertir el objeto a una matriz de pares clave-valor
             const arrayDiccionario = Object.entries(diccionario);
@@ -340,6 +386,24 @@ export default {
             const diccionarioOrdenado = Object.fromEntries(arrayDiccionario);
 
             return diccionarioOrdenado;
+        },
+
+        limpiarFormulario() {
+
+            this.taller = {
+                municipio: '',
+                localidad: '',
+                dispositivo: ''
+            };
+
+            this.actividad = {
+                tipo: '',
+                anios: [{ anio: '', divisiones: [] }],
+                cant_participantes: '',
+                cant_encuentros: '',
+                observaciones: '',
+                actividades: '',
+            };
         },
 
     }

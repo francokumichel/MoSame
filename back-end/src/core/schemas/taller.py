@@ -2,6 +2,7 @@ from marshmallow import Schema, fields
 from src.core.schemas.actividad import ActividadSchema
 from src.core.schemas.municipio import MunicipioSchema
 from src.core.schemas.escuela import EscuelaSchema
+from src.core.schemas.user import UserSchema
 
 class TallerSchema(Schema):
     tipo = fields.Str()
@@ -10,6 +11,7 @@ class TallerSchema(Schema):
     localidad = fields.Str()
     dispositivo_id = fields.Str()
     actividad = fields.Nested(ActividadSchema)
+    usuario_carga = fields.Nested(UserSchema)
 
 taller_schema = TallerSchema()
 talleres_schema = TallerSchema(many=True)
