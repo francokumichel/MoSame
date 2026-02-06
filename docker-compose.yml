@@ -1,0 +1,43 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mosame_db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=MoSame_Password_123
+    ports:
+      - "1433:1433"
+
+  backend:
+    build: ./back-end
+    container_name: mosame_backend
+    volumes:
+      - ./back-end:/app
+    environment:
+      - FLASK_APP=src.web:create_app
+      - FLASK_ENV=development
+      - PYTHONPATH=/app
+      - DB_SERVER=db
+      - DB_DATABASE=MoSameDB
+      - DB_UID=sa
+      - DB_PWD=MoSame_Password_123
+      - DB_DRIVER={ODBC Driver 17 for SQL Server}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./front-end/mosame
+    container_name: mosame_frontend
+    volumes:
+      - ./front-end:/mosame:/app
+      - /app/node_modules 
+    ports:
+      - "8080:8080"
+    environment:
+      - VUE_APP_API_URL=http://localhost:5000
+      - VITE_API_URL=http://localhost:5000/api/
+    command: npm run dev -- --host 0.0.0.0 --port 8080
+    depends_on:
+      - backend
