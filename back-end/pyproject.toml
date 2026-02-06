@@ -2,8 +2,8 @@
 name = "back-end"
 version = "0.1.0"
 description = ""
-authors = ["felipetamburrimerlo <felipetamburri@gmail.com>"]
-readme = "README.md"
+package-mode = false
+authors = ["felipetamburrimerlo <felipetamburri@gmail.com>", "francokumichel <francokumichel1996@gmail.com>"]
 packages = [{include = "web", from = "src"}]
 
 [tool.poetry.dependencies]
