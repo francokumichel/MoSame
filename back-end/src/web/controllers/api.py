@@ -105,8 +105,8 @@ def create_token():
     print(email)
     user = find_user_by_email(email)
     if user and (user.check_password(password)):
-        access_token = create_access_token(identity=user.id)
-        set_access_cookies(jsonify(), access_token)
+        access_token = create_access_token(identity=str(user.id))
+        # set_access_cookies(jsonify(), access_token)
         return jsonify({"token": access_token}), 200
     return jsonify({"msg": "Usuario o contraseña incorrecta"}), 401
 
