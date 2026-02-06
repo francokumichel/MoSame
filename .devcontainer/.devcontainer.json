@@ -1,0 +1,36 @@
+{
+  "name": "MoSame Project Space",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "backend",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [5000, 8080, 1433],
+  "portsAttributes": {
+    "5000": {
+      "label": "Backend (Flask)",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Frontend (Vue)",
+      "onAutoForward": "openPreview"
+    },
+    "1433": {
+      "label": "SQL Server",
+      "onAutoForward": "ignore"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "Vue.volar",
+        "ms-mssql.mssql",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  },
+  "remoteUser": "root",
+  "postCreateCommand": "docker-compose ps"
+}
