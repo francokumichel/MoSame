@@ -16,7 +16,7 @@ def create_app(env="development", static_folder="../static"):
     
     #Agregamos CORS
     CORS(app)
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 
     #JWT
     jwt = JWTManager(app)
