@@ -72,8 +72,8 @@ export default createStore({
     },
 
     fetchUser: ({ commit }) => {
-      axios
-        .get(import.meta.env.VITE_API_URL + "me/profile", {
+      apiService
+        .get("/me/profile", {
           xsrfCookieName: "csrf_access_token",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -95,8 +95,8 @@ export default createStore({
     },
 
     logout: ({ commit }) => {
-      axios
-        .get(import.meta.env.VITE_API_URL + "logout", {
+      apiService
+        .get("/logout", {
           xsrfCookieName: "csrf_access_token",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
