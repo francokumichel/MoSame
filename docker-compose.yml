@@ -31,13 +31,14 @@ services:
     build: ./front-end/mosame
     container_name: mosame_frontend
     volumes:
-      - ./front-end:/mosame:/app
+      - ./front-end/mosame:/app
       - /app/node_modules 
     ports:
       - "8080:8080"
     environment:
-      - VUE_APP_API_URL=http://localhost:5000
-      - VITE_API_URL=http://localhost:5000/api/
+      - VITE_API_URL=
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
     command: npm run dev -- --host 0.0.0.0 --port 8080
     depends_on:
       - backend
