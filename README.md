@@ -54,22 +54,42 @@ MoSame/
 
 ## Instalación y uso
 
-### Requisitos previos
+Podes utilizar Github Codespaces para realizar pruebas. Se deben seguir los siguientes pasos:
 
-- Python 3.x
-- Node.js & npm
-- Instancia de SQL Server
+1. Crear entorno codespaces
 
-### Backend
+Dirigite a la sección `<> code` en Github, selecciona la pestaña `Codespaces` y luego la opción "create a codespace on main".
 
-1. Navegar a `back-end`
-2. Instalar dependencias: `pip install -r requirements.txt`
-3. Configurar variables de entorno (DB Connection).
-4. Ejecutar: `flask run`
+2. Levantar la infraestructura
 
-### Frontend
+Una vez que el entorno de Codespaces haya terminado de cargar, abri una terminal y ejecuta el siguiente comando para construir y levantar los contenedores:
 
-1. Navegar a `front-end/`
-2. Instalar dependencias: `npm install`
-3. Ejecutar: `npm run serve`
+```Bash
+docker-compose up -d --build
+```
 
+3. Configurar el acceso (Puertos Públicos)
+
+Para que el frontend pueda comunicarse con el backend desde tu navegador, es obligatorio que el puerto del Backend sea público:
+
+- Dirigite a la pestaña Ports (Puertos) en la parte inferior de VS Code.
+- Encontra el puerto 5000 (Backend - Flask).
+- Hace clic derecho sobre él y selecciona Port Visibility > Public.
+- Hace lo mismo con el puerto 8080 (Frontend - Vue) para poder visualizar la aplicación.
+
+4. Acceder a la aplicación
+El puerto 8080 te proporcionará una URL similar a: https://...-8080.app.github.dev. Hace clic en el icono del globo o en el enlace que aparece en la terminal para abrir la aplicación en el navegador.
+
+## Credenciales de Acceso (Prueba)
+
+El sistema incluye usuarios y datos asociados pre-cargados para probar los diferentes niveles de permisos y funcionalidades.
+
+| Usuario / Rol | Email | Contraseña |
+| :--- | :--- | :--- |
+| **Administrador General** | `admin@gmail.com` | `1234` |
+| **Administrador de Actividades** | `adminactividades@gmail.com` | `1234` |
+| **Operador 0800** | `Operador0800@gmail.com` | `1234` |
+| **Operador CETECSM** | `OperadorCETECSM@gmail.com` | `1234` |
+| **Coordinador CETECSM** | `CoordinadorCETECSM@gmail.com` | `1234` |
+| **Observatorio** | `Observatorio@gmail.com` | `1234` |
+| **Trabajador de Salud** | `trabajadorsalud@gmail.com` | `1234` |
