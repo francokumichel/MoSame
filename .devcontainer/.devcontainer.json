@@ -1,26 +1,13 @@
 {
   "name": "MoSame Project Space",
-  "dockerComposeFile": [
-    "../docker-compose.yml"
-  ],
+  "dockerComposeFile": ["../docker-compose.yml"],
   "service": "backend",
-  "workspaceFolder": "/workspace",
+  "runServices": ["db", "frontend"], 
+  "workspaceFolder": "/app",
   "forwardPorts": [5000, 8080, 1433],
   "portsAttributes": {
-    "5000": {
-      "label": "Backend (Flask)",
-      "onAutoForward": "notify",
-      "visibility": "public"
-    },
-    "8080": {
-      "label": "Frontend (Vue)",
-      "onAutoForward": "openPreview",
-      "visibility": "public"
-    },
-    "1433": {
-      "label": "SQL Server",
-      "onAutoForward": "ignore"
-    }
+    "5000": { "label": "Backend (Flask)", "visibility": "public" },
+    "8080": { "label": "Frontend (Vue)", "visibility": "public", "onAutoForward": "openPreview" }
   },
   "customizations": {
     "vscode": {
@@ -28,12 +15,10 @@
         "ms-python.python",
         "ms-azuretools.vscode-docker",
         "Vue.volar",
-        "ms-mssql.mssql",
-        "dbaeumer.vscode-eslint"
+        "ms-mssql.mssql"
       ]
     }
   },
   "remoteUser": "root",
-  "postCreateCommand": "chmod +x back-end/entrypoint.sh && docker-compose build",
-  "postStartCommand": "docker-compose up -d"
+  "postCreateCommand": "chmod +x ./entrypoint.sh && ./entrypoint.sh"
 }
