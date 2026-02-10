@@ -34,6 +34,6 @@
     }
   },
   "remoteUser": "root",
-  "postCreateCommand": "docker-compose ps",
+  "postCreateCommand": "chmod +x back-end/entrypoint.sh && docker-compose build",
   "postStartCommand": "docker-compose up -d"
 }
