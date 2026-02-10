@@ -1,13 +1,11 @@
 {
-  "name": "MoSame Project Space",
+  "name": "MoSame Project",
   "dockerComposeFile": ["../docker-compose.yml"],
-  "service": "backend",
-  "runServices": ["db", "frontend"], 
-  "workspaceFolder": "/app",
+  "workspaceFolder": "/workspace",
   "forwardPorts": [5000, 8080, 1433],
   "portsAttributes": {
-    "5000": { "label": "Backend (Flask)", "visibility": "public" },
-    "8080": { "label": "Frontend (Vue)", "visibility": "public", "onAutoForward": "openPreview" }
+    "5000": { "label": "Backend", "visibility": "public" },
+    "8080": { "label": "Frontend", "visibility": "public", "onAutoForward": "openPreview" }
   },
   "customizations": {
     "vscode": {
@@ -19,6 +17,6 @@
       ]
     }
   },
-  "remoteUser": "root",
-  "postCreateCommand": "chmod +x ./entrypoint.sh && ./entrypoint.sh"
+  "remoteUser": "vscode", 
+  "postCreateCommand": "chmod +x back-end/entrypoint.sh && docker-compose up -d"
 }
