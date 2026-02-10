@@ -73,7 +73,7 @@ export default createStore({
 
     fetchUser: ({ commit }) => {
       apiService
-        .get("me/profile", {
+        .get("/me/profile", {
           xsrfCookieName: "csrf_access_token",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
